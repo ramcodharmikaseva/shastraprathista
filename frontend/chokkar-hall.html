@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Arulmigu Chokkar Kovil Kalyana Mandapam</title>
+
+<link rel="stylesheet" href="common.css">
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+
+<style>
+/* ================= PAGE TITLE (FIRST) ================= */
+.page-title {
+  background:#d89b2c;
+  color:#fcfcfc;
+  text-align:center;
+  padding:15px 6px;
+}
+.page-title h1 { 
+  margin:0; 
+  font-size:1.2rem; 
+  padding: 0 10px;
+}
+
+/* ================= SLIDING IMAGES (SECOND) ================= */
+.image-slider {
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
+  position: relative;
+  margin: 0;
+}
+
+.slider-container {
+  display: flex;
+  width: 600%; /* 6 images = 600% */
+  animation: slide 30s infinite;
+}
+
+.slide {
+  width: 16.6667%; /* 100% / 6 */
+  flex-shrink: 0;
+}
+
+.slide img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+@keyframes slide {
+  0%, 16.66% { transform: translateX(0%); }
+  20%, 36.66% { transform: translateX(-16.6667%); }
+  40%, 56.66% { transform: translateX(-33.3334%); }
+  60%, 76.66% { transform: translateX(-50%); }
+  80%, 96.66% { transform: translateX(-66.6667%); }
+  100% { transform: translateX(-83.3334%); }
+}
+
+/* Pause animation on hover */
+.image-slider:hover .slider-container {
+  animation-play-state: paused;
+}
+
+/* ================= TABS (THIRD) ================= */
+.hall-tabs{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  padding:12px;
+  border-bottom:2px solid #013057;
+  flex-wrap:wrap;
+  background: #f8f8f8;
+}
+.tab-btn{
+  padding:8px 16px;
+  border:none;
+  background:#eee;
+  font-weight:600;
+  cursor:pointer;
+  border-radius:4px;
+  transition: all 0.3s ease;
+}
+.tab-btn.active{
+  background:#d8962c;
+  color:#fff;
+}
+.tab-btn:hover:not(.active) {
+  background: #ddd;
+}
+
+/* ================= SECTIONS ================= */
+.hall-section{ 
+  display:none; 
+  padding:25px 15px; 
+  animation: fadeIn 0.5s ease;
+}
+.active-section{ display:block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ================= YEAR SELECT ================= */
+.year-select-wrapper{
+  text-align:center;
+  margin:15px 0;
+}
+#yearSelect{
+  padding:8px 14px;
+  font-size:1rem;
+  border:2px solid #d8962c;
+  border-radius: 4px;
+  background: white;
+}
+
+/* ================= LEGEND ================= */
+.calendar-legend-wrapper{
+  text-align:center;
+  margin:15px 0;
+}
+.notes-title{ font-weight:700; margin-bottom:8px; }
+.calendar-legend{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
+  font-size:14px;
+}
+.legend-item{ display:flex; align-items:center; gap:6px; }
+.legend-box{
+  width:14px; height:14px;
+  background:#e5e5e5;
+}
+.legend-box.full{ background:#ff2b2b; }
+.legend-box.morning{
+  background:linear-gradient(135deg,#ff2b2b 50%,#e5e5e5 50%);
+}
+.legend-box.evening{
+  background:linear-gradient(315deg,#ff2b2b 50%,#e5e5e5 50%);
+}
+
+/* ================= CALENDAR ================= */
+#calendar{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:25px;
+  padding-bottom:40px;
+}
+.month{
+  width:320px;
+  border:2px solid #013057;
+  background:#fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.month h3{
+  margin:0;
+  padding:8px;
+  background:#d8962c;
+  color:#fff;
+  text-align:center;
+}
+.weekdays{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  background:#f3f3f3;
+  font-size:13px;
+  font-weight:700;
+}
+.weekdays div{
+  border:1px solid #ddd;
+  text-align:center;
+  padding:6px 0;
+}
+.days-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+}
+.day{
+  height:42px;
+  border:1px solid #ddd;
+  background:#e5e5e5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.day:hover:not(.empty):not(.blocked) {
+  transform: scale(1.05);
+}
+.day.empty{ background:#f7f7f7; }
+.day.full{ background:#ff3b3b; color:#fff; }
+.day.morning{
+  background:linear-gradient(135deg,#ff3b3b 50%,#e5e5e5 50%);
+  color:#fff;
+}
+.day.evening{
+  background:linear-gradient(315deg,#ff3b3b 50%,#e5e5e5 50%);
+  color:#fff;
+}
+
+.day:not(.full):not(.morning):not(.evening) {
+  cursor: default;
+}
+
+/* ===== TODAY HIGHLIGHT ===== */
+.day.today {
+  border: 2px solid #013057;
+  background: #fff7e6;
+  color: #000;
+  font-weight: 700;
+  position: relative;
+}
+
+.day.today::after {
+  content: "Today";
+  position: absolute;
+  bottom: 2px;
+  font-size: 9px;
+  color: #013057;
+}
+
+/* ================= OTHER SECTIONS ================= */
+.section-title{ 
+  text-align:center; 
+  color:#7a2e00; 
+  margin-top: 0;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: #d89b2c;
+}
+.features-list{ 
+  max-width:600px; 
+  margin:auto;
+  list-style-type: none;
+  padding: 0;
+}
+.features-list li {
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+  border-left: 4px solid #d89b2c;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.features-list li::before {
+  content: '✓';
+  color: #d89b2c;
+  font-weight: bold;
+}
+
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:15px;
+  max-width:800px;
+  margin:auto;
+}
+.gallery-box{
+  background:#ddd;
+  height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.gallery-box:hover {
+  transform: translateY(-5px);
+}
+.gallery-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(216, 155, 44, 0.2), transparent);
+}
+.location-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.map-container {
+  width: 100%;
+  height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-top: 20px;
+  border: 2px solid #d89b2c;
+}
+
+.contact-box{
+  max-width:500px;
+  margin:auto;
+  background:#fff;
+  padding:25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.day.blocked {
+  background: #bdbdbd;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* ================= MOBILE ================= */
+@media(max-width:768px){
+  .month{ width:100%; }
+  .image-slider .slide img {
+    height: 250px;
+  }
+  .hall-tabs {
+    gap: 5px;
+  }
+  .tab-btn {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+  .map-container {
+    height: 300px;
+  }
+}
+
+@media(max-width:480px){
+  .image-slider .slide img {
+    height: 200px;
+  }
+  .page-title h1 {
+    font-size: 1rem;
+  }
+  .map-container {
+    height: 250px;
+  }
+}
+
+/* ===== USER BOOKING MODAL ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-box.user-view {
+  background: #fff;
+  width: 360px;
+  border-radius: 8px;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-box.user-view h3 {
+  text-align: center;
+  color: #7a2e00;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #d89b2c;
+  padding-bottom: 8px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  border-bottom: 1px dashed #ddd;
+}
+
+.detail-row span {
+  color: #555;
+}
+
+.detail-row strong {
+  color: #000;
+  text-align: right;
+}
+
+.close-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  border: none;
+  background: #7a2e00;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #5a1e00;
+}
+
+@keyframes fadeIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Location section styles */
+.location-info {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.location-info h3 {
+  color: #7a2e00;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.location-details p {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.location-details i {
+  color: #d89b2c;
+  width: 20px;
+  text-align: center;
+}
+
+.directions-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #d89b2c;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-top: 15px;
+  transition: background 0.3s ease;
+}
+
+.directions-btn:hover {
+  background: #b87c24;
+  color: white;
+}
+
+.map-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.directions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.direction-box {
+  flex: 1;
+  min-width: 200px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.direction-box h4 {
+  color: #013057;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SHARED HEADER -->
+<div id="header-container"></div>
+
+<!-- 1. PAGE TITLE (FIRST) -->
+<div class="page-title">
+  <h1>ARULMIGU CHOKKAR @ SRI MEENAKSHI SUNDARESWARAR TEMPLE KALYANA MANDAPAM</h1>
+</div>
+
+<!-- 2. SLIDING IMAGES (SECOND) -->
+<div class="image-slider">
+  <div class="slider-container">
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="Hall Entrance">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="Mandapam Interior">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="Dining Hall">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="Kitchen">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="Parking Area">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="Exterior View">
+    </div>
+  </div>
+</div>
+
+<!-- 3. TABS (THIRD) -->
+<div class="hall-tabs">
+  <button class="tab-btn active" data-tab="availability">Check Availability</button>
+  <button class="tab-btn" data-tab="features">Features</button>
+  <button class="tab-btn" data-tab="gallery">Gallery</button>
+  <button class="tab-btn" data-tab="location">Location</button>
+  <button class="tab-btn" data-tab="contact">Contact Us</button>
+</div>
+
+<!-- AVAILABILITY -->
+<section id="availability" class="hall-section active-section">
+
+<div class="calendar-legend-wrapper">
+  <div class="notes-title">Notes:</div>
+  <div class="calendar-legend">
+    <div class="legend-item"><span class="legend-box"></span> Available</div>
+    <div class="legend-item"><span class="legend-box full"></span> Booked Full Day</div>
+    <div class="legend-item"><span class="legend-box morning"></span> Booked Morning</div>
+    <div class="legend-item"><span class="legend-box evening"></span> Booked Evening</div>
+  </div>
+</div>
+
+<div class="year-select-wrapper">
+  <select id="yearSelect"></select>
+</div>
+
+<div id="calendar"></div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="hall-section">
+  <h2 class="section-title">Facilities & Features</h2>
+  <ul class="features-list">
+    <li><i class="fas fa-building"></i> Spacious Hall in First Floor</li>
+    <li><i class="fas fa-utensils"></i> Spacious Dining Hall in Ground Floor</li>
+    <li><i class="fas fa-bed"></i> Bride and Groom Rooms with all Facilities</li>
+    <li><i class="fas fa-kitchen-set"></i> Modern, spacious and fully equipped kitchen with gas, steam, etc.</li>
+    <li><i class="fas fa-car"></i> Parking Facilities</li>
+    <li><i class="fas fa-plug"></i> Power Backup</li>
+    <li><i class="fas fa-road"></i> Located on NH-744 (Easy Accessibility)</li>
+    <li><i class="fas fa-toilet"></i> Ample Restroom Facilities</li>
+  </ul>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="hall-section">
+  <h2 class="section-title">Photo Gallery</h2>
+  <div class="gallery-grid">
+    <div class="gallery-box">Main Hall</div>
+    <div class="gallery-box">Stage Area</div>
+    <div class="gallery-box">Dining Area</div>
+    <div class="gallery-box">Kitchen</div>
+    <div class="gallery-box">Entrance</div>
+    <div class="gallery-box">Parking</div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section id="location" class="hall-section">
+  <h2 class="section-title">Location & Directions</h2>
+  <div class="location-container">
+    <div class="location-info">
+      <h3><i class="fas fa-map-marker-alt"></i> Address Details</h3>
+      <div class="location-details">
+        <p><i class="fas fa-temple"></i> <strong>Arulmigu Chokkar Kovil Kalyana Mandapam</strong></p>
+        <p><i class="fas fa-road"></i> NH-744 (Rajapalayam - Tenkasi Road)</p>
+        <p><i class="fas fa-location-dot"></i> Near Sri Meenakshi Sundareswarar Temple</p>
+        <p><i class="fas fa-city"></i> Rajapalayam, Tamil Nadu - 626117</p>
+      </div>
+    </div>
+    
+    <!-- Embedded Google Maps -->
+    <div class="map-container">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3938.461436113119!2d77.5488157!3d9.4432175!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06e9dab4bfffff%3A0x19525cccdec29e6a!2sChokkar%20Koil!5e0!3m2!1sen!2sin!4v1698765432100!5m2!1sen!2sin"
+        class="map-iframe"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Chokkar Kovil Location Map">
+      </iframe>
+    </div>
+    
+    <a href="https://maps.google.com/maps?ll=9.443269,77.550567&z=16&t=m&hl=en&gl=IN&mapclient=embed&q=Chokkar+Koil+Rajapalayam,+Tamil+Nadu+626117" 
+       target="_blank" 
+       class="directions-btn">
+      <i class="fas fa-directions"></i> Get Directions on Google Maps
+    </a>
+    
+    <div class="directions-container">
+      <div class="direction-box">
+        <h4><i class="fas fa-bus"></i> By Bus</h4>
+        <p>Nearest bus stop: <strong>Temple Bus Stop</strong> (50m walk)</p>
+        <p>Frequent buses from Rajapalayam Bus Stand</p>
+      </div>
+      
+      <div class="direction-box">
+        <h4><i class="fas fa-train"></i> By Train</h4>
+        <p>Nearest railway station: <strong>Rajapalayam Railway Station</strong> (2km away)</p>
+      </div>
+      
+      <div class="direction-box">
+        <h4><i class="fas fa-car"></i> By Car</h4>
+        <p>Located on NH-744, easy to locate</p>
+        <p>Ample parking space available within premises</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="hall-section">
+  <h2 class="section-title">Contact Information</h2>
+  <div class="contact-box">
+    <p><strong><i class="fas fa-temple"></i> Arulmigu Chokkar @ Meenakshi Sundareswarar Temple</strong></p>
+    <p><i class="fas fa-phone"></i> <strong>Phone:</strong> +91 9123456789</p>
+    <p><i class="fas fa-phone"></i> <strong>Alternate:</strong> +91 9876543210</p>
+    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> chokkarmandapam@temple.com</p>
+    <p><i class="fas fa-clock"></i> <strong>Office Hours:</strong> 8:00 AM - 8:00 PM</p>
+    <p><i class="fas fa-user-tie"></i> <strong>Manager:</strong> Mr. R. Sundar</p>
+    <p><i class="fas fa-calendar-alt"></i> <strong>Booking Inquiries:</strong> Visit during office hours</p>
+  </div>
+</section>
+
+<!-- USER BOOKING DETAILS MODAL -->
+<div id="userBookingModal" class="modal">
+  <div class="modal-box user-view">
+    <h3>Booking Details</h3>
+
+    <div class="detail-row">
+      <span>📅 Booking Date</span>
+      <strong id="uDate"></strong>
+    </div>
+
+    <div class="detail-row">
+      <span>🕒 Booked On</span>
+      <strong id="uBookedOn"></strong>
+    </div>
+
+    <div class="detail-row">
+      <span>👤 Booked By</span>
+      <strong id="uBookedBy"></strong>
+    </div>
+
+    <div class="detail-row">
+      <span>🧾 Function</span>
+      <strong id="uFunction"></strong>
+    </div>
+
+    <div class="detail-row">
+      <span>⏰ Slot</span>
+      <strong id="uSlot"></strong>
+    </div>
+
+    <div class="detail-row">
+      <span>🛡️ Approved By</span>
+      <strong id="uAdmin"></strong>
+    </div>
+
+    <button class="close-btn" onclick="closeUserModal()">Close</button>
+  </div>
+</div>
+
+
+<!-- SHARED FOOTER -->
+<div id="footer-container"></div>
+
+<script src="common.js"></script>
+
+<script>
+const START_YEAR = 2025;
+const END_YEAR = 2030;
+let currentYear = Math.min(
+  Math.max(new Date().getFullYear(), START_YEAR),
+  END_YEAR
+);
+
+let bookings = {};
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadShared();
+  initTabs();
+  buildYearSelector();
+  loadBookings(currentYear);
+  
+  // Add image placeholder click events for gallery
+  document.querySelectorAll('.gallery-box').forEach((box, index) => {
+    box.onclick = () => {
+      alert(`Image ${index + 1} would open in full view`);
+    };
+  });
+});
+
+/* ---------- shared header/footer ---------- */
+function loadShared() {
+
+  // HEADER
+  fetch("header.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("header-container").innerHTML = html;
+      if (typeof initCommon === "function") {
+        initCommon();
+      }
+    })
+    .catch(err => console.error("Header load failed", err));
+
+  // FOOTER
+  fetch("footer.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("footer-container").innerHTML = html;
+    })
+    .catch(err => console.error("Footer load failed", err));
+}
+
+/* ---------- year selector ---------- */
+function buildYearSelector() {
+  const sel = document.getElementById("yearSelect");
+  sel.innerHTML = "";
+
+  for (let y = START_YEAR; y <= END_YEAR; y++) {
+    const o = document.createElement("option");
+    o.value = y;
+    o.textContent = y;
+    if (y === currentYear) o.selected = true;
+    sel.appendChild(o);
+  }
+
+  sel.onchange = e => {
+    currentYear = +e.target.value;
+    loadBookings(currentYear);
+  };
+}
+
+/* ---------- load bookings ---------- */
+async function loadBookings(year) {
+  try {
+    const res = await fetch(`/api/halls/bookings?hall=CHOKKAR&year=${year}`);
+
+    if (!res.ok) throw new Error("API error");
+
+    const data = await res.json();
+
+    bookings = {};
+
+    data.forEach(b => {
+      bookings[b.date] = {
+        morning: b.morning,
+        evening: b.evening,
+        bookedBy: b.bookedBy,
+        functionType: b.functionType,
+        createdAt: b.createdAt,
+        createdByName: b.createdByName || b.createdBy
+      };
+    });
+
+    renderCalendar(year); // ✅ correct call
+  } catch (err) {
+    console.error("Failed to load bookings", err);
+    renderCalendar(year); // still render calendar even if API fails
+  }
+}
+
+/* ---------- calendar ---------- */
+function renderCalendar(year) {
+  const cal = document.getElementById("calendar");
+  cal.innerHTML = "";
+
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth(); // 0-based (Jan = 0)
+
+  let startMonth = 0;
+  let endMonth = 11;
+
+  // 🔥 If viewing current year → remove past months
+  if (year === currentYear) {
+    startMonth = currentMonth;
+  }
+
+  // 🔒 If viewing past year → show nothing
+  if (year < currentYear) {
+    return;
+  }
+
+  for (let m = startMonth; m <= endMonth; m++) {
+    cal.appendChild(renderMonth(year, m));
+  }
+}
+
+
+function renderMonth(y, m) {
+  const box = document.createElement("div");
+  box.className = "month";
+
+  box.innerHTML = `<h3>${new Date(y, m).toLocaleString("en", { month: "long" })} ${y}</h3>`;
+
+  const week = document.createElement("div");
+  week.className = "weekdays";
+  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => {
+    const w = document.createElement("div");
+    w.textContent = d;
+    week.appendChild(w);
+  });
+
+  const grid = document.createElement("div");
+  grid.className = "days-grid";
+
+  const firstDay = new Date(y, m, 1).getDay();
+  const totalDays = new Date(y, m + 1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) {
+    grid.appendChild(Object.assign(document.createElement("div"), { className: "day empty" }));
+  }
+
+  for (let d = 1; d <= totalDays; d++) {
+    const key = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const booking = bookings[key];
+
+    const day = document.createElement("div");
+    day.className = "day";
+    day.textContent = d;
+
+    /* ⭐ Highlight TODAY */
+    const today = new Date();
+    if (
+      y === today.getFullYear() &&
+      m === today.getMonth() &&
+      d === today.getDate()
+    ) {
+      day.classList.add("today");
+    }
+
+    /* 🔒 Block past dates */
+    if (isPastDate(y, m, d)) {
+      day.classList.add("blocked");
+      day.style.pointerEvents = "none";
+      grid.appendChild(day);
+      continue;
+    }
+
+    /* ✅ IF NO BOOKING → JUST SHOW DAY (NO CLICK) */
+    if (!booking) {
+      grid.appendChild(day);
+      continue;
+    }
+
+    /* 🎨 Booking colors */
+    if (booking.morning && booking.evening) day.classList.add("full");
+    else if (booking.morning) day.classList.add("morning");
+    else if (booking.evening) day.classList.add("evening");
+
+    /* 🪟 CLICK → SHOW DETAILS */
+    day.onclick = () => {
+      document.getElementById("uDate").textContent = key;
+
+      document.getElementById("uBookedOn").textContent =
+        booking.createdAt
+          ? new Date(booking.createdAt).toLocaleString()
+          : "—";
+
+      document.getElementById("uBookedBy").textContent =
+        booking.bookedBy || "—";
+
+      document.getElementById("uFunction").textContent =
+        booking.functionType || "—";
+
+      document.getElementById("uSlot").textContent =
+        booking.morning && booking.evening
+          ? "Full Day"
+          : booking.morning
+          ? "Morning"
+          : "Evening";
+
+      document.getElementById("uAdmin").textContent =
+        booking.createdByName || "Temple Administration";
+
+      document.getElementById("userBookingModal").style.display = "flex";
+    };
+
+    grid.appendChild(day);
+  }
+
+  box.appendChild(week);
+  box.appendChild(grid);
+  return box;
+}
+
+/* ---------- tabs ---------- */
+function initTabs() {
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".hall-section").forEach(s => s.classList.remove("active-section"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab).classList.add("active-section");
+    };
+  });
+}
+
+/* ---------- utils ---------- */
+function isPastDate(year, month, day) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const check = new Date(year, month, day);
+  check.setHours(0,0,0,0);
+
+  return check < today;
+}
+
+function closeUserModal() {
+  document.getElementById("userBookingModal").style.display = "none";
+}
+
+window.addEventListener("click", e => {
+  const modal = document.getElementById("userBookingModal");
+  if (e.target === modal) closeUserModal();
+});
+
+</script>
+
+</body>
+</html>

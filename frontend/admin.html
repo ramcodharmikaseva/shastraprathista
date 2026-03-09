@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; connect-src 'self' http://localhost:5000 http://192.168.0.18:5000 https://localhost:5000 https://192.168.0.18:5000 https://api.shastraprathista.in https://*.razorpay.com blob:;">
+
+  <title>Admin Dashboard - SHASTRAPRATHISTA BOOKS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/admin-base.css">
+  <link rel="stylesheet" href="css/admin-layout.css">
+  <link rel="stylesheet" href="css/admin-components.css">
+  <link rel="stylesheet" href="css/admin-dashboard.css">
+  <link rel="stylesheet" href="css/admin-tables.css">
+  <link rel="stylesheet" href="css/admin-forms.css">
+  <link rel="stylesheet" href="css/admin-modals.css">
+  <link rel="stylesheet" href="css/admin-orders.css">
+  <link rel="stylesheet" href="css/admin-reports.css">
+  <link rel="stylesheet" href="css/admin-settings.css">
+  <link rel="stylesheet" href="css/admin-role-management.css">
+  <link rel="stylesheet" href="css/admin-responsive.css">
+  <link rel="stylesheet" href="css/admin-print.css">
+</head>
+
+  <body class="admin-page">
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo-title">
+      <a href="index.html" class="home-link">
+        <img src="image/logo.jpg" alt="Shastraprathista Logo" class="logo" />
+        <span class="site-name">Smt Lingammal Ramaraju Shastraprathista Trust</span>
+      </a>
+    </div>
+    <div class="nav-right">
+      <div class="user-info">
+        <i class="fas fa-user-circle"></i>
+        <span id="adminName">Admin User</span>
+      </div>
+      <nav class="header-links"> 
+        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="#" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Menu -->
+  <nav class="main-menu">
+    <ul id="menu">
+      <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="all_book_grid.html"><i class="fas fa-book"></i> Books</a></li>
+      <li><a href="music-admin.html"><i class="fas fa-music"></i> Music Admin</a></li> 
+      <li><a href="hall-admin.html"><i class="fas fa-building"></i> Hall Admin</a></li>
+      <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Admin</a></li>
+    </ul>
+  </nav>
+
+  <!-- Admin Navigation -->
+  <nav class="admin-nav">
+    <ul>
+      <li><a href="#dashboard" class="active" onclick="showSection('dashboard')">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a></li>
+      <li><a href="#orders" onclick="showSection('orders')">
+        <i class="fas fa-shopping-cart"></i> Orders
+      </a></li>
+      <li><a href="#customers" onclick="showSection('customers')">
+        <i class="fas fa-users"></i> Customers
+      </a></li>
+      <li><a href="#reports" onclick="showSection('reports')">
+        <i class="fas fa-chart-bar"></i> Reports
+      </a></li>
+      <li><a href="#settings" onclick="showSection('settings'); loadSettingsSection();">
+        <i class="fas fa-cog"></i> Settings
+      </a></li>
+      <!-- ✅ CORRECTED: Link to add-book.html in same folder -->
+      <li><a href="inventory.html">
+        <i class="fas fa-boxes"></i> Inventory
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- Real-time Notification -->
+  <div id="newOrderNotification" class="new-order-notification">
+    <div class="notification-content">
+      <i class="fas fa-bell"></i>
+      <div class="notification-text">
+        <strong>New Order Received!</strong>
+        <span id="newOrderMessage">Order #ORD12345678 just came in</span>
+      </div>
+      <button class="btn btn-sm btn-warning" onclick="hideNewOrderNotification()">
+        <i class="fas fa-times"></i> Dismiss
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="content-section active">
+      <div class="section-header">
+        <h1 class="section-title">
+          <i class="fas fa-tachometer-alt"></i> Dashboard Overview
+        </h1>
+        <div class="header-actions">
+          <button class="btn btn-success" onclick="refreshAllData()">
+            <i class="fas fa-sync"></i> Refresh
+          </button>
+          <button class="btn btn-primary" onclick="exportData()">
+            <i class="fas fa-download"></i> Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Metrics Cards -->
+      <div class="dashboard-cards">
+        <div class="card revenue-card">
+          <div class="card-icon">
+            <i class="fas fa-rupee-sign"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Total Revenue</div>
+            <div class="card-value" id="total-revenue">₹0.00</div>
+            <div class="card-trend trend-up">
+              <i class="fas fa-arrow-up"></i> Loading...
+            </div>
+          </div>
+        </div>
+
+        <div class="card orders-card">
+          <div class="card-icon">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Total Orders</div>
+            <div class="card-value" id="total-orders">0</div>
+            <div class="card-trend trend-up">
+              <i class="fas fa-arrow-up"></i> Loading...
+            </div>
+          </div>
+        </div>
+
+        <div class="card customers-card">
+          <div class="card-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Customers</div>
+            <div class="card-value" id="total-customers">0</div>
+            <div class="card-trend trend-up">
+              <i class="fas fa-arrow-up"></i> Loading...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="recent-activity">
+        <div class="section-header">
+          <h3><i class="fas fa-clock"></i> Recent Orders</h3>
+          <button class="btn btn-outline" onclick="showSection('orders')">
+            View All Orders
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recent-orders-body">
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  <div>Loading orders...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Section -->
+    <div id="orders" class="content-section">
+      <div class="section-header">
+        <h1 class="section-title">
+          <i class="fas fa-shopping-cart"></i> Order Management
+        </h1>
+        <div class="header-actions">
+          <div class="search-box">
+            <input type="text" id="orderSearch" placeholder="Search orders..." class="search-input" onkeyup="searchOrders()">
+            <i class="fas fa-search search-icon"></i>
+          </div>
+          <button class="btn btn-secondary" onclick="clearOrdersSearch()">
+            <i class="fas fa-times"></i> Clear
+          </button>
+          <button class="btn btn-primary" onclick="toggleOrdersFilters()">
+            <i class="fas fa-filter"></i> Filters
+          </button>
+          <button class="btn btn-success" onclick="refreshOrdersList()">
+            <i class="fas fa-sync"></i> Refresh
+          </button>
+          <button class="btn btn-primary" onclick="exportOrders()">
+            <i class="fas fa-file-export"></i> Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Filters Panel -->
+      <div class="filters-panel" id="ordersFiltersPanel" style="display: none;">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>Order Status</label>
+            <select id="filterOrderStatus" onchange="applyOrdersFilters()">
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+      
+          <div class="filter-group">
+            <label>Payment Status</label>
+            <select id="filterPaymentStatus" onchange="applyOrdersFilters()">
+              <option value="">All Payments</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+      
+          <div class="filter-group">
+            <label>Date Range</label>
+            <select id="filterDateRange" onchange="handleDateRangeChange()">
+              <option value="">All Time</option>
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+        </div>
+    
+        <div class="filter-row" id="ordersCustomDateRange" style="display: none;">
+          <div class="filter-group">
+            <label>From Date</label>
+            <input type="date" id="filterStartDate" onchange="applyOrdersFilters()">
+          </div>
+          <div class="filter-group">
+            <label>To Date</label>
+            <input type="date" id="filterEndDate" onchange="applyOrdersFilters()">
+          </div>
+        </div>
+    
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>Min Amount (₹)</label>
+            <input type="number" id="filterMinAmount" placeholder="0" onchange="applyOrdersFilters()">
+          </div>
+          <div class="filter-group">
+            <label>Max Amount (₹)</label>
+            <input type="number" id="filterMaxAmount" placeholder="10000" onchange="applyOrdersFilters()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Counter -->
+      <div class="results-counter" id="ordersResultsCounter">
+        Loading orders...
+      </div>
+
+      <!-- Orders content will be loaded by JavaScript -->
+      <div id="orders-content">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Tracking ID</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="orders-body">
+              <tr>
+                <td colspan="8" class="empty-state">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  <div>Loading orders...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers Section -->
+    <div id="customers" class="content-section">
+      <div class="section-header">
+        <h1 class="section-title">
+          <i class="fas fa-users"></i> Customer Management
+        </h1>
+        <div class="header-actions">
+          <div class="search-box">
+            <input type="text" id="customerSearch" placeholder="Search customers..." class="search-input" onkeyup="searchCustomers()">
+            <i class="fas fa-search search-icon"></i>
+          </div>
+          <button class="btn btn-secondary" onclick="clearCustomersSearch()">
+            <i class="fas fa-times"></i> Clear
+          </button>
+          <button class="btn btn-primary" onclick="toggleCustomersFilters()">
+            <i class="fas fa-filter"></i> Filters
+          </button>
+          <button class="btn btn-primary" onclick="exportCustomers()">
+            <i class="fas fa-file-export"></i> Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Filters Panel -->
+      <div class="filters-panel" id="customersFiltersPanel" style="display: none;">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>City</label>
+            <input type="text" id="filterCity" placeholder="Filter by city..." onkeyup="applyCustomersFilters()">
+          </div>
+
+          <div class="filter-group">
+            <label>State</label>
+            <input type="text" id="filterState" placeholder="Filter by state..." onkeyup="applyCustomersFilters()">
+          </div>
+
+          <div class="filter-group">
+            <label>Min Orders</label>
+            <input type="number" id="filterMinOrders" placeholder="0" onchange="applyCustomersFilters()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Counter -->
+      <div class="results-counter" id="customersResultsCounter">
+        Loading customers...
+      </div>
+
+      <div id="customers-content">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Orders</th>
+                <th>Join Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customers-body">
+              <tr>
+                <td colspan="7" class="empty-state">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  <div>Loading customers...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Section -->
+    <div id="reports" class="content-section">
+      <div class="section-header">
+        <h1 class="section-title">
+          <i class="fas fa-chart-bar"></i> Analytics & Reports
+        </h1>
+        <div class="header-actions">
+          <button class="btn btn-success" onclick="exportOrdersPeriodReport()">
+            <i class="fas fa-file-csv"></i> Export Orders Report
+          </button>
+          <button class="btn btn-info" onclick="refreshReports()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Replace the existing report-filters section with this: -->
+      <div class="report-filters">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="reportPeriod">Report Period:</label>
+            <select id="reportPeriod" onchange="changeReportPeriod()">
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="week" selected>This Week</option>
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="year">This Year</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+    
+          <div id="customDateRange" class="filter-group custom-range-group" style="display: none;">
+            <label for="startDate">From:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">To:</label>
+            <input type="date" id="endDate">
+            <button class="btn btn-sm" onclick="applyCustomDateRange()">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="report-summary-cards">
+        <div class="summary-card">
+          <div class="summary-icon sales">
+            <i class="fas fa-rupee-sign"></i>
+          </div>
+          <div class="summary-content">
+            <h3 id="totalSales">₹0</h3>
+            <p>Total Sales</p>
+            <span class="summary-trend" id="salesTrend">0%</span>
+          </div>
+        </div>
+    
+        <div class="summary-card">
+          <div class="summary-icon orders">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="summary-content">
+            <h3 id="totalOrdersCount">0</h3>
+            <p>Total Orders</p>
+            <span class="summary-trend" id="ordersTrend">0%</span>
+          </div>
+        </div>
+    
+        <div class="summary-card">
+          <div class="summary-icon customers">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="summary-content">
+            <h3 id="newCustomers">0</h3>
+            <p>New Customers</p>
+            <span class="summary-trend" id="customersTrend">0%</span>
+          </div>
+        </div>
+    
+        <div class="summary-card">
+          <div class="summary-icon average">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="summary-content">
+            <h3 id="averageOrder">₹0</h3>
+            <p>Average Order Value</p>
+            <span class="summary-trend" id="averageTrend">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-container">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3><i class="fas fa-chart-line"></i> Sales Overview</h3>
+            <select id="salesChartType" onchange="updateSalesChart()">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Products Table -->
+      <div class="report-table-section">
+        <div class="section-header">
+          <h3><i class="fas fa-cube"></i> Top Selling Books</h3>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Book Title</th>
+                <th>Category</th>
+                <th>Units Sold</th>
+                <th>Revenue</th>
+                <th>Stock Status</th>
+              </tr>
+            </thead>
+            <tbody id="topProductsBody">
+              <tr>
+                <td colspan="5" class="empty-state">Loading top products...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ✅ BOOK SALES REPORT MOVED INSIDE REPORTS SECTION -->
+      <div class="report-section">
+        <div class="section-header">
+          <h3><i class="fas fa-book"></i> Book Sales Report</h3>
+          <div class="header-actions">
+            <button class="btn btn-success" onclick="exportBookSalesReport()">
+              <i class="fas fa-file-csv"></i> Export Book Sales
+            </button>
+          </div>
+        </div>
+
+        <!-- Book Sales Report Filters -->
+        <div class="report-filters">
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="bookSalesPeriod">Report Period:</label>
+              <select id="bookSalesPeriod" onchange="changeBookSalesPeriod()">
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week" selected>This Week</option>
+                <option value="month">This Month</option>
+                <option value="quarter">This Quarter</option>
+                <option value="year">This Year</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="bookSearch">Search Book:</label>
+              <input type="text" id="bookSearch" placeholder="Search by book title..." 
+                    class="search-input" onkeyup="searchBooksForReport()">
+            </div>
+
+            <div class="filter-group">
+              <label for="bookCategory">Category:</label>
+              <select id="bookCategory" onchange="filterBooksByCategory()">
+                <option value="">All Categories</option>
+                <!-- Categories will be populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <div id="bookSalesCustomRange" class="filter-group custom-range-group" style="display: none;">
+              <label for="bookStartDate">From:</label>
+              <input type="date" id="bookStartDate">
+              <label for="bookEndDate">To:</label>
+              <input type="date" id="bookEndDate">
+              <button class="btn btn-sm" onclick="applyBookSalesDateRange()">Apply</button>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <button class="btn btn-primary" onclick="generateBookSalesReport()">
+              <i class="fas fa-chart-bar"></i> Generate Report
+            </button>
+            <button class="btn btn-secondary" onclick="clearBookSalesFilters()">
+              <i class="fas fa-times"></i> Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Book Sales Results -->
+        <div class="report-results">
+          <div class="results-header">
+            <h4 id="bookSalesTitle">Book Sales Report</h4>
+            <div class="results-summary" id="bookSalesSummary">
+              Select filters and generate report to see data
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Category</th>
+                  <th>Units Sold</th>
+                  <th>Total Revenue</th>
+                  <th>Average Price</th>
+                  <th>Orders Count</th>
+                  <th>Sales Trend</th>
+                </tr>
+              </thead>
+              <tbody id="bookSalesBody">
+                <tr>
+                  <td colspan="7" class="empty-state">
+                    No data to display. Generate report to see book sales.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Book Sales Chart -->
+          <div class="chart-card" style="margin-top: 20px;">
+            <div class="chart-header">
+              <h4><i class="fas fa-chart-line"></i> Book Sales Performance</h4>
+              <select id="bookChartType" onchange="updateBookSalesChart()">
+                <option value="revenue">By Revenue</option>
+                <option value="quantity">By Quantity</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas id="bookSalesChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div id="settings" class="content-section">
+      <div class="section-header">
+        <h1 class="section-title">
+          <i class="fas fa-cog"></i> System Settings
+        </h1>
+        <div class="header-actions">
+          <button class="btn btn-success" onclick="saveAllSettings()">
+            <i class="fas fa-save"></i> Save All Settings
+          </button>
+          <button class="btn btn-secondary" onclick="resetSettings()">
+            <i class="fas fa-undo"></i> Reset to Defaults
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings Tabs -->
+      <div class="settings-tabs">
+        <div class="tab-nav">
+          <button class="tab-link active" onclick="openSettingsTab('general', event)">
+            <i class="fas fa-cog"></i> General
+          </button>
+          <button class="tab-link" onclick="openSettingsTab('shipping')">
+            <i class="fas fa-shipping-fast"></i> Shipping
+          </button>
+          <button class="tab-link" onclick="openSettingsTab('invoices')">
+            <i class="fas fa-receipt"></i> Invoices
+          </button>
+          <button class="tab-link" onclick="openSettingsTab('notifications')">
+            <i class="fas fa-bell"></i> Notifications
+          </button>
+          <button class="tab-link" onclick="openSettingsTab('admins')">
+            <i class="fas fa-user-cog"></i> Admin Users
+          </button>
+        </div>
+
+        <!-- General Settings Tab -->
+        <div id="general-tab" class="tab-content active">
+          <div class="settings-form">
+            <div class="form-section">
+              <h3><i class="fas fa-store"></i> Store Information</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="storeName">Store Name *</label>
+                  <input type="text" id="storeName" class="form-input" placeholder="Smt Lingammal Ramaraju Shastrapratista Trust">
+                </div>
+                <div class="form-group">
+                  <label for="storeEmail">Contact Email *</label>
+                  <input type="email" id="storeEmail" class="form-input" placeholder="shastraprathista@gmail.com">
+                </div>
+                <div class="form-group">
+                  <label for="storePhone">Contact Phone *</label>
+                  <input type="tel" id="storePhone" class="form-input" placeholder="88704 12345">
+                </div>
+                <div class="form-group full-width">
+                  <label for="storeAddress">Store Address *</label>
+                  <textarea id="storeAddress" class="form-textarea" placeholder="No.1, Gandhi Kalaimandram, Rajapalayam - 626117, Tamil Nadu" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3><i class="fas fa-globe"></i> Regional Settings</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="currency">Currency *</label>
+                  <select id="currency" class="form-select">
+                    <option value="INR" selected>Indian Rupee (₹)</option>
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="EUR">Euro (€)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="timezone">Timezone *</label>
+                  <select id="timezone" class="form-select">
+                    <option value="Asia/Kolkata" selected>India Standard Time (IST)</option>
+                    <option value="UTC">UTC</option>
+                    <option value="America/New_York">Eastern Time (ET)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="dateFormat">Date Format *</label>
+                  <select id="dateFormat" class="form-select">
+                    <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3><i class="fas fa-shopping-cart"></i> Order Settings</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="autoConfirm">Auto-confirm Orders</label>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="autoConfirm" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                  </div>
+                  <small>Automatically confirm orders when payment is successful</small>
+                </div>
+                <div class="form-group">
+                  <label for="lowStockThreshold">Low Stock Threshold</label>
+                  <input type="number" id="lowStockThreshold" class="form-input" value="10" min="1">
+                  <small>Send alerts when stock falls below this number</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Settings Tab -->
+        <div id="shipping-tab" class="tab-content">
+          <div class="settings-form">
+            <div class="form-section">
+              <h3><i class="fas fa-truck"></i> Shipping Methods</h3>
+
+              <!-- Domestic Shipping -->
+              <div class="shipping-method">
+                <div class="method-header">
+                  <h4>Domestic Shipping (India)</h4>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="domesticEnabled" class="toggle-input" checked>
+                    <span class="toggle-slider"></span>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="domesticCost">Base Shipping Cost (₹)</label>
+                    <input type="number" id="domesticCost" class="form-input" value="50" min="0" step="10">
+                  </div>
+                  <div class="form-group">
+                    <label for="domesticFreeThreshold">Free Shipping Threshold (₹)</label>
+                    <input type="number" id="domesticFreeThreshold" class="form-input" value="500" min="0">
+                  </div>
+                  <div class="form-group">
+                    <label for="domesticDeliveryDays">Estimated Delivery (Days)</label>
+                    <input type="number" id="domesticDeliveryDays" class="form-input" value="7" min="1" max="30">
+                  </div>
+                </div>
+              </div>
+
+              <!-- International Shipping -->
+              <div class="shipping-method">
+                <div class="method-header">
+                  <h4>International Shipping</h4>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="internationalEnabled" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="internationalCost">Base Shipping Cost (₹)</label>
+                    <input type="number" id="internationalCost" class="form-input" value="500" min="0" step="50">
+                  </div>
+                  <div class="form-group">
+                    <label for="internationalDeliveryDays">Estimated Delivery (Days)</label>
+                    <input type="number" id="internationalDeliveryDays" class="form-input" value="21" min="7" max="60">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3><i class="fas fa-map-marker-alt"></i> Shipping Regions</h3>
+              <div class="form-section">
+                <h4>Enabled Regions</h4>
+                <div class="regions-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                  <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="shippingRegions" value="south" checked> 
+                    <span>South India</span>
+                  </label>
+                  <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="shippingRegions" value="north"> 
+                    <span>North India</span>
+                  </label>
+                  <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="shippingRegions" value="east"> 
+                    <span>East India</span>
+                  </label>
+                  <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="shippingRegions" value="west"> 
+                    <span>West India</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="regions-list">
+                <div class="region-item">
+                  <span>South India</span>
+                  <span class="region-cost">₹50</span>
+                </div>
+                <div class="region-item">
+                  <span>North India</span>
+                  <span class="region-cost">₹75</span>
+                </div>
+                <div class="region-item">
+                  <span>East India</span>
+                  <span class="region-cost">₹80</span>
+                </div>
+                <div class="region-item">
+                  <span>West India</span>
+                  <span class="region-cost">₹70</span>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="editShippingRegions()">
+                <i class="fas fa-edit"></i> Edit Regions
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice Settings Tab -->
+        <div id="invoices-tab" class="tab-content">
+          <div class="settings-form">
+            <div class="form-section">
+              <h3><i class="fas fa-receipt"></i> Invoice Template</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="invoicePrefix">Invoice Prefix</label>
+                  <input type="text" id="invoicePrefix" class="form-input" value="INV" placeholder="INV">
+                </div>
+                <div class="form-group">
+                  <label for="invoiceStartingNumber">Starting Number</label>
+                  <input type="number" id="invoiceStartingNumber" class="form-input" value="1001" min="1">
+                </div>
+                <div class="form-group">
+                  <label for="invoiceTerms">Payment Terms</label>
+                  <select id="invoiceTerms" class="form-select">
+                    <option value="due_on_receipt" selected>Due on Receipt</option>
+                    <option value="net_7">Net 7 Days</option>
+                    <option value="net_15">Net 15 Days</option>
+                    <option value="net_30">Net 30 Days</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3><i class="fas fa-file-invoice"></i> Invoice Details</h3>
+              <div class="form-grid">
+                <!-- In Invoice Settings Tab, add this section -->
+                <div class="form-section">
+                  <h3><i class="fas fa-file-pdf"></i> PDF Options</h3>
+                  <div class="checkbox-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px;">
+                      <input type="checkbox" name="pdfOptions" value="logo" checked> 
+                      <span>Include Logo</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px;">
+                      <input type="checkbox" name="pdfOptions" value="signature"> 
+                      <span>Include Signature</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px;">
+                      <input type="checkbox" name="pdfOptions" value="watermark"> 
+                      <span>Add Watermark</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="invoiceNotes">Invoice Notes</label>
+                  <textarea id="invoiceNotes" class="form-textarea" rows="3" placeholder="Thank you for your business!">Books HSN - 4901 (GST Exempt as per Indian Law)</textarea>
+                </div>
+                <div class="form-group full-width">
+                  <label for="invoiceFooter">Invoice Footer</label>
+                  <textarea id="invoiceFooter" class="form-textarea" rows="2" placeholder="This is a computer-generated invoice; no signature required."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3><i class="fas fa-palette"></i> Invoice Styling</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="invoicePrimaryColor">Primary Color</label>
+                  <input type="color" id="invoicePrimaryColor" class="form-color" value="#2c3e50">
+                </div>
+                <div class="form-group">
+                  <label for="invoiceLogo">Company Logo</label>
+                  <input type="file" id="invoiceLogo" class="form-file" accept="image/*">
+                  <small>Recommended: 200x60px PNG</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notifications-tab" class="tab-content">
+          <div class="settings-form">
+            <div class="form-section">
+              <h3><i class="fas fa-envelope"></i> Email Notifications</h3>
+              <div class="notification-settings">
+                <div class="notification-item">
+                  <div class="notification-info">
+                    <h4>New Order Alerts</h4>
+                    <p>Receive email when new orders are placed</p>
+                  </div>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="emailNewOrders" class="toggle-input" checked>
+                    <span class="toggle-slider"></span>
+                  </div>
+                </div>
+            
+                <div class="notification-item">
+                  <div class="notification-info">
+                    <h4>Low Stock Alerts</h4>
+                    <p>Get notified when product stock is low</p>
+                  </div>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="emailLowStock" class="toggle-input" checked>
+                    <span class="toggle-slider"></span>
+                  </div>
+                </div>
+            
+                <div class="notification-item">
+                  <div class="notification-info">
+                    <h4>Daily Sales Report</h4>
+                    <p>Receive daily summary of sales and orders</p>
+                  </div>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="emailDailyReport" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3><i class="fas fa-bell"></i> Admin Notifications</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="notificationSound">Notification Sound</label>
+                  <select id="notificationSound" class="form-select">
+                    <option value="default" selected>Default</option>
+                    <option value="chime">Chime</option>
+                    <option value="bell">Bell</option>
+                    <option value="none">None</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="desktopNotifications">Desktop Notifications</label>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="desktopNotifications" class="toggle-input" checked>
+                    <span class="toggle-slider"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Users Tab -->
+        <div id="admins-tab" class="tab-content">
+          <div class="admin-users-section">
+            <div class="section-header">
+              <h3><i class="fas fa-users-cog"></i> Admin Users</h3>
+              <button class="btn btn-primary" onclick="showAddAdminModal()">
+                <i class="fas fa-plus"></i> Add Admin
+              </button>
+            </div>
+        
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Admin User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Last Login</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersBody">
+                  <tr>
+                    <td colspan="6" class="empty-state">
+                      <i class="fas fa-users"></i>
+                      <div>Loading admin users...</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- View Order Modal -->
+  <div id="viewOrderModal" class="modal">
+    <div class="modal-content large">
+      <div id="viewOrderContent">
+        <!-- Order details will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <!-- External Libraries -->
+  <script src="assets/libs/jspdf/jspdf.umd.min.js"></script>
+  <script src="assets/libs/jspdf-autotable/jspdf.plugin.autotable.min.js"></script>
+
+  
+  <!-- Scripts -->
+  <script src="admin-utils.js"></script>   <!-- helpers first -->
+  <script src="admin-data.js"></script>    <!-- API & state -->
+  <script src="admin-ui.js"></script>      <!-- rendering -->
+  <script src="admin-settings.js"></script>
+  <script src="admin.js"></script>         <!-- bootstrap LAST -->
+
+</body>
+</html>

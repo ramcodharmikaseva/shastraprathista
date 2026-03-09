@@ -1,0 +1,74 @@
+<!-- header.html - Shared header component -->
+<header class="site-header">
+  <div class="logo-title">
+    <a href="index.html" class="home-link">
+      <div class="site-name-container">
+        <div class="site-name-main">RAMCO</div>
+        <div class="site-name-sub">DHARMIKA SEVA</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="nav-right">
+    <!-- Top row: Logout, Profile, Cart links -->
+    <div class="nav-top-links">
+      <nav class="header-links"> 
+        <a href="login.html" id="auth-link"><i class="fas fa-user"></i> Sign In</a>
+        <a href="profile.html"><i class="fas fa-box"></i> Profile</a>
+        <a href="cart.html" id="cart-link">
+          <i class="fas fa-shopping-cart"></i> Cart
+          <span id="cart-count" class="cart-count" style="display: none;">0</span>
+        </a>
+      </nav>
+      
+      <!-- 🔥 ADD THIS LINE: Admin shields container -->
+      <div class="admin-shields-header" id="adminShieldsHeader"></div>
+      
+      <div class="user-welcome" id="user-welcome">
+        <i class="fas fa-user-circle"></i>
+        <span id="welcome-text">Guest</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="main-menu">
+  <div class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </div>
+  <ul id="menu">
+    <li><a href="index.html" id="menu-home"><i class="fas fa-home"></i> HOME</a></li>
+    
+    <li><a href="all_book_grid.html" id="menu-books"><i class="fas fa-book"></i> BOOKS</a></li>
+    <li><a href="library.html" id="menu-library"><i class="fas fa-university"></i> LIBRARY</a></li>
+    <li><a href="music.html" id="menu-music"><i class="fas fa-music"></i> MUSIC SCHOOL</a></li>
+    <li><a href="vedapathasala.html" id="menu-videos"><i class="fas fa-book-open"></i> VEDAPATHASALA</a></li>
+    
+    <!-- Temples Dropdown -->
+    <li class="dropdown">
+      <a href="#" id="menu-temples">
+        <i class="fas fa-place-of-worship"></i> TEMPLES
+        <i class="fas fa-chevron-down dropdown-arrow"></i>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="temple_sharadambal.html"><i class="fas fa-om"></i> Sri Sringeri Sharadambal Temple</a></li>
+        <li><a href="temple_meenakshi.html"><i class="fas fa-om"></i> Sri Meenakshi Sundareswarar Temple</a></li>
+        <li><a href="temple_ramalingeshwarar.html"><i class="fas fa-om"></i> Sri Ramalingeshwarar Temple</a></li>
+      </ul>
+    </li>
+    
+    <!-- Marriage Hall Dropdown -->
+    <li class="dropdown">
+      <a href="#" id="menu-marriage-hall">
+        <i class="fas fa-heart-circle-check"></i> MARRIAGE HALL
+        <i class="fas fa-chevron-down dropdown-arrow"></i>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="chokkar-hall.html"><i class="fas fa-heart-circle-check"></i> Arulmigu Chokkar Kovil Kalyana Mandapam</a></li>
+        <li><a href="ttd-hall.html"><i class="fas fa-heart-circle-check"></i> TTD - P.A.C. Ramasamy Raja Kalyana Mandapam</a></li>
+      </ul>
+    </li>
+
+    <li><a href="aboutus.html" id="menu-about"><i class="fas fa-info-circle"></i> ABOUT US</a></li>
+  </ul>
+</nav>

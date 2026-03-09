@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>User Profile - SHASTRAPRATHISTA BOOKS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column;">
+  <div class="loading-spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #8B0000; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
+  <p>Loading your profile...</p>
+</div>
+
+<!-- Main Content (hidden initially) -->
+<div id="main-content" style="display: none;">
+
+  <!-- Shared Header -->
+  <div id="header-container"></div>
+
+  <!-- Top Toast -->
+  <div id="top-toast" role="alert" aria-live="polite"></div>
+
+  <div class="profile-container">
+    <!-- Single Profile Section with Edit -->
+    <div class="profile-header">
+      <div class="profile-header-top">
+        <h1 class="profile-title"><i class="fas fa-user-circle"></i> My Profile</h1>
+        <button id="editProfileBtn" class="btn btn-edit-profile" onclick="enableProfileEdit()">
+          <i class="fas fa-edit"></i> Edit Profile
+        </button>
+      </div>
+      
+      <!-- View Mode (Default) -->
+      <div class="profile-info-section" id="profileInfoView">
+        <div class="profile-info-grid">
+          <div class="info-item">
+            <div class="info-label">
+              <i class="fas fa-user"></i>
+              <strong>Full Name</strong>
+            </div>
+            <div class="info-value" id="profileName">Loading...</div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-label">
+              <i class="fas fa-envelope"></i>
+              <strong>Email Address</strong>
+            </div>
+            <div class="info-value" id="profileEmail">Loading...</div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-label">
+              <i class="fas fa-phone"></i>
+              <strong>Phone Number</strong>
+            </div>
+            <div class="info-value" id="profilePhone">Loading...</div>
+          </div>
+
+          <!-- Add this info-item after phone number -->
+          <div class="info-item">
+              <div class="info-label">
+                  <i class="fas fa-user-shield"></i>
+                  <strong>Account Role</strong>
+              </div>
+              <div class="info-value" id="profileRole">Loading...</div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-label">
+              <i class="fas fa-calendar"></i>
+              <strong>Member Since</strong>
+            </div>
+            <div class="info-value" id="memberSince">Loading...</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Edit Profile Form (hidden initially) -->
+      <div class="profile-edit-section" id="profileEditForm" style="display: none;">
+        <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
+          <div class="form-group">
+            <label for="editName">
+              <i class="fas fa-user"></i> Full Name
+            </label>
+            <input type="text" id="editName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="editPhone">
+              <i class="fas fa-phone"></i> Phone Number
+            </label>
+            <input type="tel" id="editPhone" required>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-save">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+            <button type="button" class="btn btn-cancel" onclick="cancelEdit()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Order History Section -->
+    <div class="history-section">
+      <h2 class="history-header"><i class="fas fa-history"></i> Order History</h2>
+      
+      <div class="history-controls">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="orderSearch" placeholder="Search orders..." aria-label="Search orders">
+        </div>
+      </div>
+      
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- Order history will be populated by JavaScript -->
+        </tbody>
+      </table>
+      
+      <div id="empty-history" class="empty-history" style="display: none;">
+        <i class="fas fa-box-open"></i>
+        <p>You haven't placed any orders yet.</p>
+        <button class="browse-btn" onclick="window.location.href='all_book_grid.html'">
+          <i class="fas fa-book"></i> Browse Books
+        </button>
+      </div>
+      
+      <div class="pagination" id="pagination">
+        <!-- Pagination will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div id="orderModal" class="modal" aria-hidden="true">
+      <div class="modal-content" id="orderModalContent">
+          <!-- Content will be loaded dynamically by JavaScript -->
+      </div>
+  </div>
+
+  <!-- Shared Footer -->
+  <div id="footer-container"></div>
+
+</div>
+
+<!-- Fixed jsPDF library loading -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Your JavaScript -->
+<script src="common.js"></script>
+<script src="js/profile/profile-api.js"></script>
+<script src="js/profile/profile-utils.js"></script>
+<script src="js/profile/profile-ui.js"></script>
+<script src="js/profile/profile-orders.js"></script>
+<script src="js/profile/profile-invoice.js"></script>
+<script src="js/profile/profile-main.js"></script>
+<script src="js/profile/profile-events.js"></script>
+
+<script>
+// Profile-specific JavaScript
+function loadSharedComponents() {
+  // Load header
+  fetch('header.html')
+    .then(response => {
+      if (!response.ok) throw new Error('Header not found');
+      return response.text();
+    })
+    .then(html => {
+      document.getElementById('header-container').innerHTML = html;
+      // Initialize common.js functions after header loads
+      setTimeout(() => {
+        if (typeof initCommon === 'function') initCommon();
+      }, 100);
+    })
+    .catch(error => {
+      console.error('Error loading header:', error);
+    });
+
+  // Load footer
+  fetch('footer.html')
+    .then(response => {
+      if (!response.ok) throw new Error('Footer not found');
+      return response.text();
+    })
+    .then(html => {
+      document.getElementById('footer-container').innerHTML = html;
+    })
+    .catch(error => {
+      console.error('Error loading footer:', error);
+    });
+}
+
+function showContent() {
+  document.getElementById('loading-overlay').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+}
+
+function updateUserInfo() {
+  try {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    // Update all profile fields
+    if (currentUser.name) {
+      document.getElementById('profileName').textContent = currentUser.name;
+    }
+    if (currentUser.email) {
+      document.getElementById('profileEmail').textContent = currentUser.email;
+    }
+    if (currentUser.phone) {
+      document.getElementById('profilePhone').textContent = currentUser.phone;
+    }
+    
+    // Format member since date if available
+    if (currentUser.createdAt) {
+      const date = new Date(currentUser.createdAt);
+      const formattedDate = date.toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      document.getElementById('memberSince').textContent = formattedDate;
+    }
+  } catch (error) {
+    console.error('Error updating user info:', error);
+  }
+}
+
+function handleProfileUpdate(event) {
+  event.preventDefault();
+  if (typeof window.ProfileManager !== 'undefined' && window.ProfileManager.saveProfile) {
+    window.ProfileManager.saveProfile();
+  } else {
+    console.error('ProfileManager.saveProfile is not available');
+    if (typeof window.ProfileUtils !== 'undefined' && window.ProfileUtils.showTopToast) {
+      window.ProfileUtils.showTopToast('Profile update failed. Please try again.', 'error');
+    }
+  }
+}
+
+// Main initialization
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Profile page loading...');
+  
+  // Check authentication
+  const token = localStorage.getItem('token');
+  const currentUser = localStorage.getItem('currentUser');
+  
+  if (!token || !currentUser) {
+    alert('Please login to view your profile');
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  // Load shared components
+  loadSharedComponents();
+  
+  // Initialize profile functionality
+  setTimeout(() => {
+    // Update user info
+    updateUserInfo();
+    
+    // Initialize profile app
+    if (typeof initializeApp === 'function') {
+      initializeApp();
+    } else if (typeof loadProfile === 'function') {
+      loadProfile();
+    }
+    
+    // Show content after initialization
+    showContent();
+  }, 500);
+});
+
+// Mobile layout fix
+function fixMobileLayout() {
+  if (window.innerWidth <= 768) {
+    // Add data-labels to table cells for mobile
+    const tableCells = document.querySelectorAll('.history-table td');
+    const headers = ['Order ID', 'Date', 'Items', 'Total', 'Status', 'Actions'];
+    
+    tableCells.forEach((cell, index) => {
+      const headerIndex = index % 6;
+      cell.setAttribute('data-label', headers[headerIndex]);
+    });
+    
+    // Ensure modals are full screen on mobile
+    const modal = document.getElementById('orderModal');
+    if (modal) {
+      modal.style.padding = '0';
+    }
+  }
+}
+
+// Call on load and resize
+window.addEventListener('load', fixMobileLayout);
+window.addEventListener('resize', fixMobileLayout);
+
+</script>
+
+</body>
+</html>

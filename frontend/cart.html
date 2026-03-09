@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart - SHASTRAPRATHISTA BOOKS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <!-- Cart-specific CSS -->
+  <style>
+    /* CART-SPECIFIC STYLES */
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    /* Notification Bar */
+    .notification-bar {
+      background: #d4af37;
+      color: #333;
+      padding: 10px 5%;
+      text-align: center;
+      font-weight: 500;
+      margin-top: 0;
+    }
+    
+    /* Cart Container */
+    .cart-container {
+      width: 90%;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .cart-title {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #d4af37;
+    }
+    
+    .cart-table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .cart-table-header, .cart-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+      gap: 15px;
+      align-items: center;
+      padding: 15px 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .cart-table-header {
+      font-weight: bold;
+      background: #e2ebf5;
+      border-radius: 4px;
+      color: #2c3e50;
+    }
+    
+    .cart-item img {
+      width: 60px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .cart-details h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+    
+    .cart-details p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #7f8c8d;
+    }
+    
+    /* Discount styles */
+    .original-price {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 0.9rem;
+      display: block;
+    }
+    
+    .discounted-price {
+      color: #e74c3c;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: block;
+    }
+    
+    .discount-badge {
+      background: #e74c3c;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 5px;
+    }
+    
+    .cart-actions input {
+      width: 60px;
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .cart-actions .remove-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .cart-actions .remove-btn:hover {
+      background: #c0392b;
+    }
+    
+    /* Cart Summary */
+    .summary-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    
+    .cart-summary {
+      margin-top: 30px;
+      padding: 25px;
+      background: #fff5e6;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .cart-summary h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .cart-summary p {
+      margin: 12px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .savings {
+      color: #27ae60;
+      font-weight: bold;
+    }
+    
+    .weight-display {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 12px 0;
+    }
+    
+    .weight-display .label {
+      font-weight: 500;
+    }
+    
+    .weight-display .value-unit {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .cart-summary .total {
+      font-weight: bold;
+      font-size: 18px;
+      color: #2c3e50;
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 2px solid #d4af37;
+    }
+    
+    .checkout-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #d4af37;
+      color: #2c3e50;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 15px;
+    }
+    
+    .checkout-btn:hover {
+      background: #c19b2e;
+    }
+
+    .checkout-btn:disabled {
+      background: #cccccc !important;
+      color: #666 !important;
+      cursor: not-allowed !important;
+      opacity: 0.7 !important;
+    }
+
+    .checkout-btn:disabled:hover {
+      background: #cccccc !important;
+      transform: none !important;
+    }
+    
+    .continue-shopping {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #2c3e50;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    
+    .continue-shopping:hover {
+      background: #1a1a2e;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .empty-cart i {
+      font-size: 64px;
+      color: #d4af37;
+      margin-bottom: 20px;
+    }
+    
+    .empty-cart h3 {
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    
+    .empty-cart p {
+      color: #7f8c8d;
+      margin-bottom: 25px;
+    }
+    
+    .empty-cart button {
+      padding: 12px 30px;
+      background: #d4af37;
+      color: #2c3e50;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .empty-cart button:hover {
+      background: #c19b2e;
+    }
+    
+    .cart-item.out-of-stock {
+      background-color: #fff5f5 !important;
+      border-left: 4px solid #e74c3c !important;
+      opacity: 0.8;
+    }
+
+    .cart-item.out-of-stock .cart-details h3 {
+      color: #999 !important;
+    }
+
+    .cart-item.out-of-stock .cart-qty-input,
+    .cart-item.out-of-stock .cart-qty-btn {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* Toast Notification */
+    #top-toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #f5bf5b;
+      color: #070707;
+      text-align: center;
+      border-radius: 8px;
+      padding: 14px;
+      position: fixed;
+      z-index: 9999;
+      top: 20px;
+      right: 20px;
+      font-size: 16px;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    
+    #top-toast.show {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-20px);
+    }
+
+    #top-toast.error {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    #top-toast.success {
+      background-color: #2ecc71;
+      color: white;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .cart-table-header, .cart-item {
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      }
+      
+      .cart-item .weight-header,
+      .cart-item .weight-value {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .cart-container {
+        width: 95%;
+        padding: 15px;
+      }
+      
+      .cart-table-header {
+        display: none;
+      }
+      
+      .cart-item {
+        grid-template-columns: 80px 1fr;
+        grid-template-rows: auto auto auto auto;
+        gap: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+      }
+      
+      .cart-details {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      
+      .cart-item > div:not(.cart-details) {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px dashed #eee;
+        padding-top: 10px;
+        grid-column: 1 / span 2;
+      }
+      
+      .cart-item > div:not(.cart-details)::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #2c3e50;
+      }
+      
+      .cart-actions {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+      }
+      
+      .cart-summary {
+        width: 100%;
+        margin-top: 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .cart-item {
+        grid-template-columns: 1fr;
+      }
+      
+      .cart-details {
+        grid-column: 1;
+      }
+      
+      .cart-item > div:not(.cart-details) {
+        grid-column: 1;
+      }
+    }
+
+    /* Add to your existing cart CSS */
+    .inventory-status {
+      font-size: 12px;
+      margin-top: 5px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .inventory-status.in-stock {
+      background: #d4f8d4;
+      color: #27ae60;
+      border: 1px solid #27ae60;
+    }
+
+    .inventory-status.low-stock {
+      background: #fff8e1;
+      color: #f39c12;
+      border: 1px solid #f39c12;
+    }
+
+    .inventory-status.out-of-stock {
+      background: #ffe6e6;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+    }
+
+    .inventory-status.unknown {
+      background: #f5f5f5;
+      color: #7f8c8d;
+      border: 1px solid #ddd;
+    }
+
+    .inventory-status i {
+      margin-right: 5px;
+    }
+
+    /* Loading state for stock check */
+    .inventory-status.loading {
+      color: #3498db;
+    }
+
+    .inventory-status.loading i {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Shared Header -->
+<div id="header-container"></div>
+
+<!-- ✅ Top toast container -->
+<div id="top-toast" role="alert" aria-live="polite"></div>
+
+<!-- Notification Bar -->
+<div class="notification-bar">
+  <div class="notification-text">
+    <i class="fas fa-bell"></i> Easy returns within 7 days
+  </div>
+</div>
+
+<!-- Cart Container -->
+<div class="cart-container">
+  <h2 class="cart-title"><i class="fas fa-shopping-cart"></i> Your Shopping Cart</h2>
+  
+  <div class="cart-table-wrapper">
+    <div class="cart-table-header">
+      <div>Book</div>
+      <div>Price</div>
+      <div>Quantity</div>
+      <div>Item Total</div>
+      <div class="weight-header">Weight</div>
+      <div>Action</div>
+    </div>
+    <div id="cart-items"></div>
+
+    <!-- Empty Cart Message -->
+    <div id="empty-cart" class="empty-cart" style="display:none;">
+      <i class="fas fa-shopping-cart"></i>
+      <h3>Your cart is empty</h3>
+      <p>Looks like you haven't added any books to your cart yet.</p>
+      <button onclick="goToBookStore()">Browse Books</button>
+    </div>
+  </div>
+
+  <!-- Summary Container -->
+  <div class="summary-container">
+    <!-- Cart Summary -->
+    <div class="cart-summary" id="cart-summary">
+      <h3>Order Summary</h3>
+      
+      <p>Subtotal: <span id="subtotal">₹0</span></p>
+      <p id="savings-container" style="display:none;">You save: <span id="savings" class="savings">₹0</span></p>
+      
+      <div class="weight-display">
+        <span class="label">Total Weight:</span>
+        <span class="value-unit">
+          <span id="total-weight">0</span> g
+        </span>
+      </div>
+      
+      <p class="total">Total: <span id="total">₹0</span></p>
+
+      <button class="checkout-btn" id="checkout-btn" onclick="goToCheckout()">Proceed to Checkout</button>
+    </div>
+  </div>
+  
+  <a href="all_book_grid.html" class="continue-shopping">
+    <i class="fas fa-arrow-left"></i> Continue Shopping
+  </a>
+</div>
+
+<!-- Shared Footer -->
+<div id="footer-container"></div>
+
+<!-- Load Shared Components and Common.js -->
+<script src="common.js"></script>
+
+<script>
+  // API Configuration
+  const API_BASE_URL = window.location.origin + '/api';
+
+  // Cart-specific functions (not in common.js)
+  function goToBookStore() {
+    window.location.href = "all_book_grid.html";
+  }
+
+  // ===============================
+  // INVENTORY-AWARE CART FUNCTIONS
+  // ===============================
+
+  // Override the updateQuantity function
+  async function updateCartQuantityWithInventory(index, newQty) {
+    newQty = parseInt(newQty);
+    if (newQty < 1) newQty = 1;
+    if (newQty > 10) newQty = 10;
+
+    // ✅ FIXED: Use window.getUserCart
+    let cart = window.getUserCart ? window.getUserCart() : [];
+    
+    if (cart[index]) {
+      const item = cart[index];
+      const bookId = item.bookId || item.id;
+      
+      // Check inventory availability before updating quantity
+      try {
+        const availability = await window.checkBookAvailability(bookId, newQty);
+        
+        if (!availability.canPurchase) {
+          window.showToast(`❌ "${item.title}" - ${availability.message}`, "error");
+          
+          // Reset to maximum available quantity
+          const maxAvailable = Math.min(availability.available, 10);
+          const qtyInput = document.querySelectorAll('.cart-actions input')[index];
+          if (qtyInput) {
+            qtyInput.value = maxAvailable;
+            if (maxAvailable <= 0) {
+              // If out of stock, remove from cart
+              removeFromCartWithInventory(index);
+              return;
+            }
+            cart[index].quantity = maxAvailable;
+          }
+        } else {
+          cart[index].quantity = newQty;
+          window.showToast(`Quantity updated to ${newQty}`, "success");
+        }
+      } catch (error) {
+        console.error('Error checking inventory:', error);
+        // Fallback to original behavior
+        cart[index].quantity = newQty;
+        window.showToast("Quantity updated", "success");
+      }
+      
+      // Recalculate discount amount if it exists
+      if (cart[index].discount && cart[index].originalPrice) {
+        const discountPerItem = (cart[index].originalPrice * cart[index].discount / 100);
+        cart[index].price = cart[index].originalPrice - discountPerItem;
+      }
+      
+      // ✅ FIXED: Use window.saveUserCart
+      if (window.saveUserCart) window.saveUserCart(cart);
+      updateCartSummary();
+    }
+  }
+
+  // Override the removeFromCart function
+  async function removeFromCartWithInventory(index) {
+    // ✅ FIXED: Use window.getUserCart
+    let cart = window.getUserCart ? window.getUserCart() : [];
+    if (cart[index]) {
+      let removedItem = cart[index].title;
+      cart.splice(index, 1);
+      // ✅ FIXED: Use window.saveUserCart
+      if (window.saveUserCart) window.saveUserCart(cart);
+      updateCartSummary();
+      window.showToast(`"${removedItem}" removed from cart`, "success");
+    }
+  }
+
+  // Check cart inventory before checkout
+  async function validateCartBeforeCheckout() {
+    // ✅ FIXED: Use window.getUserCart
+    const cart = window.getUserCart ? window.getUserCart() : [];
+    let updated = false;
+
+    console.log('🔍 Validating cart inventory...');
+
+    for (let i = 0; i < cart.length; i++) {
+      const item = cart[i];
+      const bookId = item.id || item.bookId;
+
+      try {
+        const availability = await window.checkBookAvailability(bookId, item.quantity);
+
+        // ✅ If stock is zero → remove item
+        if (availability.available <= 0) {
+          window.showToast(`❌ "${item.title}" is out of stock and removed from cart`, "error");
+          cart.splice(i, 1);
+          i--;
+          updated = true;
+          continue;
+        }
+
+        // ✅ If requested > available → auto reduce
+        if (item.quantity > availability.available) {
+          window.showToast(
+            `⚠️ "${item.title}" quantity reduced to ${availability.available} (stock limit)`,
+            "warning"
+          );
+          cart[i].quantity = availability.available;
+          updated = true;
+        }
+
+      } catch (error) {
+        console.error(`Inventory check failed for ${item.title}`, error);
+      }
+    }
+
+    // Save corrected cart
+    if (updated && window.saveUserCart) {
+      window.saveUserCart(cart);
+      updateCartSummary();
+    }
+
+    return {
+      allAvailable: true,
+      totalItems: cart.length
+    };
+  }
+
+  async function updateAllCartItemStockStatus() {
+    // ✅ FIXED: Use window.getUserCart
+    const cart = window.getUserCart ? window.getUserCart() : [];
+    const statusPromises = [];
+    let hasOutOfStock = false;
+
+    // Create promises for all inventory checks
+    cart.forEach((item, index) => {
+      const statusElement = document.getElementById(`inventory-status-${index}`);
+      if (statusElement) {
+        statusPromises.push(updateSingleCartItemStock(item, index, statusElement, cart));
+      }
+    });
+
+    // Wait for all checks to complete
+    await Promise.all(statusPromises);
+    
+    // Update checkout button based on stock status
+    updateCheckoutButtonState();
+  }
+
+  function updateCheckoutButtonState() {
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (!checkoutBtn) return;
+    
+    // Check if any item is out of stock
+    const outOfStockElements = document.querySelectorAll('.inventory-status.out-of-stock');
+    const hasOutOfStock = outOfStockElements.length > 0;
+    
+    if (hasOutOfStock) {
+      checkoutBtn.disabled = true;
+      checkoutBtn.title = "Cannot checkout with out-of-stock items";
+      checkoutBtn.innerHTML = '<i class="fas fa-ban"></i> Cannot Checkout (Out of Stock)';
+    } else {
+      checkoutBtn.disabled = false;
+      checkoutBtn.title = "Proceed to checkout";
+      checkoutBtn.innerHTML = 'Proceed to Checkout';
+    }
+  }
+
+  async function updateSingleCartItemStock(item, index, statusElement) {
+    try {
+      const availability = await window.checkBookAvailability(item.id, item.quantity);
+      
+      let statusHTML = '';
+      let statusClass = '';
+      
+      if (availability.available <= 0) {
+        statusHTML = '<i class="fas fa-times-circle"></i> Out of Stock';
+        statusClass = 'out-of-stock';
+        
+        // ✅ AUTO-REMOVE from cart immediately
+        setTimeout(() => {
+          removeFromCartWithInventory(index);
+          window.showToast(`"${item.title}" removed from cart (out of stock)`, "error");
+        }, 1000);
+        
+      } else if (availability.available < item.quantity) {
+        statusHTML = `<i class="fas fa-exclamation-triangle"></i> Only ${availability.available} available`;
+        statusClass = 'low-stock';
+        
+        // ✅ AUTO-REDUCE quantity immediately
+        if (item.quantity > availability.available) {
+          // ✅ FIXED: Use window.getUserCart
+          const cart = window.getUserCart ? window.getUserCart() : [];
+          const cartIndex = cart.findIndex(cartItem => cartItem.id === item.id);
+          if (cartIndex !== -1) {
+            cart[cartIndex].quantity = availability.available;
+            // ✅ FIXED: Use window.saveUserCart
+            if (window.saveUserCart) window.saveUserCart(cart);
+            
+            // Update UI
+            const qtyInput = document.querySelector(`.cart-item[data-index="${index}"] .cart-qty-input`);
+            if (qtyInput) {
+              qtyInput.value = availability.available;
+            }
+            
+            window.showToast(`"${item.title}" quantity reduced to ${availability.available}`, 'warning');
+          }
+        }
+        
+      } else {
+        statusHTML = '<i class="fas fa-check-circle"></i> In Stock';
+        statusClass = 'in-stock';
+      }
+      
+      statusElement.innerHTML = statusHTML;
+      statusElement.className = `inventory-status ${statusClass}`;
+      
+    } catch (error) {
+      console.error(`Failed to check stock for ${item.title}:`, error);
+      statusElement.innerHTML = '<i class="fas fa-question-circle"></i> Stock unknown';
+      statusElement.className = 'inventory-status unknown';
+    }
+  }
+
+  function updateCartSummary() {
+    // ✅ FIXED: Use window.getUserCart
+    let cart = window.getUserCart ? window.getUserCart() : [];
+    let subtotal = 0, totalWeight = 0, totalSavings = 0;
+
+    let cartItemsContainer = document.getElementById("cart-items");
+    let emptyCartMessage = document.getElementById("empty-cart");
+    let cartSummary = document.getElementById("cart-summary");
+    let savingsContainer = document.getElementById("savings-container");
+    let checkoutBtn = document.getElementById("checkout-btn");
+
+    if (!cartItemsContainer || !emptyCartMessage || !cartSummary) {
+      console.error('Required DOM elements not found');
+      return;
+    }
+
+    cartItemsContainer.innerHTML = "";
+
+    console.log('🛒 Updating cart summary. Valid items:', cart.length);
+
+    // Filter out invalid cart items
+    const validCart = cart.filter(item => 
+      item && 
+      item.id && 
+      typeof item.quantity === 'number' && 
+      item.quantity > 0 &&
+      typeof item.price === 'number'
+    );
+
+    if (validCart.length === 0) {
+      emptyCartMessage.style.display = "block";
+      cartSummary.style.display = "none";
+      
+      // Show appropriate empty cart message
+      const user = window.getCurrentUser ? window.getCurrentUser() : null;
+      if (!user) {
+        emptyCartMessage.innerHTML = `
+          <i class="fas fa-shopping-cart"></i>
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added any books to your cart yet.</p>
+          <button onclick="goToBookStore()">Browse Books</button>
+          <p style="margin-top: 15px; font-size: 14px; color: #7f8c8d;">
+            <i class="fas fa-info-circle"></i> 
+            Items added as guest will be saved when you sign in
+          </p>
+        `;
+      } else {
+        emptyCartMessage.innerHTML = `
+          <i class="fas fa-shopping-cart"></i>
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added any books to your cart yet.</p>
+          <button onclick="goToBookStore()">Browse Books</button>
+        `;
+      }
+      
+      // IMPORTANT: Save empty cart to fix the cart count issue
+      if (window.saveUserCart) window.saveUserCart([]);
+      return;
+    } else {
+      emptyCartMessage.style.display = "none";
+      cartSummary.style.display = "block";
+    }
+
+    // Add inventory status to each cart item
+    validCart.forEach((item, index) => {
+      const itemWeight = item.weight ? item.weight * item.quantity : 0;
+      let itemTotal = item.price * item.quantity;
+      subtotal += itemTotal;
+      
+      // Calculate savings if there's a discount
+      if (item.originalPrice && item.price < item.originalPrice) {
+        let originalItemTotal = item.originalPrice * item.quantity;
+        totalSavings += (originalItemTotal - itemTotal);
+      }
+
+      totalWeight += itemWeight;
+
+      // Calculate discount percentage for display
+      let discountPercent = item.discount || 0;
+      if (!discountPercent && item.originalPrice && item.price < item.originalPrice) {
+        discountPercent = Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100);
+      }
+
+      const individualWeight = item.weight || 'N/A';
+      
+      cartItemsContainer.innerHTML += `
+        <div class="cart-item" data-index="${index}" data-book-id="${item.id}">
+          <div class="cart-details">
+            <img 
+              src="/${item.image || 'images/no-book.png'}" 
+              alt="${item.title || 'Book'}"
+              loading="lazy"
+              onerror="this.onerror=null; this.src='/images/no-book.png';"
+            />
+            <h3>${item.title || 'Unknown Book'}</h3>
+            <p>${individualWeight !== 'N/A' ? individualWeight + 'g each' : 'Weight not available'}</p>
+            <div class="inventory-status loading" id="inventory-status-${index}">
+              <i class="fas fa-sync-alt"></i> Checking stock...
+            </div>
+            <!-- Inventory status will be added here by JavaScript -->
+          </div>
+          <div data-label="Price:">
+            ${item.originalPrice && item.price < item.originalPrice ? `
+              <span class="original-price">₹${item.originalPrice.toFixed(2)}</span>
+              <span class="discounted-price">₹${item.price.toFixed(2)}</span>
+              ${discountPercent > 0 ? `<span class="discount-badge">${discountPercent}% OFF</span>` : ''}
+            ` : `₹${item.price.toFixed(2)}`}
+          </div>
+          <div class="cart-actions" data-label="Quantity:">
+            <div class="cart-quantity-controls">
+              <button class="cart-qty-btn minus" onclick="decreaseCartQty(${index})">-</button>
+              <input type="number" 
+                    class="cart-qty-input" 
+                    value="${item.quantity}" 
+                    min="1" 
+                    max="10" 
+                    data-index="${index}"
+                    onchange="updateCartQuantityWithInventory(${index}, this.value)">
+              <button class="cart-qty-btn plus" onclick="increaseCartQty(${index})">+</button>
+            </div>
+          </div>
+          <div data-label="Total:">
+            ${item.originalPrice && item.price < item.originalPrice ? `
+              <span class="original-price">₹${(item.originalPrice * item.quantity).toFixed(2)}</span>
+              <span class="discounted-price">₹${itemTotal.toFixed(2)}</span>
+            ` : `₹${itemTotal.toFixed(2)}`}
+          </div>
+          <div class="weight-value" data-label="Weight:">${itemWeight} g</div>
+          <div data-label="Action:"><button class="remove-btn" onclick="removeFromCartWithInventory(${index})"><i class="fas fa-trash"></i> Remove</button></div>
+        </div>
+      `;
+    });
+
+    // Save the filtered valid cart back
+    // ✅ FIXED: Use window.saveUserCart
+    if (window.saveUserCart) window.saveUserCart(validCart);
+    
+    // Total is now just the subtotal (no shipping charges)
+    let total = subtotal;
+    
+    document.getElementById("subtotal").textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById("total-weight").textContent = totalWeight;
+    document.getElementById("total").textContent = `₹${total.toFixed(2)}`;
+    
+    // Show savings if there are any
+    if (totalSavings > 0) {
+      savingsContainer.style.display = "flex";
+      document.getElementById("savings").textContent = `₹${totalSavings.toFixed(2)}`;
+    } else {
+      savingsContainer.style.display = "none";
+    }
+
+    // Enable/disable checkout button
+    if (checkoutBtn) {
+      checkoutBtn.disabled = validCart.length === 0;
+    }
+    
+    // Update quantity limits based on inventory
+    setTimeout(updateCartQuantityLimits, 100);
+
+    // ✅ ADD THIS SECTION - Update stock status for all cart items
+    if (validCart.length > 0) {
+      setTimeout(() => {
+        updateAllCartItemStockStatus();
+      }, 500);
+    }
+  }
+
+  // Add this at the start of updateCartSummary():
+  function cleanInvalidCartItems() {
+    // ✅ FIXED: Use window.getUserCart
+    let cart = window.getUserCart ? window.getUserCart() : [];
+    if (!Array.isArray(cart)) return [];
+    
+    const validCart = cart.filter(item => 
+      item && 
+      item.id && 
+      typeof item.quantity === 'number' && 
+      item.quantity > 0 &&
+      item.quantity <= 10 &&
+      typeof item.price === 'number' &&
+      item.price > 0
+    );
+    
+    if (validCart.length !== cart.length) {
+      console.log(`🔄 Cleaned cart: removed ${cart.length - validCart.length} invalid items`);
+      // ✅ FIXED: Use window.saveUserCart
+      if (window.saveUserCart) window.saveUserCart(validCart);
+    }
+    
+    return validCart;
+  }
+
+  async function updateCartItemStockStatus() {
+    // ✅ FIXED: Use window.getUserCart
+    const cart = window.getUserCart ? window.getUserCart() : [];
+    
+    for (let i = 0; i < cart.length; i++) {
+      const item = cart[i];
+      const statusElement = document.getElementById(`inventory-status-${i}`);
+      
+      if (!statusElement) continue;
+      
+      try {
+        const availability = await window.checkBookAvailability(item.id, item.quantity);
+        
+        let statusHTML = '';
+        if (availability.available <= 0) {
+          statusHTML = '<span style="color: #e74c3c;"><i class="fas fa-times-circle"></i> Out of Stock</span>';
+        } else if (availability.available < item.quantity) {
+          statusHTML = `<span style="color: #f39c12;"><i class="fas fa-exclamation-triangle"></i> Only ${availability.available} available</span>`;
+        } else {
+          statusHTML = '<span style="color: #27ae60;"><i class="fas fa-check-circle"></i> In Stock</span>';
+        }
+        
+        statusElement.innerHTML = statusHTML;
+        
+      } catch (error) {
+        statusElement.innerHTML = '<span style="color: #666;"><i class="fas fa-question-circle"></i> Stock unknown</span>';
+      }
+    }
+  }
+
+  // Update quantity limits based on inventory
+  async function updateCartQuantityLimits() {
+    const cartItems = document.querySelectorAll('.cart-item');
+
+    for (const cartItem of cartItems) {
+      const qtyInput = cartItem.querySelector('.cart-qty-input');
+      const qtyInfo = cartItem.querySelector('.qty-info');
+
+      if (!qtyInput) continue;
+
+      // ✅ Do NOT show stock status in cart page
+      if (qtyInfo) qtyInfo.innerHTML = '';
+
+      // ✅ Always allow quantity edit (1–10)
+      qtyInput.disabled = false;
+      qtyInput.max = 10;
+
+      const buttons = cartItem.querySelectorAll('.cart-qty-btn');
+      buttons.forEach(btn => btn.disabled = false);
+    }
+  }
+
+  // Quantity control functions for cart
+  function increaseCartQty(index) {
+    const cartItem = document.querySelector(`.cart-item[data-index="${index}"]`);
+    if (!cartItem) return;
+    
+    const qtyInput = cartItem.querySelector('.cart-qty-input');
+    if (!qtyInput || qtyInput.disabled) return;
+    
+    const currentQty = parseInt(qtyInput.value);
+    const maxQty = parseInt(qtyInput.max);
+    
+    if (currentQty < maxQty) {
+      qtyInput.value = currentQty + 1;
+      updateCartQuantityWithInventory(index, currentQty + 1);
+    } else {
+      window.showToast(`Maximum ${maxQty} items available`, 'warning');
+    }
+  }
+
+  function decreaseCartQty(index) {
+    const cartItem = document.querySelector(`.cart-item[data-index="${index}"]`);
+    if (!cartItem) return;
+    
+    const qtyInput = cartItem.querySelector('.cart-qty-input');
+    if (!qtyInput || qtyInput.disabled) return;
+    
+    const currentQty = parseInt(qtyInput.value);
+    const minQty = parseInt(qtyInput.min);
+    
+    if (currentQty > minQty) {
+      qtyInput.value = currentQty - 1;
+      updateCartQuantityWithInventory(index, currentQty - 1);
+    }
+  }
+
+  // Add CSS for cart quantity controls
+  const cartStyle = document.createElement('style');
+  cartStyle.textContent = `
+    .cart-quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .cart-qty-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background: #f8f9fa;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    
+    .cart-qty-btn:hover:not(:disabled) {
+      background: #e9ecef;
+      border-color: #ccc;
+    }
+    
+    .cart-qty-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .cart-qty-input {
+      width: 50px;
+      text-align: center;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .cart-qty-input:disabled {
+      background: #f5f5f5;
+      cursor: not-allowed;
+    }
+  `;
+  document.head.appendChild(cartStyle);
+
+  // Enhanced checkout function with inventory validation
+  async function goToCheckout() {
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const cart = window.getUserCart ? window.getUserCart() : [];
+
+    // Quick validation
+    if (cart.length === 0) {
+      window.showToast("Your cart is empty", "error");
+      return;
+    }
+    
+    // Check inventory
+    window.showToast("Verifying inventory...", "info");
+    
+    try {
+      // Use the enhanced validation from common.js if available
+      let validation;
+      if (typeof window.validateCartBeforeCheckout === 'function') {
+        validation = await window.validateCartBeforeCheckout();
+      } else {
+        validation = await validateCartBeforeCheckout(); // Your local function
+      }
+      
+      if (!validation.allAvailable) {
+        window.showToast("Some items are unavailable. Please review your cart.", "error");
+        return;
+      }
+      
+      // User auth check
+      if (!user) {
+        window.showToast("Please log in to checkout", "error");
+        localStorage.setItem('redirectAfterLogin', 'checkout.html');
+        setTimeout(() => window.location.href = "login.html", 1000);
+        return;
+      }
+      
+      // Proceed to checkout
+      window.location.href = "checkout.html";
+      
+    } catch (error) {
+      console.error('Checkout error:', error);
+      window.showToast("Unable to proceed with checkout", "error");
+    }
+  }
+
+  // Debug function to check cart issues
+  function debugCartIssues() {
+    console.log('🔍 DEBUG CART ISSUES');
+    
+    // Check all cart keys
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.includes('cart')) {
+        console.log(`\nKey: ${key}`);
+        try {
+          const data = JSON.parse(localStorage.getItem(key));
+          if (Array.isArray(data)) {
+            console.log(`  Items: ${data.length}`);
+            data.forEach((item, idx) => {
+              console.log(`  Item ${idx + 1}:`, {
+                id: item?.id,
+                quantity: item?.quantity,
+                price: item?.price,
+                title: item?.title
+              });
+            });
+          } else {
+            console.log('  Not an array:', typeof data);
+          }
+        } catch (e) {
+          console.log('  Invalid JSON');
+        }
+      }
+    }
+  }
+
+  // Load shared components
+  function loadSharedComponents() {
+      fetch('header.html')
+          .then(res => res.text())
+          .then(html => {
+              document.getElementById('header-container').innerHTML = html;
+              // Initialize common functions after header loads
+              setTimeout(() => {
+                  // ✅ FIXED: Use window functions
+                  if (typeof window.initCommon === "function") window.initCommon();
+                  if (typeof window.updateCartCount === "function") window.updateCartCount();
+                  updateCartSummary();
+                  
+                  // Check inventory for cart items on load
+                  setTimeout(async () => {
+                      const validation = await validateCartBeforeCheckout();
+                      if (!validation.allAvailable && validation.unavailableItems.length > 0) {
+                          const unavailableTitles = validation.unavailableItems
+                              .map(item => item.item.title)
+                              .join(', ');
+                          
+                          // ✅ FIXED: Use window.showToast
+                          if (window.showToast) {
+                              window.showToast(
+                                  `⚠️ Some items may be out of stock: ${unavailableTitles}`,
+                                  'warning'
+                              );
+                          }
+                      }
+                  }, 2000);
+              }, 100);
+          })
+          .catch(err => console.error('Error loading header:', err));
+
+      fetch('footer.html')
+          .then(res => res.text())
+          .then(html => {
+              document.getElementById('footer-container').innerHTML = html;
+          })
+          .catch(err => console.error('Error loading footer:', err));
+  }
+
+  // Initialize the cart page
+  document.addEventListener("DOMContentLoaded", function() {
+    console.log('🛒 Cart page initialized');
+    
+    // Clear any corrupted cart data first
+    try {
+      const currentCart = window.getUserCart ? window.getUserCart() : [];
+      console.log('Current cart items:', currentCart.length);
+      
+      // Fix: Clear any cart with corrupted count
+      const cartKey = window.getCartKey ? window.getCartKey() : 'guest_cart';
+      const cartData = localStorage.getItem(cartKey);
+      
+      if (cartData) {
+        try {
+          const parsed = JSON.parse(cartData);
+          if (!Array.isArray(parsed) || parsed.some(item => !item || !item.id)) {
+            console.log('Clearing corrupted cart data');
+            localStorage.removeItem(cartKey);
+          }
+        } catch (e) {
+          console.log('Clearing invalid cart JSON');
+          localStorage.removeItem(cartKey);
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning cart:', error);
+    }
+    
+    // Load shared components
+    loadSharedComponents();
+    
+    // Add event listener for storage changes
+    window.addEventListener('storage', function(e) {
+      if (e.key && e.key.includes('cart')) {
+        console.log('🔄 Cart updated in another tab, refreshing...');
+        updateCartSummary();
+      }
+    });
+  });
+
+  // Global function to clear cart after successful checkout
+  function clearCartAfterCheckout() {
+    // ✅ FIXED: Use window.getCartKey and window.updateCartCount
+    const cartKey = window.getCartKey ? window.getCartKey() : 'guest_cart';
+    localStorage.removeItem(cartKey);
+    console.log('✅ Cart cleared after successful checkout');
+    if (window.updateCartCount) window.updateCartCount();
+  }
+</script>
+
+</body>
+</html>

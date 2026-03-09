@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Library - Shastraprathista</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* Library-specific styles */
+    .library-hero {
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 80px 20px;
+      margin-bottom: 30px;
+    }
+    
+    .library-hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    
+    .library-hero p {
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .library-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+    
+    .library-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+      justify-content: center;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .filter-group label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .filter-group select, .search-input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-width: 180px;
+      background: #f8f8f8;
+    }
+    
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    
+    .library-item {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .library-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .library-img {
+      height: 200px;
+      overflow: hidden;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+    }
+    
+    .library-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .library-item:hover .library-img img {
+      transform: scale(1.05);
+    }
+    
+    .library-info {
+      padding: 20px;
+    }
+    
+    .library-info h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .library-info p {
+      color: #7f8c8d;
+      margin: 8px 0;
+      font-size: 0.9rem;
+    }
+    
+    .library-status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    
+    .status-available {
+      background-color: #e6f7ee;
+      color: #0c9464;
+    }
+    
+    .status-borrowed {
+      background-color: #ffe6e6;
+      color: #d33;
+    }
+    
+    .library-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    
+    .btn-borrow {
+      background-color: #d4af37;
+      color: #2c3e50;
+    }
+    
+    .btn-borrow:hover {
+      background-color: #c19b2e;
+    }
+    
+    .btn-borrow:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    .btn-details {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+    
+    .btn-details:hover {
+      background-color: #ddd;
+    }
+    
+    .library-pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+      gap: 10px;
+    }
+    
+    .page-btn {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 4px;
+      color: #2c3e50;
+      transition: all 0.3s;
+    }
+    
+    .page-btn:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .page-btn.active {
+      background-color: #d4af37;
+      color: white;
+      border-color: #d4af37;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .library-hero {
+        padding: 60px 20px;
+      }
+      
+      .library-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .library-hero p {
+        font-size: 1rem;
+      }
+      
+      .library-filters {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .filter-group {
+        width: 100%;
+      }
+      
+      .filter-group select {
+        width: 100%;
+      }
+      
+      .library-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .library-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .btn-borrow, .btn-details {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .library-hero {
+        padding: 40px 15px;
+      }
+      
+      .library-hero h1 {
+        font-size: 1.8rem;
+      }
+      
+      .library-content {
+        padding: 0 15px 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Load Shared Components -->
+  <div id="header-container"></div>
+
+  <!-- Library Hero Section -->
+  <section class="library-hero">
+    <h1>Our Spiritual Library</h1>
+    <p>Explore our collection of sacred texts, spiritual books, and resources for your journey</p>
+  </section>
+
+  <!-- Library Content -->
+  <section class="library-content">
+    <div class="library-filters">
+      <div class="filter-group">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="all">All Categories</option>
+          <option value="vedas">Vedas & Upanishads</option>
+          <option value="puranas">Puranas</option>
+          <option value="yoga">Yoga & Meditation</option>
+          <option value="bhakti">Bhakti Literature</option>
+          <option value="philosophy">Philosophy</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="language">Language</label>
+        <select id="language">
+          <option value="all">All Languages</option>
+          <option value="sanskrit">Sanskrit</option>
+          <option value="tamil">Tamil</option>
+          <option value="hindi">Hindi</option>
+          <option value="english">English</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="availability">Availability</label>
+        <select id="availability">
+          <option value="all">All</option>
+          <option value="available">Available Now</option>
+          <option value="borrowed">Currently Borrowed</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="library-grid">
+      <!-- Library Item 1 -->
+      <div class="library-item">
+        <div class="library-img">
+          <i class="fas fa-book fa-3x"></i>
+        </div>
+        <div class="library-info">
+          <h3>Bhagavad Gita</h3>
+          <p>Author: Ved Vyasa</p>
+          <p>Language: Sanskrit/English</p>
+          <p>Category: Philosophy</p>
+          <span class="library-status status-available">Available</span>
+          <div class="library-actions">
+            <button class="btn btn-borrow">Borrow</button>
+            <button class="btn btn-details">Details</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Library Item 2 -->
+      <div class="library-item">
+        <div class="library-img">
+          <i class="fas fa-book fa-3x"></i>
+        </div>
+        <div class="library-info">
+          <h3>Principal Upanishads</h3>
+          <p>Author: Traditional</p>
+          <p>Language: Sanskrit</p>
+          <p>Category: Vedas & Upanishads</p>
+          <span class="library-status status-available">Available</span>
+          <div class="library-actions">
+            <button class="btn btn-borrow">Borrow</button>
+            <button class="btn btn-details">Details</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Library Item 3 -->
+      <div class="library-item">
+        <div class="library-img">
+          <i class="fas fa-book fa-3x"></i>
+        </div>
+        <div class="library-info">
+          <h3>Yoga Sutras of Patanjali</h3>
+          <p>Author: Patanjali</p>
+          <p>Language: Sanskrit/English</p>
+          <p>Category: Yoga & Meditation</p>
+          <span class="library-status status-borrowed">Borrowed until 15/10/2023</span>
+          <div class="library-actions">
+            <button class="btn btn-borrow" disabled>Borrow</button>
+            <button class="btn btn-details">Details</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Library Item 4 -->
+      <div class="library-item">
+        <div class="library-img">
+          <i class="fas fa-book fa-3x"></i>
+        </div>
+        <div class="library-info">
+          <h3>Valmiki Ramayana</h3>
+          <p>Author: Valmiki</p>
+          <p>Language: Sanskrit/Tamil</p>
+          <p>Category: Ithihasa</p>
+          <span class="library-status status-available">Available</span>
+          <div class="library-actions">
+            <button class="btn btn-borrow">Borrow</button>
+            <button class="btn btn-details">Details</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Library Item 5 -->
+      <div class="library-item">
+        <div class="library-img">
+          <i class="fas fa-book fa-3x"></i>
+        </div>
+        <div class="library-info">
+          <h3>Shiva Purana</h3>
+          <p>Author: Traditional</p>
+          <p>Language: Sanskrit</p>
+          <p>Category: Puranas</p>
+          <span class="library-status status-available">Available</span>
+          <div class="library-actions">
+            <button class="btn btn-borrow">Borrow</button>
+            <button class="btn btn-details">Details</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Library Item 6 -->
+      <div class="library-item">
+        <div class="library-img">
+          <i class="fas fa-book fa-3x"></i>
+        </div>
+        <div class="library-info">
+          <h3>Thirukkural</h3>
+          <p>Author: Thiruvalluvar</p>
+          <p>Language: Tamil</p>
+          <p>Category: Ethics & Morality</p>
+          <span class="library-status status-borrowed">Borrowed until 12/10/2023</span>
+          <div class="library-actions">
+            <button class="btn btn-borrow" disabled>Borrow</button>
+            <button class="btn btn-details">Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="library-pagination">
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">Next</button>
+    </div>
+  </section>
+
+  <!-- Load Footer -->
+  <div id="footer-container"></div>
+
+  <!-- Common JS -->
+  <script src="common.js"></script>
+
+  <script>
+    function loadSharedHeaderFooter() {
+      // Load header
+      fetch('header.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          setTimeout(initCommon, 100); // ✅ SAME as Home & Books
+        })
+        .catch(err => console.error('Header load failed:', err));
+
+      // Load footer
+      fetch('footer.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('footer-container').innerHTML = html;
+        })
+        .catch(err => console.error('Footer load failed:', err));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('📚 Library page loading...');
+      loadSharedHeaderFooter();
+      setupLibraryInteractions();
+    });
+
+    // Setup library interactions
+    function setupLibraryInteractions() {
+      // Filter functionality
+      const filters = document.querySelectorAll('.library-filters select');
+      filters.forEach(filter => {
+        filter.addEventListener('change', filterLibraryItems);
+      });
+      
+      // Borrow button functionality
+      const borrowButtons = document.querySelectorAll('.btn-borrow:not(:disabled)');
+      borrowButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const user = window.getCurrentUser();
+          if (!user) {
+            window.showToast("Please log in to borrow books", "error");
+            return;
+          }
+          
+          const bookTitle = this.closest('.library-item').querySelector('h3').textContent;
+          window.showToast(`Request sent to borrow: ${bookTitle}. Our librarian will contact you shortly.`, "success");
+        });
+      });
+      
+      // Details button functionality
+      const detailsButtons = document.querySelectorAll('.btn-details');
+      detailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const bookTitle = this.closest('.library-item').querySelector('h3').textContent;
+          alert(`More details about "${bookTitle}" would be shown here in a real implementation.`);
+        });
+      });
+      
+      // Pagination
+      const pageButtons = document.querySelectorAll('.page-btn');
+      pageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          pageButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          window.showToast(`Loading page ${this.textContent}...`);
+        });
+      });
+    }
+    
+    function filterLibraryItems() {
+      const category = document.getElementById('category').value;
+      const language = document.getElementById('language').value;
+      const availability = document.getElementById('availability').value;
+      
+      window.showToast(`Filtering books... Category: ${category}, Language: ${language}, Availability: ${availability}`);
+    }
+
+  </script>
+
+</body>
+</html>

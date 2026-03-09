@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Books - Shastraprathista</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- Load Shared Header -->
+<div id="header-container"></div>
+
+
+<!-- Notification Bar (REMOVED) -->
+
+<!-- ✅ Toast -->
+<div id="toast" role="alert" aria-live="polite"></div>
+
+<!-- Search and Filter Section -->
+<div class="search-container">
+  <input type="text" id="book-search" placeholder="Search by title, author..." aria-label="Search books" />
+  <button id="search-btn" aria-label="Search books"><i class="fas fa-search"></i> Search</button>
+</div>
+
+<div class="filter-options">
+  <button class="filter-btn active" data-filter="all">All Books</button>
+  <button class="filter-btn" data-filter="author-Smt Sudarsanam">By Smt Sudarsanam</button>
+  <button class="filter-btn" data-filter="author-Sri Gnanananda">By Sri Gnanananda</button>
+  <button class="filter-btn" data-filter="author-Sringeri">By Sringeri Mutt</button>
+  <button class="filter-btn discount" data-filter="discount">Discounted Books</button>
+  <button class="filter-btn" data-filter="price-low">Price: Low to High</button>
+  <button class="filter-btn" data-filter="price-high">Price: High to Low</button>
+</div>
+
+<!-- Book Grid -->
+<section class="book-grid" id="book-grid-container">
+  <div class="loading">
+    <div class="loading-dots"><div></div><div></div><div></div><div></div></div>
+  </div>
+</section>
+
+<!-- Pagination -->
+<div class="pagination" id="pagination"></div>
+
+<!-- Book Detail Modal -->
+<div class="book-detail-modal" id="book-detail-modal" role="dialog" aria-modal="true">
+  <div class="book-detail-container">
+    <button class="close-modal" id="close-modal">&times;</button>
+    <div class="modal-content" id="modal-content"></div>
+  </div>
+</div>
+
+<!-- Zoom Overlay -->
+<div class="zoom-overlay" id="zoom-overlay" onclick="closeZoom()">
+  <img id="zoom-img" src="" alt="Zoomed Book Image"/>
+</div>
+
+<!-- Load Shared Footer -->
+<div id="footer-container"></div>
+
+<!-- Core Scripts -->
+<script src="common.js"></script>
+<script src="app.js"></script>
+
+<script>
+  function loadSharedHeaderFooter() {
+    // Load HEADER (same as Home page)
+    fetch('header.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('header-container').innerHTML = html;
+        setTimeout(initCommon, 100); // 🔥 SAME behavior as Home page
+      })
+      .catch(err => console.error('Header load failed:', err));
+      
+
+    // Load FOOTER
+    fetch('footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('footer-container').innerHTML = html;
+      })
+      .catch(err => console.error('Footer load failed:', err));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('📚 Books page loading...');
+    loadSharedHeaderFooter();
+  });
+
+</script>
+
+</body>
+</html>

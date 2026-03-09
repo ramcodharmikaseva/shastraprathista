@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Music School - Shastraprathista</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <style>    
+    .music-school-bar {
+      background: #fff8ef;
+      border-bottom: 1px solid #e6d3b1;
+      padding: 4px 10px;   /* 🔽 reduced */
+    }
+
+    .music-school-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;   /* ✅ center block */
+    }
+
+    .music-school-left {
+      display: flex;
+      align-items: center;       /* ✅ logo + text same line */
+      gap: 12px;
+      text-align: center;
+    }
+
+    .music-school-logo {
+      width: 55px !important;
+      height: 55px !important;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .music-school-bar h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #02295c;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    /* Rotating Hero Images Section */
+    .rotating-hero {
+      position: relative;
+      height: 500px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    
+    .hero-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .hero-slide.active {
+      opacity: 1;
+    }
+    
+    .hero-slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+    
+    .hero-content h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #d4af37;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .hero-content p {
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+    }
+    
+    .hero-indicators {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 2;
+    }
+    
+    .hero-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .hero-indicator.active {
+      background: #d4af37;
+    }
+    
+    /* Music Content */
+    .music-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+    
+    .music-intro {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-top: 30px;
+    }
+    
+    .music-intro h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    
+    .music-intro p {
+      max-width: 800px;
+      margin: 0 auto 30px;
+      font-size: 1.1rem;
+    }
+    
+    .classes-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .class-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .class-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .class-image {
+      height: 200px;
+      overflow: hidden;
+      background: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .class-image.vocal {
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+    }
+    
+    .class-image.veena {
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1569428034239-f9565e32e224?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+    }
+    
+    .class-image.violin {
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1510915361894-db8b60106cb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+    }
+    
+    .class-image.mridangam {
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w-1350&q=80');
+    }
+    
+    .class-image.keyboard {
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1571974599782-87624638275b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+    }
+    
+    .class-image.bharatanatyam {
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+    }
+    
+    .class-info {
+      padding: 25px;
+    }
+    
+    .class-info h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    
+    .class-info p {
+      color: #7f8c8d;
+      margin-bottom: 20px;
+    }
+    
+    .class-details {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+    }
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .detail-item i {
+      color: #d4af37;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+    
+    .detail-item span {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+    }
+    
+    .class-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    
+    .btn-enroll {
+      background-color: #d4af37;
+      color: #2c3e50;
+    }
+    
+    .btn-enroll:hover {
+      background-color: #c19b2e;
+    }
+    
+    .btn-details {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+    
+    .btn-details:hover {
+      background-color: #ddd;
+    }
+    
+    .btn-pay {
+      background-color: #27ae60;
+      color: white;
+    }
+    
+    .btn-pay:hover {
+      background-color: #219653;
+    }
+    
+    .header-pay-btn {
+      background: #d4af37;
+      color: #2c3e50;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    
+    .header-pay-btn:hover {
+      background: #c19b2e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .instructors-section {
+      margin: 60px 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 40px;
+      font-size: 2rem;
+    }
+    
+    .instructors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+    
+    .instructor-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    
+    .instructor-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .instructor-image {
+      height: 200px;
+      background: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+    }
+    
+    .instructor-info {
+      padding: 20px;
+    }
+    
+    .instructor-info h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .instructor-info p {
+      color: #7f8c8d;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+    
+    .instructor-social {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .instructor-social a {
+      color: #2c3e50;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+    
+    .instructor-social a:hover {
+      color: #d4af37;
+    }
+    
+    .testimonials-section {
+      background: #f9f9f9;
+      padding: 60px 5%;
+      margin: 60px 0;
+    }
+    
+    .testimonials-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .testimonial-card {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .testimonial-text {
+      font-style: italic;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+    }
+    
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #ddd;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+    }
+    
+    .author-info h4 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    
+    .author-info p {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .registration-section {
+      background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+      color: white;
+      padding: 30px 2%;
+      text-align: center;
+      border-radius: 8px;
+      margin: 30px 0;
+    }
+    
+    .registration-section h2 {
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+    }
+    
+    .registration-section p {
+      max-width: 700px;
+      margin: 0 auto 30px;
+      font-size: .9rem;
+    }
+    
+    .btn-register {
+      background: #d4af37;
+      color: #2c3e50;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 2px;
+      font-size: .8rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .btn-register:hover {
+      background: #c19b2e;
+    }
+
+    @media (max-width: 768px) {
+      .music-school-logo {
+        width: 40px !important;
+        height: 40px !important;
+      }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {       
+      .rotating-hero {
+        height: 400px;
+      }
+      
+      .hero-content h1 {
+        font-size: 1.8rem;
+      }
+      
+      .hero-content p {
+        font-size: 1.2rem;
+      }
+      
+      .classes-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .class-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Focus accessibility */
+    a:focus, button:focus, input:focus {
+      outline: 2px solid #d4af37;
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 768px) {
+
+      .music-school-inner {
+        position: relative;
+        justify-content: center;
+      }
+
+      .music-school-bar h1 {
+        font-size: 0.9rem;      /* ✅ smaller text */
+        text-align: center;
+        word-break: break-word;
+      }
+    }
+
+    /* Sticky Pay Fee Button */
+    .sticky-pay-fee {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 999;
+      display: none;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .sticky-pay-fee button {
+      background: #d4af37;
+      color: #2c3e50;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      font-size: 1rem;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .sticky-pay-fee button:hover {
+      background: #c19b2e;
+      transform: translateY(-2px);
+    }
+
+    /* Mobile behavior */
+    @media (max-width: 768px) {
+      .sticky-pay-fee {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .sticky-pay-fee button {
+        width: 100%;
+        border-radius: 0;
+        padding: 16px;
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Animation */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="header-container"></div>
+
+  <section class="music-school-bar">
+    <div class="music-school-inner">
+      <div class="music-school-left">
+        <img src="image/founder.png" alt="Music School Logo" class="music-school-logo">
+        <h1>P.A.C. RAMASAMY RAJA MEMORIAL MUSIC SCHOOL</h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rotating Hero Images -->
+  <section class="rotating-hero">
+    <!-- Slide 1: Vocal -->
+    <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+      <div class="hero-content">
+        <h1>Carnatic Vocal Classes</h1>
+        <p>Master the art of traditional Carnatic singing with expert guidance</p>
+      </div>
+    </div>
+    
+    <!-- Slide 2: Veena -->
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1569428034239-f9565e32e224?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+      <div class="hero-content">
+        <h1>Veena Class</h1>
+        <p>Learn the divine instrument of Goddess Saraswati</p>
+      </div>
+    </div>
+    
+    <!-- Slide 3: Violin -->
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1510915361894-db8b60106cb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+      <div class="hero-content">
+        <h1>Violin Class</h1>
+        <p>Western classical and Carnatic violin training</p>
+      </div>
+    </div>
+    
+    <!-- Slide 4: Mridangam -->
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+      <div class="hero-content">
+        <h1>Mridangam Class</h1>
+        <p>Master the traditional percussion instrument</p>
+      </div>
+    </div>
+    
+    <!-- Slide 5: Keyboard -->
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1571974599782-87624638275b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+      <div class="hero-content">
+        <h1>Keyboard Class</h1>
+        <p>Learn Western and Carnatic music on keyboard</p>
+      </div>
+    </div>
+    
+    <!-- Slide 6: Bharatanatyam -->
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+      <div class="hero-content">
+        <h1>Bharatanatyam Class</h1>
+        <p>Classical Indian dance form with spiritual essence</p>
+      </div>
+    </div>
+    
+    <div class="hero-indicators">
+      <div class="hero-indicator active" data-slide="0"></div>
+      <div class="hero-indicator" data-slide="1"></div>
+      <div class="hero-indicator" data-slide="2"></div>
+      <div class="hero-indicator" data-slide="3"></div>
+      <div class="hero-indicator" data-slide="4"></div>
+      <div class="hero-indicator" data-slide="5"></div>
+    </div>
+  </section>
+
+  <!-- Music Content -->
+  <section class="music-content">
+    <div class="music-intro">
+      <h2>Discover the Joy of Music & Dance</h2>
+      <p>Our classes are designed to help students of all ages and skill levels explore the rich tradition of Indian classical music and dance. Whether you're a beginner or an advanced student, we have the perfect program for you.</p>
+    </div>
+
+
+    <!-- Classes Container -->
+    <div class="classes-container">
+      <!-- All 6 class cards with your specified fees -->
+      <!-- Vocal Class -->
+      <div class="class-card">
+        <div class="class-image vocal">
+          <i class="fas fa-microphone fa-4x" style="color: white;"></i>
+        </div>
+        <div class="class-info">
+          <h3>Vocal Classes</h3>
+          <p>Learn the ancient art of Carnatic vocal music with our expert instructors. This course covers basic to advanced techniques including ragas, talas, and traditional compositions.</p>
+          
+          <div class="class-details">
+            <div class="detail-item">
+              <i class="fas fa-rupee-sign"></i>
+              <span>₹250/month</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <span>Group</span>
+            </div>
+          </div>
+          
+          <div class="class-actions">
+            <button class="btn btn-enroll">Enroll Now</button>
+            <button class="btn btn-details">Details</button>
+            <button class="btn btn-pay" onclick="payFees('Vocal', 250)">Pay Fees</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Veena Class -->
+      <div class="class-card">
+        <div class="class-image veena">
+          <i class="fas fa-guitar fa-4x" style="color: white;"></i>
+        </div>
+        <div class="class-info">
+          <h3>Veena Classes</h3>
+          <p>Master the divine instrument of Goddess Saraswati. Learn traditional techniques, compositions, and the spiritual aspects of playing the Veena.</p>
+          
+          <div class="class-details">
+            <div class="detail-item">
+              <i class="fas fa-rupee-sign"></i>
+              <span>₹280/month</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <span>Group</span>
+            </div>
+          </div>
+          
+          <div class="class-actions">
+            <button class="btn btn-enroll">Enroll Now</button>
+            <button class="btn btn-details">Details</button>
+            <button class="btn btn-pay" onclick="payFees('Veena', 280)">Pay Fees</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Violin Class -->
+      <div class="class-card">
+        <div class="class-image violin">
+          <i class="fas fa-violin fa-4x" style="color: white;"></i>
+        </div>
+        <div class="class-info">
+          <h3>Violin Classes</h3>
+          <p>Learn both Western classical and Carnatic violin techniques. Course includes bowing techniques, finger positioning, and repertoire building.</p>
+          
+          <div class="class-details">
+            <div class="detail-item">
+              <i class="fas fa-rupee-sign"></i>
+              <span>₹250/month</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <span>Group</span>
+            </div>
+          </div>
+          
+          <div class="class-actions">
+            <button class="btn btn-enroll">Enroll Now</button>
+            <button class="btn btn-details">Details</button>
+            <button class="btn btn-pay" onclick="payFees('Violin', 250)">Pay Fees</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mridangam Class -->
+      <div class="class-card">
+        <div class="class-image mridangam">
+          <i class="fas fa-drum fa-4x" style="color: white;"></i>
+        </div>
+        <div class="class-info">
+          <h3>Mridangam Classes</h3>
+          <p>Learn the traditional percussion instrument that forms the foundation of Carnatic music. Master complex talas and rhythmic patterns.</p>
+          
+          <div class="class-details">
+            <div class="detail-item">
+              <i class="fas fa-rupee-sign"></i>
+              <span>₹300/month</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <span>Group</span>
+            </div>
+          </div>
+          
+          <div class="class-actions">
+            <button class="btn btn-enroll">Enroll Now</button>
+            <button class="btn btn-details">Details</button>
+            <button class="btn btn-pay" onclick="payFees('Mridangam', 300)">Pay Fees</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Keyboard Class -->
+      <div class="class-card">
+        <div class="class-image keyboard">
+          <i class="fas fa-keyboard fa-4x" style="color: white;"></i>
+        </div>
+        <div class="class-info">
+          <h3>Keyboard Classes</h3>
+          <p>Learn Western and Carnatic music on keyboard. Course includes music theory, chord progressions, and performance techniques.</p>
+          
+          <div class="class-details">
+            <div class="detail-item">
+              <i class="fas fa-rupee-sign"></i>
+              <span>₹450/month</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <span>Group</span>
+            </div>
+          </div>
+          
+          <div class="class-actions">
+            <button class="btn btn-enroll">Enroll Now</button>
+            <button class="btn btn-details">Details</button>
+            <button class="btn btn-pay" onclick="payFees('Keyboard', 450)">Pay Fees</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bharatanatyam Class -->
+      <div class="class-card">
+        <div class="class-image bharatanatyam">
+          <i class="fas fa-user-ninja fa-4x" style="color: white;"></i>
+        </div>
+        <div class="class-info">
+          <h3>Bharatanatyam Classes</h3>
+          <p>Learn the classical Indian dance form that combines rhythm, expression, and spirituality. Includes adavus, abhinaya, and traditional margams.</p>
+          
+          <div class="class-details">
+            <div class="detail-item">
+              <i class="fas fa-rupee-sign"></i>
+              <span>₹300/month</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <span>Group</span>
+            </div>
+          </div>
+          
+          <div class="class-actions">
+            <button class="btn btn-enroll">Enroll Now</button>
+            <button class="btn btn-details">Details</button>
+            <button class="btn btn-pay" onclick="payFees('Bharatanatyam', 300)">Pay Fees</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Rest of your existing sections (instructors, testimonials, registration) -->
+    <div class="instructors-section">
+      <h2 class="section-title">Our Expert Instructors</h2>
+      <div class="instructors-grid">
+        <!-- Instructor cards -->
+        <div class="instructor-card">
+          <div class="instructor-image">
+            <i class="fas fa-microphone fa-3x"></i>
+          </div>
+          <div class="instructor-info">
+            <h3>Vidwan R. Srikrishnan</h3>
+            <p>Senior Carnatic Vocalist with over 25 years of teaching experience</p>
+            <div class="instructor-social">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="instructor-card">
+          <div class="instructor-image">
+            <i class="fas fa-guitar fa-3x"></i>
+          </div>
+          <div class="instructor-info">
+            <h3>Lalitha Mageswari</h3>
+            <p>Veena exponent and disciple of the legendary Sri K.S. Narayanaswamy</p>
+            <div class="instructor-social">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="instructor-card">
+          <div class="instructor-image">
+            <i class="fas fa-violin fa-3x"></i>
+          </div>
+          <div class="instructor-info">
+            <h3>M. Gopalakrishnan</h3>
+            <p>Renowned Violin artist with performances across India and abroad</p>
+            <div class="instructor-social">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="testimonials-section">
+      <h2 class="section-title">What Our Students Say</h2>
+      <div class="testimonials-container">
+        <!-- Testimonial cards -->
+        <div class="testimonial-card">
+          <div class="testimonial-text">
+            "The Carnatic vocal classes have transformed my understanding of music. Vidwan Srikrishnan is a patient and knowledgeable teacher."
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-info">
+              <h4>Priya S.</h4>
+              <p>Vocal Student</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <div class="testimonial-text">
+            "Learning Veena from Smt. Lalitha has been a divine experience. Her approach combines technique with spiritual understanding."
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-info">
+              <h4>Karthik R.</h4>
+              <p>Veena Student</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <div class="testimonial-text">
+            "The Bharatanatyam classes are structured perfectly for beginners. I've made significant progress in just 3 months."
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-info">
+              <h4>Arjun M.</h4>
+              <p>Bharatanatyam Student</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="registration-section">
+      <h2>Begin Your Musical Journey Today</h2>
+      <p>Join our community of music lovers and discover the transformative power of Indian classical music and dance</p>
+      <button class="btn-register">Register Now</button>
+    </div>
+
+  </section>
+
+  <!-- Run By Section -->
+  <div class="run-by-section">
+    <span class="run-by-label">Run by:</span>
+    <div class="run-by-content">
+      <img src="image/logo.jpg" alt="Trust Logo" class="run-by-logo">
+      <span class="run-by-text">
+        Smt. Lingammal Ramaraju Shastraprathista Trust
+      </span>
+    </div>
+  </div>
+
+
+  <!-- Shared Footer -->
+  <div id="footer-container"></div>
+
+  <!-- Sticky Pay Fee Button -->
+  <div class="sticky-pay-fee" id="stickyPayFee">
+    <button onclick="goToPaymentPage()">
+      <i class="fas fa-rupee-sign"></i> Pay Monthly Fee
+    </button>
+  </div>
+
+  <script src="common.js"></script>
+  <script src="js/music-user.js"></script>
+
+  <script>
+    function loadSharedHeaderFooter() {
+      fetch('header.html')
+        .then(r => r.text())
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          setTimeout(initCommon, 100); // ✅ same as Home & Books
+        });
+
+      fetch('footer.html')
+        .then(r => r.text())
+        .then(html => {
+          document.getElementById('footer-container').innerHTML = html;
+        });
+    }
+
+    function goToPaymentPage() {
+      window.location.href = 'music-payment.html';
+    }
+
+    function setupMusicInteractions() {
+      // Enroll buttons
+      document.querySelectorAll('.btn-enroll').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const className = btn.closest('.class-card')?.querySelector('h3')?.textContent || 'Class';
+          alert(`You selected: ${className}\n\nPlease proceed to payment.`);
+        });
+      });
+
+      // Details buttons
+      document.querySelectorAll('.btn-details').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const className = btn.closest('.class-card')?.querySelector('h3')?.textContent || 'Class';
+          alert(`Details for ${className} will be available soon.`);
+        });
+      });
+    }
+
+    function payFees(className, amount) {
+      window.location.href = `music-payment.html?class=${encodeURIComponent(className)}&fee=${amount}`;
+    }
+
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.hero-slide');
+    const indicators = document.querySelectorAll('.hero-indicator');
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+        indicators[i].classList.toggle('active', i === index);
+      });
+      currentSlide = index;
+    }
+
+    setInterval(() => {
+      showSlide((currentSlide + 1) % slides.length);
+    }, 3000);
+
+    indicators.forEach(indicator => {
+      indicator.addEventListener('click', () => {
+        showSlide(parseInt(indicator.dataset.slide));
+      });
+    });
+
+    // Sticky Pay Fee button visibility on scroll
+    window.addEventListener('scroll', () => {
+      const stickyBtn = document.getElementById('stickyPayFee');
+      if (!stickyBtn) return;
+
+      if (window.scrollY > 350) {
+        stickyBtn.style.display = 'block';
+      } else {
+        stickyBtn.style.display = 'none';
+      }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🎵 Music page loading...');
+      loadSharedHeaderFooter();
+      setupMusicInteractions();
+    });
+  </script>
+
+
+</body>
+</html>

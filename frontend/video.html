@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SHASTRAPRATHISTA - Videos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* Video-specific styles only */
+    
+    .video-hero {
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 80px 20px;
+      margin-bottom: 30px;
+    }
+    
+    .video-hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    
+    .video-hero p {
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .video-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+    
+    .video-intro {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .video-intro h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    
+    .video-intro p {
+      max-width: 800px;
+      margin: 0 auto 30px;
+      font-size: 1.1rem;
+    }
+    
+    .video-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+      justify-content: center;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .filter-group label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .filter-group select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-width: 180px;
+      background: #f8f8f8;
+    }
+    
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    
+    .video-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .video-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .video-thumbnail {
+      height: 180px;
+      overflow: hidden;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      position: relative;
+    }
+    
+    .video-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(212, 175, 55, 0.8);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .play-button:hover {
+      background: rgba(212, 175, 55, 1);
+    }
+    
+    .video-info {
+      padding: 20px;
+    }
+    
+    .video-info h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .video-info p {
+      color: #7f8c8d;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    .video-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #95a5a6;
+      font-size: 0.85rem;
+    }
+    
+    .video-meta i {
+      margin-right: 5px;
+    }
+    
+    .video-pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+      gap: 10px;
+    }
+    
+    .page-btn {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 4px;
+      color: #2c3e50;
+      transition: all 0.3s;
+    }
+    
+    .page-btn:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .page-btn.active {
+      background-color: #d4af37;
+      color: white;
+      border-color: #d4af37;
+    }
+    
+    .video-categories {
+      margin: 60px 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 40px;
+      font-size: 2rem;
+    }
+    
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+    
+    .category-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .category-icon {
+      height: 120px;
+      background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d4af37;
+      font-size: 2.5rem;
+    }
+    
+    .category-info {
+      padding: 20px;
+    }
+    
+    .category-info h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .category-info p {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    .video-cta {
+      background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+      color: white;
+      padding: 60px 5%;
+      text-align: center;
+      border-radius: 8px;
+      margin: 60px 0;
+    }
+    
+    .video-cta h2 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    
+    .video-cta p {
+      max-width: 700px;
+      margin: 0 auto 30px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .btn-subscribe {
+      background: #d4af37;
+      color: #2c3e50;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .btn-subscribe:hover {
+      background: #c19b2e;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .video-hero {
+        padding: 60px 20px;
+      }
+      
+      .video-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .video-hero p {
+        font-size: 1rem;
+      }
+      
+      .video-filters {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+      
+      .filter-group {
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .video-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .categories-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .video-cta {
+        padding: 40px 5%;
+        margin: 40px 0;
+      }
+      
+      .video-cta h2 {
+        font-size: 1.8rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .video-hero {
+        padding: 40px 15px;
+      }
+      
+      .video-hero h1 {
+        font-size: 1.8rem;
+      }
+      
+      .video-content {
+        padding: 0 15px 30px;
+      }
+      
+      .video-intro h2 {
+        font-size: 1.8rem;
+      }
+      
+      .btn-subscribe {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Load Shared Header -->
+  <div id="header-container"></div>
+  
+  <!-- Load Shared Notification -->
+  <div id="notification-container"></div>
+
+  <!-- Video Hero Section -->
+  <section class="video-hero">
+    <h1>Spiritual Videos & Discourses</h1>
+    <p>Watch enlightening discourses, spiritual talks, and cultural performances from our trust</p>
+  </section>
+
+  <!-- Video Content -->
+  <section class="video-content">
+    <div class="video-intro">
+      <h2>Divine Content for Spiritual Seekers</h2>
+      <p>Explore our collection of spiritual videos featuring discourses by renowned scholars, devotional music, and cultural performances.</p>
+    </div>
+    
+    <div class="video-filters">
+      <div class="filter-group">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="all">All Categories</option>
+          <option value="discourses">Spiritual Discourses</option>
+          <option value="music">Devotional Music</option>
+          <option value="lectures">Philosophy Lectures</option>
+          <option value="cultural">Cultural Programs</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="language">Language</label>
+        <select id="language">
+          <option value="all">All Languages</option>
+          <option value="tamil">Tamil</option>
+          <option value="english">English</option>
+          <option value="sanskrit">Sanskrit</option>
+          <option value="hindi">Hindi</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="duration">Duration</label>
+        <select id="duration">
+          <option value="all">Any Duration</option>
+          <option value="short">Short (< 30 min)</option>
+          <option value="medium">Medium (30-60 min)</option>
+          <option value="long">Long (> 60 min)</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="video-grid">
+      <!-- Video 1 -->
+      <div class="video-card">
+        <div class="video-thumbnail">
+          <i class="fas fa-play-circle fa-4x"></i>
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="video-info">
+          <h3>Bhagavad Gita Discourse - Chapter 1</h3>
+          <p>An in-depth explanation of the first chapter of Bhagavad Gita by Swami Paramarthananda</p>
+          <div class="video-meta">
+            <span><i class="fas fa-clock"></i> 45 min</span>
+            <span><i class="fas fa-calendar"></i> 2 days ago</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video 2 -->
+      <div class="video-card">
+        <div class="video-thumbnail">
+          <i class="fas fa-play-circle fa-4x"></i>
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="video-info">
+          <h3>Carnatic Vocal Concert</h3>
+          <p>Traditional Carnatic music performance by students of PAC Ramasamy Raja Memorial Music School</p>
+          <div class="video-meta">
+            <span><i class="fas fa-clock"></i> 2h 15min</span>
+            <span><i class="fas fa-calendar"></i> 1 week ago</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video 3 -->
+      <div class="video-card">
+        <div class="video-thumbnail">
+          <i class="fas fa-play-circle fa-4x"></i>
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="video-info">
+          <h3>Introduction to Vedanta</h3>
+          <p>Basic principles of Vedanta philosophy explained for beginners</p>
+          <div class="video-meta">
+            <span><i class="fas fa-clock"></i> 28 min</span>
+            <span><i class="fas fa-calendar"></i> 3 weeks ago</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video 4 -->
+      <div class="video-card">
+        <div class="video-thumbnail">
+          <i class="fas fa-play-circle fa-4x"></i>
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="video-info">
+          <h3>Bharatanatyam Performance</h3>
+          <p>Traditional dance performance on divine themes by our students</p>
+          <div class="video-meta">
+            <span><i class="fas fa-clock"></i> 1h 10min</span>
+            <span><i class="fas fa-calendar"></i> 1 month ago</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video 5 -->
+      <div class="video-card">
+        <div class="video-thumbnail">
+          <i class="fas fa-play-circle fa-4x"></i>
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="video-info">
+          <h3>Upanishads Explained</h3>
+          <p>Detailed commentary on Isha Upanishad by renowned scholar</p>
+          <div class="video-meta">
+            <span><i class="fas fa-clock"></i> 1h 35min</span>
+            <span><i class="fas fa-calendar"></i> 2 months ago</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video 6 -->
+      <div class="video-card">
+        <div class="video-thumbnail">
+          <i class="fas fa-play-circle fa-4x"></i>
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="video-info">
+          <h3>Devotional Bhajans</h3>
+          <p>Evening bhajan session with traditional instruments</p>
+          <div class="video-meta">
+            <span><i class="fas fa-clock"></i> 50 min</span>
+            <span><i class="fas fa-calendar"></i> 3 months ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="video-pagination">
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">Next</button>
+    </div>
+    
+    <!-- Video Categories -->
+    <div class="video-categories">
+      <h2 class="section-title">Browse by Category</h2>
+      
+      <div class="categories-grid">
+        <div class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-microphone-alt"></i>
+          </div>
+          <div class="category-info">
+            <h3>Spiritual Discourses</h3>
+            <p>In-depth explanations of scriptures by learned scholars</p>
+          </div>
+        </div>
+        
+        <div class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-music"></i>
+          </div>
+          <div class="category-info">
+            <h3>Devotional Music</h3>
+            <p>Bhajans, classical concerts, and instrumental music</p>
+          </div>
+        </div>
+        
+        <div class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+          <div class="category-info">
+            <h3>Philosophy Lectures</h3>
+            <p>Educational content on Indian philosophy systems</p>
+          </div>
+        </div>
+        
+        <div class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-theater-masks"></i>
+          </div>
+          <div class="category-info">
+            <h3>Cultural Programs</h3>
+            <p>Dance, drama, and cultural performances</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Subscribe CTA -->
+    <div class="video-cta">
+      <h2>Never Miss a New Video</h2>
+      <p>Subscribe to our channel to get notified about new spiritual content</p>
+      <button class="btn-subscribe">Subscribe Now</button>
+    </div>
+  </section>
+
+  <!-- Load Shared Footer -->
+  <div id="footer-container"></div>
+
+  <!-- Common JS -->
+  <script src="common.js"></script>
+
+  <script>
+    // Load shared components
+    function loadSharedComponents() {
+      // Load header
+      fetch('header.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+          // Initialize common functionality after loading header
+          initCommon();
+        })
+        .catch(error => console.error('Error loading header:', error));
+      
+      // Load notification
+      fetch('notification.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('notification-container').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading notification:', error));
+      
+      // Load footer
+      fetch('footer.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading footer:', error));
+    }
+
+    // Initialize the page
+    function initPage() {
+      setupVideoInteractions();
+    }
+
+    // Setup video interactions
+    function setupVideoInteractions() {
+      // Play button functionality
+      const playButtons = document.querySelectorAll('.play-button');
+      playButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const videoTitle = this.closest('.video-card').querySelector('h3').textContent;
+          showToast(`Playing: ${videoTitle}`);
+        });
+      });
+      
+      // Filter functionality
+      const filters = document.querySelectorAll('.video-filters select');
+      filters.forEach(filter => {
+        filter.addEventListener('change', filterVideos);
+      });
+      
+      // Pagination
+      const pageButtons = document.querySelectorAll('.page-btn');
+      pageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          pageButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          showToast(`Loading page ${this.textContent}...`);
+        });
+      });
+      
+      // Subscribe button
+      const subscribeButton = document.querySelector('.btn-subscribe');
+      if (subscribeButton) {
+        subscribeButton.addEventListener('click', function() {
+          const user = getCurrentUser();
+          if (!user) {
+            showToast("Please log in to subscribe to our channel", "error");
+            return;
+          }
+          showToast('Thank you for subscribing to our channel!', 'success');
+        });
+      }
+    }
+    
+    function filterVideos() {
+      const category = document.getElementById('category').value;
+      const language = document.getElementById('language').value;
+      const duration = document.getElementById('duration').value;
+      
+      showToast(`Filtering videos... Category: ${category}, Language: ${language}, Duration: ${duration}`);
+    }
+    
+    // Helper function to get current user
+    function getCurrentUser() {
+      return JSON.parse(localStorage.getItem("currentUser")) || null;
+    }
+    
+    // Helper function to show toast
+    function showToast(message, type = 'info') {
+      if (typeof window.showToast === 'function') {
+        window.showToast(message, type);
+      } else {
+        alert(message);
+      }
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      loadSharedComponents();
+      setTimeout(() => {
+        initPage();
+      }, 100);
+    });
+  </script>
+
+</body>
+</html>

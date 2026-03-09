@@ -1,0 +1,112 @@
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marriage Hall Admin</title>
+
+<link rel="stylesheet" href="../common.css">
+<link rel="stylesheet" href="hall-admin.css">
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+</head>
+
+<body>
+
+<div id="header-container"></div>
+
+<div class="admin-wrapper">
+
+  <h1>Marriage Hall Admin Panel</h1>
+
+  <!-- Hall Selection -->
+  <div class="hall-tabs">
+    <button class="hall-tab active" data-hall="CHOKKAR">
+      Arulmigu Chokkar Kovil Kalyana Mandapam
+    </button>
+    <button class="hall-tab" data-hall="TTD">
+      TTD – P.A.C Ramasamy Raja Kalyana Mandapam
+    </button>
+  </div>
+
+  <!-- ADMIN CALENDAR -->
+  <div class="admin-calendar-wrapper">
+    <h2>Hall Booking Calendar</h2>
+
+    <div class="year-select-wrapper">
+      <select id="adminYear"></select>
+    </div>
+
+    <div id="adminCalendar"></div>
+  </div>
+
+</div> <!-- ✅ admin-wrapper closes correctly -->
+
+<!-- BOOKING MODAL -->
+<div id="bookingModal" class="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Hall Booking</h3>
+
+    <!-- Booking date -->
+    <div class="form-group">
+      <label>Booking Date</label>
+      <input type="text" id="modalDate" readonly>
+    </div>
+
+    <!-- Booked timestamp -->
+    <div class="form-group">
+      <label>Booked On</label>
+      <input type="text" id="modalBookedAt" readonly>
+    </div>
+
+    <!-- Admin/User email -->
+    <div class="form-group">
+      <label>Booked By (Admin Email)</label>
+      <input type="text" id="modalBookedByEmail" readonly>
+    </div>
+
+    <!-- Slots -->
+    <div class="form-group checkbox-group">
+      <label><input type="checkbox" id="modalMorning"> Morning</label>
+      <label><input type="checkbox" id="modalEvening"> Evening</label>
+    </div>
+
+    <!-- Customer name -->
+    <div class="form-group">
+      <label>Booked By (Name)</label>
+      <input type="text" id="modalBookedBy">
+    </div>
+
+    <!-- Contact -->
+    <div class="form-group">
+      <label>Contact Number</label>
+      <input type="text" id="modalContact" placeholder="+91 XXXXXXXX">
+    </div>
+
+    <!-- Function -->
+    <div class="form-group">
+      <label>Function Type</label>
+      <input type="text" id="modalFunctionType">
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button id="editBtn" onclick="enableEdit()">Edit</button>
+      <button id="saveBtn" onclick="saveModalBooking()" style="display:none;">Save / Update</button>
+      <button class="danger" onclick="deleteModalBooking()">Delete</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+
+    <div id="modalMessage"></div>
+  </div>
+</div>
+
+<script src="../common.js"></script>
+<script src="hall-admin.js"></script>
+
+</body>
+</html>
