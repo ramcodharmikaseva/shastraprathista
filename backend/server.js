@@ -13,32 +13,9 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Enhanced CORS configuration for local network access
+// ✅ TEMPORARY: Allow all origins (for testing only)
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:3000', 
-      'http://127.0.0.1:3000', 
-      'http://localhost:5000',
-      'http://192.168.0.18:5000',  // ← ADD THIS
-      'http://192.168.0.18:3000',  // ← ADD THIS
-      // Add common local network patterns
-      /http:\/\/192\.168\.\d+\.\d+:\d+/, // Allow all 192.168.x.x addresses
-      /http:\/\/10\.\d+\.\d+\.\d+:\d+/,  // Allow all 10.x.x.x addresses
-      /http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+:\d+/ // Allow 172.16-31.x.x
-    ];
-    
-    if (allowedOrigins.some(pattern => pattern.test && pattern.test(origin)) || 
-        allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true,
   credentials: true
 }));
 
@@ -79,6 +56,25 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Add this at the VERY TOP of backend/server.js
+console.log('🚀 STARTUP PHASE 1: Server.js loaded');
+console.log('Current Directory:', process.cwd());
+console.log('__dirname:', __dirname);
+console.log('PORT env:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
+// Add error handlers for uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ UNCAUGHT EXCEPTION:', err);
+  console.error('Stack:', err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ UNHANDLED REJECTION:', reason);
+});
+
 
 // ✅ IMPORT MODELS FROM SEPARATE FILES
 const User = require('./models/User');
@@ -233,10 +229,11 @@ app.post('/api/cart', authMiddleware, async (req, res) => {
 mongoose.connect(process.env.MONGO_URI)
 .then(async () => {
   console.log('✅ MongoDB Connected Successfully');
+  console.error('Full error:', err);
 })
 .catch(err => {
-  console.error('❌ MongoDB Connection Error:', err.message);
-  process.exit(1);
+  // Don't exit immediately - let's see if this is the problem
+  // process.exit(1); // Comment this out temporarily
 });
 
 // ✅ Admin Token Verification Endpoint (optional, for frontend to check token)
