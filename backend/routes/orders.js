@@ -6,13 +6,13 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 // ✅ ADD EMAIL SERVICE IMPORT - REPLACE THE EXISTING ONE
-const { 
-  sendOrderConfirmationEmail, 
-  sendOrderShippedEmail, 
-  sendOrderDeliveredEmail, 
-  sendAdminOrderNotification,
-  generateTrackingNumber 
-} = require('../utils/orderEmailService');
+// const { 
+//   sendOrderConfirmationEmail, 
+//   sendOrderShippedEmail, 
+//   sendOrderDeliveredEmail, 
+//   sendAdminOrderNotification,
+//   generateTrackingNumber 
+// } = require('../utils/orderEmailService');
 
 // ✅ FIXED: Proper book search without ObjectId casting issues
 async function updateInventoryOnServer(orderItems) {
@@ -241,24 +241,23 @@ router.post('/checkout', async (req, res) => {
     console.log('✅ Order created successfully:', order.orderId);
 
     // ✅ SEND ORDER CONFIRMATION EMAIL TO CUSTOMER
-    try {
-        console.log('📧 Sending order confirmation email...');
-        await sendOrderConfirmationEmail(order);
-        console.log('✅ Order confirmation email sent successfully');
-    } catch (emailError) {
-        console.error('❌ Failed to send order confirmation email:', emailError);
-        // Don't fail the entire order if email fails
-    }
+    // try {
+    //     console.log('📧 Sending order confirmation email...');
+    //     await sendOrderConfirmationEmail(order);
+    //     console.log('✅ Order confirmation email sent successfully');
+    // } catch (emailError) {
+    //     console.error('❌ Failed to send order confirmation email:', emailError);
+    //     // Don't fail the entire order if email fails
+    // }
 
     // ✅ SEND ADMIN NOTIFICATION EMAIL
-    try {
-        console.log('📧 Sending admin notification email...');
-        await sendAdminOrderNotification(order);
-        console.log('✅ Admin notification email sent successfully');
-    } catch (adminEmailError) {
-        console.error('❌ Failed to send admin notification email:', adminEmailError);
-        // Don't fail the entire order if email fails
-    }
+    // try {
+    //     console.log('📧 Sending admin notification email...');
+    //     await sendAdminOrderNotification(order);
+    //     console.log('✅ Admin notification email sent successfully');
+    // } catch (adminEmailError) {
+    //     console.error('❌ Failed to send admin notification email:', adminEmailError);
+    // }
 
     // ✅ Add order to user's order history if user exists
     if (user) {
@@ -414,32 +413,31 @@ router.put('/:id/status', async (req, res) => {
     await order.save();
 
     // ✅ ADD EMAIL NOTIFICATIONS BASED ON STATUS CHANGE
-    try {
-      if (status === 'shipped' && oldStatus !== 'shipped') {
-        const trackingNumber = generateTrackingNumber();
-        console.log(`📧 Sending shipped email with tracking: ${trackingNumber}`);
-        const emailResult = await sendOrderShippedEmail(order, trackingNumber);
-        
-        // Update order with tracking number if email was successful
-        if (emailResult.success) {
-          order.statusHistory.push({
-            status: 'shipped',
-            updatedAt: new Date(),
-            notes: `Tracking number: ${emailResult.trackingNumber}`
-          });
-          await order.save();
-        }
-      } else if (status === 'delivered' && oldStatus !== 'delivered') {
-        console.log('📧 Sending delivered email');
-        await sendOrderDeliveredEmail(order);
-      } else if (status === 'confirmed' && oldStatus !== 'confirmed') {
-        console.log('📧 Sending confirmation email');
-        await sendOrderConfirmationEmail(order);
-      }
-    } catch (emailError) {
-      console.error('❌ Failed to send status email:', emailError);
-      // Don't fail the status update if email fails
-    }
+    // try {
+    //   if (status === 'shipped' && oldStatus !== 'shipped') {
+    //     const trackingNumber = generateTrackingNumber();
+    //     console.log(`📧 Sending shipped email with tracking: ${trackingNumber}`);
+    //     const emailResult = await sendOrderShippedEmail(order, trackingNumber);
+    //     
+    //     // Update order with tracking number if email was successful
+    //     if (emailResult.success) {
+    //       order.statusHistory.push({
+    //         status: 'shipped',
+    //         updatedAt: new Date(),
+    //         notes: `Tracking number: ${emailResult.trackingNumber}`
+    //       });
+    //       await order.save();
+    //     }
+    //   } else if (status === 'delivered' && oldStatus !== 'delivered') {
+    //     console.log('📧 Sending delivered email');
+    //     await sendOrderDeliveredEmail(order);
+    //   } else if (status === 'confirmed' && oldStatus !== 'confirmed') {
+    //     console.log('📧 Sending confirmation email');
+    //     await sendOrderConfirmationEmail(order);
+    //   }
+    // } catch (emailError) {
+    //   console.error('❌ Failed to send status email:', emailError);
+    // }
     
     res.json({
       success: true,
@@ -578,24 +576,22 @@ router.post('/', async (req, res) => {
     await order.save();
 
     // ✅ ADD ORDER CONFIRMATION EMAIL
-    try {
-        console.log('📧 Sending order confirmation email...');
-        await sendOrderConfirmationEmail(order);
-        console.log('✅ Order confirmation email sent successfully');
-    } catch (emailError) {
-        console.error('❌ Failed to send order confirmation email:', emailError);
-        // Don't fail the entire order if email fails
-    }
+    // try {
+    //     console.log('📧 Sending order confirmation email...');
+    //     await sendOrderConfirmationEmail(order);
+    //     console.log('✅ Order confirmation email sent successfully');
+    // } catch (emailError) {
+    //     console.error('❌ Failed to send order confirmation email:', emailError);
+    // }
 
     // ✅ SEND ADMIN NOTIFICATION
-    try {
-        console.log('📧 Sending admin notification email...');
-        await sendAdminOrderNotification(order);
-        console.log('✅ Admin notification email sent successfully');
-    } catch (adminEmailError) {
-        console.error('❌ Failed to send admin notification email:', adminEmailError);
-        // Don't fail the entire order if email fails
-    }
+    // try {
+    //     console.log('📧 Sending admin notification email...');
+    //     await sendAdminOrderNotification(order);
+    //     console.log('✅ Admin notification email sent successfully');
+    // } catch (adminEmailError) {
+    //     console.error('❌ Failed to send admin notification email:', adminEmailError);
+    // }
 
     // ✅ UPDATED: Use the new inventory management function
     console.log('📦 Updating inventory using server function...');
@@ -879,14 +875,14 @@ router.patch('/:orderId/ship', async (req, res) => {
 
     await order.save();
 
-    // ✅ SEND SHIPPED EMAIL
-    const emailResult = await sendOrderShippedEmail(order, trackingNumber);
+    // // ✅ SEND SHIPPED EMAIL
+    // const emailResult = await sendOrderShippedEmail(order, trackingNumber);
     
     res.json({
       success: true,
       message: 'Order marked as shipped',
       order: order,
-      emailSent: emailResult.success,
+      // emailSent: emailResult.success,
       trackingNumber: emailResult.trackingNumber
     });
 
@@ -923,14 +919,14 @@ router.patch('/:orderId/deliver', async (req, res) => {
 
     await order.save();
 
-    // ✅ SEND DELIVERED EMAIL
-    const emailSent = await sendOrderDeliveredEmail(order);
+    // // ✅ SEND DELIVERED EMAIL
+    // const emailSent = await sendOrderDeliveredEmail(order);
     
     res.json({
       success: true,
       message: 'Order marked as delivered',
       order: order,
-      emailSent: emailSent
+      // emailSent: emailSent
     });
 
   } catch (error) {
