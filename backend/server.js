@@ -329,6 +329,9 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Serve book images
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
 // Add to server.js
 const rateLimit = require('express-rate-limit');
 
