@@ -426,3 +426,51 @@ app.listen(PORT, HOST, () => {
   console.log(`📚 Actual Books: Loaded from book-data.js`);
   console.log(`💳 Critical: Order endpoints ready for checkout`);
 });
+
+// ✅ TEMPORARY DEBUG ROUTE - Check image files
+app.get('/debug/images/:bookId', async (req, res) => {
+    const { bookId } = req.params;
+    const imagesPath = path.join(__dirname, 'public/images', bookId);
+    
+    try {
+        // Check if directory exists
+        const fs = require('fs');
+        if (!fs.existsSync(imagesPath)) {
+            return res.json({
+                success: false,
+                error: 'Directory not found',
+                path: imagesPath,
+                publicContents: fs.existsSync(path.join(__dirname, 'public')) 
+                    ? fs.readdirSync(path.join(__dirname, 'public')) 
+                    : 'public folder not found'
+            });
+        }
+        
+        // List all files in the directory
+        const files = fs.readdirSync(imagesPath);
+        const fileDetails = files.map(file => {
+            const filePath = path.join(imagesPath, file);
+            const stats = fs.statSync(filePath);
+            return {
+                filename: file,
+                size: stats.size,
+                exists: true,
+                url: `/images/${bookId}/${file}`
+            };
+        });
+        
+        res.json({
+            success: true,
+            bookId: bookId,
+            path: imagesPath,
+            files: fileDetails,
+            count: fileDetails.length
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            error: error.message,
+            path: imagesPath
+        });
+    }
+});
