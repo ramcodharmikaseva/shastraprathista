@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Signup | Shastraprathista</title>
+  <title>Sign Up | Shastraprathista</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
@@ -12,15 +12,17 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 20px;
     }
     .signup-container {
       background: white;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 380px;
+      width: 400px;
+      max-width: 100%;
     }
     h2 {
       text-align: center;
@@ -29,7 +31,6 @@
     }
     .form-group {
       margin-bottom: 15px;
-      position: relative;
     }
     input {
       width: 100%;
@@ -38,7 +39,7 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
-      transition: border-color 0.3s;
+      font-size: 14px;
     }
     input:focus {
       outline: none;
@@ -91,39 +92,41 @@
       color: #007bff;
       text-decoration: none;
     }
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    .password-requirements {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
-
   <div class="signup-container">
     <h2>Create Your Account</h2>
     
-    <form id="signupForm" onsubmit="handleSignup(event); return false;">
+    <form id="signupForm">
       <div class="form-group">
-        <input type="text" id="signupName" placeholder="Full Name" 
-              autocomplete="name" required>
+        <input type="text" id="signupName" placeholder="Full Name" required>
       </div>
       
       <div class="form-group">
-        <input type="email" id="signupEmail" placeholder="Email Address" 
-              autocomplete="email" required>
+        <input type="email" id="signupEmail" placeholder="Email Address" required>
       </div>
       
       <div class="form-group">
-        <input type="tel" id="signupPhone" placeholder="Phone Number (10 digits)" 
-              autocomplete="tel" required 
-              pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+        <input type="tel" id="signupPhone" placeholder="Phone Number (10 digits)" pattern="[0-9]{10}" maxlength="10">
       </div>
       
       <div class="form-group">
-        <input type="password" id="signupPassword" placeholder="Password (min. 6 characters)" 
-              autocomplete="new-password" required 
-              minlength="6">
+        <input type="password" id="signupPassword" placeholder="Password (min. 6 characters)" minlength="6" required>
+        <div class="password-requirements">Minimum 6 characters</div>
       </div>
-      
+
       <button type="submit" id="signupBtn">Sign Up</button>
     </form>
-    
+
     <div class="error" id="signupError"></div>
     <div class="success" id="signupSuccess"></div>
     
@@ -133,168 +136,101 @@
   </div>
 
   <script>
-      // ================================
-      // DYNAMIC BASE URL CONFIGURATION
-      // ================================
-      window.API_BASE_URL = window.location.origin;
-      
-      // ================================
-      // IMPROVED API CALL FUNCTION
-      // ================================
-      async function apiCall(endpoint, options = {}) {
-          // Use relative path (works on same origin)
-          const url = `/api${endpoint}`;
-          
-          console.log(`📡 API Call: ${url}`, options);
-          
-          try {
-              const response = await fetch(url, {
-                  ...options,
-                  headers: {
-                      'Content-Type': 'application/json',
-                      ...(options.headers || {})
-                  }
-              });
-              
-              console.log(`📡 Response Status: ${response.status}`);
-              
-              if (!response.ok) {
-                  const errorText = await response.text();
-                  console.error(`📡 Error Response:`, errorText);
-                  
-                  try {
-                      const errorJson = JSON.parse(errorText);
-                      throw new Error(errorJson.message || errorJson.error || `HTTP ${response.status}`);
-                  } catch (e) {
-                      throw new Error(errorText || `HTTP ${response.status}`);
-                  }
-              }
-              
-              const data = await response.json();
-              console.log(`📡 Success Response:`, data);
-              return data;
-              
-          } catch (error) {
-              console.error('❌ API Error:', error);
-              throw error;
+    async function apiCall(endpoint, options = {}) {
+      const url = `/api${endpoint}`;
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
           }
-      }
-
-      // Phone number validation
-      document.getElementById('signupPhone').addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length > 10) {
-          this.value = this.value.slice(0, 10);
-        }
-      });
-
-      async function handleSignup(event) {
-        if (event) event.preventDefault();
-        
-        const name = document.getElementById('signupName').value.trim();
-        const email = document.getElementById('signupEmail').value.trim();
-        const phone = document.getElementById('signupPhone').value.trim();
-        const password = document.getElementById('signupPassword').value.trim();
-      
-        // Reset messages
-        hideMessage(document.getElementById('signupError'));
-        hideMessage(document.getElementById('signupSuccess'));
-
-        // Validation
-        if (!name || !email || !phone || !password) {
-          showError('Please fill in all fields.');
-          return;
-        }
-
-        if (name.length < 2) {
-          showError('Please enter a valid name (at least 2 characters).');
-          return;
-        }
-
-        if (!/^\d{10}$/.test(phone)) {
-          showError('Please enter a valid 10-digit phone number.');
-          return;
-        }
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          showError('Please enter a valid email address.');
-          return;
-        }
-
-        if (password.length < 6) {
-          showError('Password must be at least 6 characters long.');
-          return;
-        }
-
-        try {
-          const signupBtn = document.getElementById('signupBtn');
-          signupBtn.disabled = true;
-          signupBtn.textContent = 'Creating Account...';
-
-          // Direct signup - no OTP
-          const result = await apiCall('/auth/signup', {
-              method: 'POST',
-              body: JSON.stringify({ name, email, phone, password })
-          });
-        
-          if (result.success) {
-            showSuccess('Account created successfully! Redirecting...');
-          
-            // Save token and user data
-            localStorage.setItem('token', result.token);
-            localStorage.setItem('currentUser', JSON.stringify(result.user));
-          
-            // Redirect to home page
-            setTimeout(() => {
-              window.location.href = 'all_book_grid.html';
-            }, 2000);
-          } else {
-            showError(result.message || 'Signup failed');
-          }
-        } catch (error) {
-          console.error('Signup error:', error);
-          showError(error.message || 'Error creating account. Please try again.');
-        } finally {
-          const signupBtn = document.getElementById('signupBtn');
-          signupBtn.disabled = false;
-          signupBtn.textContent = 'Sign Up';
-        }
-      }
-
-      function showError(message) {
-        const errorMsg = document.getElementById('signupError');
-        errorMsg.textContent = message;
-        errorMsg.style.display = 'block';
-        setTimeout(() => hideMessage(errorMsg), 5000);
-      }
-
-      function showSuccess(message) {
-        const successMsg = document.getElementById('signupSuccess');
-        successMsg.textContent = message;
-        successMsg.style.display = 'block';
-      }
-
-      function hideMessage(element) {
-        if (element) {
-          element.style.display = 'none';
-          element.textContent = '';
-        }
-      }
-
-      // Allow Enter key to submit
-      document.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-          handleSignup(event);
-        }
-      });
-
-      // Clear error when user starts typing
-      ['signupName', 'signupEmail', 'signupPhone', 'signupPassword'].forEach(id => {
-        document.getElementById(id).addEventListener('input', function() {
-          hideMessage(document.getElementById('signupError'));
         });
-      });
-  </script>
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          try {
+            const errorJson = JSON.parse(errorText);
+            throw new Error(errorJson.message || errorJson.error || `HTTP ${response.status}`);
+          } catch (e) {
+            throw new Error(errorText || `HTTP ${response.status}`);
+          }
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('❌ API Error:', error);
+        throw error;
+      }
+    }
 
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const phone = document.getElementById('signupPhone').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      
+      const errorMsg = document.getElementById('signupError');
+      const successMsg = document.getElementById('signupSuccess');
+      const signupBtn = document.getElementById('signupBtn');
+      
+      errorMsg.style.display = 'none';
+      successMsg.style.display = 'none';
+      
+      if (!name || !email || !password) {
+        errorMsg.textContent = 'Please fill in all required fields.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (password.length < 6) {
+        errorMsg.textContent = 'Password must be at least 6 characters.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errorMsg.textContent = 'Please enter a valid email address.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (phone && !/^\d{10}$/.test(phone)) {
+        errorMsg.textContent = 'Please enter a valid 10-digit phone number.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      try {
+        signupBtn.disabled = true;
+        signupBtn.textContent = 'Creating account...';
+        
+        const data = await apiCall('/auth/signup', {
+          method: 'POST',
+          body: JSON.stringify({
+            name,
+            email,
+            phone: phone || undefined,
+            password
+          })
+        });
+        
+        successMsg.textContent = 'Account created successfully! Redirecting to login...';
+        successMsg.style.display = 'block';
+        
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        
+      } catch (err) {
+        errorMsg.textContent = err.message || 'Something went wrong. Please try again.';
+        errorMsg.style.display = 'block';
+      } finally {
+        signupBtn.disabled = false;
+        signupBtn.textContent = 'Sign Up';
+      }
+    });
+  </script>
 </body>
 </html>
