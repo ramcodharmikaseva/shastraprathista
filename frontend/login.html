@@ -6,7 +6,6 @@
   <title>Login | Shastraprathista</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Your existing CSS remains the same */
     body {
       font-family: Arial, sans-serif;
       background: #f9f9f9;
@@ -145,50 +144,9 @@
 
       <button type="submit" id="loginBtn">Login</button>
     </form>
-    
-    <div class="form-group" style="text-align: center; margin: 15px 0;">
-      <div style="color: #666; margin-bottom: 10px;">Or</div>
-      <button type="button" onclick="showOTPLogin()" style="background: #28a745; width: 100%; padding: 12px 20px; margin-top: 10px;">
-        Login with OTP
-      </button>
-    </div>
-
-    <div id="otpLoginSection" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-      <!-- Back to Login Button -->
-      <div style="text-align: center; margin-bottom: 15px;">
-        <button type="button" onclick="hideOTPLogin()" style="background: #6c757d; width: auto; padding: 5px 15px; font-size: 14px; margin-bottom: 10px;">
-          ← Back to Password Login
-        </button>
-      </div>
-      
-      <form onsubmit="sendLoginOTP(event); return false;">
-        <div class="form-group">
-          <input type="email" id="otpLoginInput" placeholder="Enter your email address" 
-                autocomplete="email" required>
-        </div>
-
-        <button type="submit" id="sendLoginOtpBtn">Send OTP</button>
-      </form>
-
-      <div id="otpVerificationSection" style="display: none; margin-top: 15px;">
-        <form onsubmit="verifyLoginOTP(event); return false;">
-          <div class="form-group">
-            <input type="text" id="loginOtp" placeholder="Enter 6-digit OTP" 
-                  maxlength="6" autocomplete="one-time-code" required>
-          </div>
-          <div id="loginTimer" style="text-align: center; color: #e74c3c; font-weight: bold; margin: 10px 0;">10:00</div>
-          <button type="submit" id="verifyLoginOtpBtn">Verify OTP</button>
-        </form>
-        <div style="text-align: center; margin-top: 10px;">
-          <button type="button" onclick="resendLoginOTP()" id="resendLoginOtpBtn" style="background: #6c757d; padding: 5px 15px; font-size: 14px;" disabled>
-            Resend OTP (60s)
-          </button>
-        </div>
-      </div>
-    </div>
 
     <div class="forgot-password">
-      <a href="forgot-password-otp.html" style="font-size: 14px; color: #007bff; text-decoration: none;">
+      <a href="forgot-password.html" style="font-size: 14px; color: #007bff; text-decoration: none;">
         Forgot your password?
       </a>
     </div>
@@ -255,221 +213,6 @@
       }
 
       let loginTimeout;
-      let loginOtpTimer;
-      let loginTimeLeft = 600;
-      let loginResendTimer;
-      let loginResendTimeLeft = 60;
-      let otpLoginEmail = '';
-
-      function showOTPLogin() {
-        // Show OTP section
-        document.getElementById('otpLoginSection').style.display = 'block';
-        
-        // Hide regular login form
-        document.getElementById('loginForm').style.display = 'none';
-        
-        // Also hide the "Or" section and forgot password link
-        document.querySelector('.form-group[style*="text-align: center"]').style.display = 'none';
-        document.querySelector('.forgot-password').style.display = 'none';
-      }
-
-      function hideOTPLogin() {
-        // Hide OTP section
-        document.getElementById('otpLoginSection').style.display = 'none';
-        document.getElementById('otpVerificationSection').style.display = 'none';
-        
-        // Show regular login form
-        document.getElementById('loginForm').style.display = 'block';
-        
-        // Show the "Or" section and forgot password link
-        document.querySelector('.form-group[style*="text-align: center"]').style.display = 'block';
-        document.querySelector('.forgot-password').style.display = 'block';
-        
-        // Reset OTP fields and clear timers
-        document.getElementById('otpLoginInput').value = '';
-        document.getElementById('loginOtp').value = '';
-        
-        // Clear timers
-        if (loginOtpTimer) clearInterval(loginOtpTimer);
-        if (loginResendTimer) clearInterval(loginResendTimer);
-        
-        hideMessage(document.getElementById('loginError'));
-        hideMessage(document.getElementById('loginSuccess'));
-      }
-
-      async function sendLoginOTP(event) {  // Add event parameter
-        if (event) event.preventDefault();  // Add this line
-        
-        const email = document.getElementById('otpLoginInput').value.trim();
-
-        if (!email) {
-          showError('Please enter your email address.');
-          return;
-        }
-
-        // Email validation
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          showError('Please enter a valid email address.');
-          return;
-        }
-
-        try {
-          const sendLoginOtpBtn = document.getElementById('sendLoginOtpBtn');
-          sendLoginOtpBtn.disabled = true;
-          sendLoginOtpBtn.textContent = 'Sending OTP...';
-
-          // FIXED: Use apiCall function, remove duplicate declaration
-          const result = await apiCall('/auth/send-login-otp', {
-              method: 'POST',
-              body: JSON.stringify({ email })
-          });
-
-          if (result.success) {
-            otpLoginEmail = email;
-            document.getElementById('otpVerificationSection').style.display = 'block';
-            startLoginOTPTimer();
-            startLoginResendTimer();
-            showSuccess('OTP sent to your email successfully!');
-          } else {
-            showError(result.message);
-          }
-        } catch (error) {
-          console.error('Send login OTP error:', error);
-          showError('Error sending OTP. Please try again.');
-        } finally {
-          const sendLoginOtpBtn = document.getElementById('sendLoginOtpBtn');
-          sendLoginOtpBtn.disabled = false;
-          sendLoginOtpBtn.textContent = 'Send OTP';
-        }
-      }
-
-      async function verifyLoginOTP(event) {  // Add event parameter
-        if (event) event.preventDefault();  // Add this line
-        
-        const otp = document.getElementById('loginOtp').value.trim();
-
-        if (!otp || otp.length !== 6) {
-          showError('Please enter a valid 6-digit OTP.');
-          return;
-        }
-
-        try {
-          const verifyLoginOtpBtn = document.getElementById('verifyLoginOtpBtn');
-          verifyLoginOtpBtn.disabled = true;
-          verifyLoginOtpBtn.textContent = 'Verifying...';
-
-          // FIXED: Use apiCall function, remove duplicate declaration
-          const result = await apiCall('/auth/verify-login-otp', {
-              method: 'POST',
-              body: JSON.stringify({ 
-                  email: otpLoginEmail,
-                  otp: otp 
-              })
-          });
-
-          if (result.success) {
-            showSuccess('Login successful! Redirecting...');
-
-            // Save token and user data
-            localStorage.setItem('token', result.token);
-            localStorage.setItem('currentUser', JSON.stringify(result.user));
-
-            // Set auto-logout timer
-            if (window.loginTimeout) clearTimeout(window.loginTimeout);
-            window.loginTimeout = setTimeout(() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('currentUser');
-              alert('Session expired. Please login again.');
-              window.location.href = 'login.html';
-            }, 10 * 60 * 1000);
-
-            // Redirect based on role
-            setTimeout(() => {
-              if (result.user.role === 'admin') {
-                window.location.href = 'admin.html';
-              } else {
-                window.location.href = 'all_book_grid.html';
-              }
-            }, 1000);
-          } else {
-            showError(result.message);
-          }
-        } catch (error) {
-          console.error('Verify login OTP error:', error);
-          showError('Error verifying OTP. Please try again.');
-        } finally {
-          const verifyLoginOtpBtn = document.getElementById('verifyLoginOtpBtn');
-          verifyLoginOtpBtn.disabled = false;
-          verifyLoginOtpBtn.textContent = 'Verify OTP';
-        }
-      }
-
-      async function resendLoginOTP() {
-        try {
-          const resendLoginOtpBtn = document.getElementById('resendLoginOtpBtn');
-          resendLoginOtpBtn.disabled = true;
-          resendLoginOtpBtn.textContent = 'Resending...';
-
-          // FIXED: Use apiCall function, remove duplicate declaration
-          const result = await apiCall('/auth/send-login-otp', {
-              method: 'POST',
-              body: JSON.stringify({ email: otpLoginEmail })
-          });
-
-          if (result.success) {
-            showSuccess('OTP resent successfully!');
-            clearInterval(loginOtpTimer);
-            clearInterval(loginResendTimer);
-            loginTimeLeft = 600;
-            loginResendTimeLeft = 60;
-            startLoginOTPTimer();
-            startLoginResendTimer();
-          } else {
-            showError(result.message);
-          }
-        } catch (error) {
-          console.error('Resend login OTP error:', error);
-          showError('Error resending OTP. Please try again.');
-        }
-      }
-
-      function startLoginOTPTimer() {
-        updateLoginTimerDisplay();
-        
-        loginOtpTimer = setInterval(() => {
-          loginTimeLeft--;
-          updateLoginTimerDisplay();
-          
-          if (loginTimeLeft <= 0) {
-            clearInterval(loginOtpTimer);
-            showError('OTP has expired. Please request a new one.');
-          }
-        }, 1000);
-      }
-
-      function startLoginResendTimer() {
-        const resendLoginOtpBtn = document.getElementById('resendLoginOtpBtn');
-        resendLoginOtpBtn.disabled = true;
-        resendLoginOtpBtn.textContent = `Resend OTP (${loginResendTimeLeft}s)`;
-        
-        loginResendTimer = setInterval(() => {
-          loginResendTimeLeft--;
-          resendLoginOtpBtn.textContent = `Resend OTP (${loginResendTimeLeft}s)`;
-    
-          if (loginResendTimeLeft <= 0) {
-            clearInterval(loginResendTimer);
-            resendLoginOtpBtn.disabled = false;
-            resendLoginOtpBtn.textContent = 'Resend OTP';
-          }
-        }, 1000);
-      }
-
-      function updateLoginTimerDisplay() {
-        const minutes = Math.floor(loginTimeLeft / 60);
-        const seconds = loginTimeLeft % 60;
-        document.getElementById('loginTimer').textContent = 
-          `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      }
 
       // ✅ Auto redirect if user already logged in
       document.addEventListener('DOMContentLoaded', function() {
@@ -537,7 +280,7 @@
             console.log('🔍 Token saved:', data.token.substring(0, 50) + '...');
             console.log('🔍 User saved:', data.user);
 
-            // ✅ AUTO-LOGOUT TIMEOUT
+            // ✅ AUTO-LOGOUT TIMEOUT (10 minutes)
             if (window.loginTimeout) clearTimeout(window.loginTimeout);
 
             window.loginTimeout = setTimeout(() => {
@@ -613,14 +356,6 @@
       });
       
       document.getElementById('loginPassword').addEventListener('input', function() {
-        hideMessage(document.getElementById('loginError'));
-      });
-
-      document.getElementById('otpLoginInput').addEventListener('input', function() {
-        hideMessage(document.getElementById('loginError'));
-      });
-
-      document.getElementById('loginOtp').addEventListener('input', function() {
         hideMessage(document.getElementById('loginError'));
       });
   </script>
