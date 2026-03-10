@@ -1,0 +1,857 @@
+<!-- frontend/add-book.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Book - Admin Panel</title>
+    
+    <!-- Same CSP as admin.html -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        img-src 'self' data:;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        script-src 'self' 'unsafe-inline';
+        script-src-attr 'unsafe-inline';
+        connect-src 'self' https://api.shastraprathista.in https://*.razorpay.com;
+    ">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="css/admin-base.css">
+    <link rel="stylesheet" href="css/admin-layout.css">
+    <link rel="stylesheet" href="css/admin-responsive.css">
+    
+    <style>
+        .site-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        /* Add Book Specific Styles */
+        .add-book-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .add-book-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .add-book-header h1 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group label.required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #d4af37;
+            outline: none;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .image-upload-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background: #fafafa;
+            transition: border-color 0.3s;
+        }
+        
+        .image-upload-container:hover {
+            border-color: #d4af37;
+        }
+        
+        .image-upload-container.drag-over {
+            border-color: #27ae60;
+            background: #eafaf1;
+        }
+        
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .image-preview-item {
+            width: 100px;
+            height: 120px;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .cancel-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cancel-btn:hover {
+            background: #7f8c8d;
+        }
+        
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .help-text {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .add-book-container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="admin-page">
+    <!-- Header (Same as admin.html) -->
+    <header class="site-header">
+        <div class="logo-title">
+            <a href="index.html" class="home-link">
+                <img src="image/logo.jpg" alt="Shastraprathista Logo" class="logo" />
+                <span class="site-name">Smt Lingammal Ramaraju Shastraprathista Trust</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="adminName">Admin User</span>
+            </div>
+            <nav class="header-links"> 
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Menu -->
+    <nav class="main-menu">
+        <ul id="menu">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="all_book_grid.html"><i class="fas fa-book"></i> Books</a></li>
+            <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+            <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="admin.html">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a></li>
+            <li><a href="admin.html#orders">
+                <i class="fas fa-shopping-cart"></i> Orders
+            </a></li>
+            <li><a href="admin.html#customers">
+                <i class="fas fa-users"></i> Customers
+            </a></li>
+            <li><a href="admin.html#reports">
+                <i class="fas fa-chart-bar"></i> Reports
+            </a></li>
+            <li><a href="admin.html#settings">
+                <i class="fas fa-cog"></i> Settings
+            </a></li>
+            <li><a href="add-book.html" class="active">
+                <i class="fas fa-book-medical"></i> Add New Book
+            </a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="add-book-container">
+            <div class="add-book-header">
+                <h1><i class="fas fa-book-medical"></i> Add New Book</h1>
+                <p>Add new books to your inventory. All fields marked with * are required.</p>
+            </div>
+            
+            <form id="addBookForm" enctype="multipart/form-data">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="title" class="required">Book Title</label>
+                            <input type="text" id="title" name="title" required 
+                                   placeholder="Enter book title">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="author" class="required">Author</label>
+                            <input type="text" id="author" name="author" required 
+                                   placeholder="Enter author name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="category" class="required">Category</label>
+                            <select id="category" name="category" required>
+                                <option value="">Select category</option>
+                                <option value="General">General</option>
+                                <option value="Vedanta">Vedanta</option>
+                                <option value="Stotram">Stotram</option>
+                                <option value="Puja">Puja</option>
+                                <option value="Philosophy">Philosophy</option>
+                                <option value="Sanskrit">Sanskrit</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Dharmashastra">Dharmashastra</option>
+                                <option value="Smriti">Smriti</option>
+                                <option value="Purana">Purana</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" 
+                                  placeholder="Enter book description (optional)"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Pricing & Stock -->
+                <div class="form-section">
+                    <h3><i class="fas fa-tags"></i> Pricing & Stock</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="price" class="required">Price (₹)</label>
+                            <input type="number" id="price" name="price" min="0" step="1" required 
+                                   placeholder="e.g., 150">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="originalPrice">Original Price (₹)</label>
+                            <input type="number" id="originalPrice" name="originalPrice" min="0" step="1"
+                                   placeholder="Leave empty if same as price">
+                            <span class="help-text">For showing discount</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="discount">Discount (%)</label>
+                            <input type="number" id="discount" name="discount" min="0" max="100" step="1"
+                                   placeholder="0">
+                            <span class="help-text">0-100%</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stock" class="required">Initial Stock</label>
+                            <input type="number" id="stock" name="stock" min="0" step="1" required 
+                                   value="10">
+                            <span class="help-text">Number of copies available</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Book Details -->
+                <div class="form-section">
+                    <h3><i class="fas fa-book-open"></i> Book Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="publisher">Publisher</label>
+                            <input type="text" id="publisher" name="publisher" 
+                                   placeholder="e.g., Shastraprathista Trust">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <input type="text" id="language" name="language" 
+                                   placeholder="e.g., Sanskrit and Tamil" value="Sanskrit and Tamil">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pages">Pages</label>
+                            <input type="number" id="pages" name="pages" min="0" step="1"
+                                   placeholder="e.g., 200">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="size">Size</label>
+                            <input type="text" id="size" name="size" 
+                                   placeholder="e.g., 5.4x8.3 inches">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="isbn">ISBN</label>
+                            <input type="text" id="isbn" name="isbn" 
+                                   placeholder="e.g., 9788198642677">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="weight" class="required">Weight (grams)</label>
+                            <input type="number" id="weight" name="weight" min="0" step="1" required 
+                                   value="500">
+                            <span class="help-text">For shipping calculations</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Images -->
+                <div class="form-section">
+                    <h3><i class="fas fa-images"></i> Book Images</h3>
+                    <div class="image-upload-container" id="imageUploadContainer">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #95a5a6; margin-bottom: 15px;"></i>
+                        <h4>Drag & Drop Images Here</h4>
+                        <p>or click to browse (max 5 images, JPG/PNG/WEBP, max 5MB each)</p>
+                        <input type="file" id="images" name="images" multiple accept="image/*" 
+                               style="display: none;">
+                        <button type="button" id="browseBtn" style="margin-top: 15px; padding: 10px 20px; 
+                                background: #d4af37; color: white; border: none; border-radius: 5px; 
+                                cursor: pointer;">
+                            Browse Images
+                        </button>
+                    </div>
+                    
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                
+                <!-- Submit Buttons -->
+                <div class="button-group">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-plus-circle"></i> Add Book
+                    </button>
+                    <a href="inventory.html" class="cancel-btn">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+                
+                <div class="status-message" id="statusMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="admin-utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load admin name
+            const adminName = document.getElementById('adminName');
+            const user = getCurrentUser();
+            if (user) {
+                adminName.textContent = user.name || 'Admin User';
+            }
+            
+            // Check admin authentication
+            if (!user || !['super_admin', 'admin'].includes(user.role)) {
+                showToast('❌ Admin access required. Redirecting to login...', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return;
+            }
+            
+            setupFormEvents();
+        });
+        
+        // Setup form events
+        function setupFormEvents() {
+            const form = document.getElementById('addBookForm');
+            const browseBtn = document.getElementById('browseBtn');
+            const fileInput = document.getElementById('images');
+            const imageUploadContainer = document.getElementById('imageUploadContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            // Browse button click
+            browseBtn.addEventListener('click', () => fileInput.click());
+            
+            // File input change
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                imageUploadContainer.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                imageUploadContainer.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                imageUploadContainer.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                imageUploadContainer.classList.add('drag-over');
+            }
+            
+            function unhighlight() {
+                imageUploadContainer.classList.remove('drag-over');
+            }
+            
+            // Handle drop
+            imageUploadContainer.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+            
+            // Handle file select
+            function handleFileSelect(e) {
+                const files = e.target.files;
+                handleFiles(files);
+            }
+            
+            // Handle files
+            function handleFiles(files) {
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+
+                let validFiles = Array.from(files).filter(file => {
+                    if (!validTypes.includes(file.type)) {
+                        showToast(`❌ ${file.name} is not a valid image file. Only JPG, PNG, WEBP allowed.`, 'error');
+                        return false;
+                    }
+
+                    if (file.size > maxSize) {
+                        showToast(`❌ ${file.name} is too large. Max size is 5MB.`, 'error');
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                // limit to 5 images total
+                validFiles = validFiles.slice(0, 5);
+
+                const dataTransfer = new DataTransfer();
+
+                validFiles.forEach(file => {
+                    dataTransfer.items.add(file);
+                });
+
+                fileInput.files = dataTransfer.files;
+
+                updateImagePreview();
+            }
+            
+            // Update image preview
+            function updateImagePreview() {
+                imagePreview.innerHTML = '';
+                const files = fileInput.files;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'image-preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${i + 1}">
+                            <button type="button" class="remove-image" data-index="${i}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        imagePreview.appendChild(previewItem);
+                        
+                        // Remove button event
+                        previewItem.querySelector('.remove-image').addEventListener('click', function() {
+                            removeImage(parseInt(this.dataset.index));
+                        });
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            // Remove image
+            function removeImage(index) {
+                const dataTransfer = new DataTransfer();
+                const files = fileInput.files;
+                
+                for (let i = 0; i < files.length; i++) {
+                    if (i !== index) {
+                        dataTransfer.items.add(files[i]);
+                    }
+                }
+                
+                fileInput.files = dataTransfer.files;
+                updateImagePreview();
+            }
+            
+            // Form submission
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const token = localStorage.getItem("token");
+                const user = getCurrentUser();
+
+                if (!user || !['super_admin', 'admin'].includes(user.role)) {
+                    showToast("Admin only", "error");
+                    return;
+                }
+
+                const submitBtn = form.querySelector('.submit-btn');
+                submitBtn.disabled = true;
+                showLoading();
+
+                try {
+                    const formData = new FormData();
+
+                    // Basic fields
+                    formData.append("title", title.value.trim());
+                    formData.append("author", author.value.trim());
+                    formData.append("category", category.value);
+                    formData.append("description", description.value.trim());
+                    formData.append("price", price.value);
+                    formData.append("originalPrice", originalPrice.value || price.value);
+                    formData.append("discount", discount.value || 0);
+                    formData.append("stock", stock.value || 0);
+                    formData.append("isbn", isbn.value);
+                    formData.append("weight", weight.value || 500);
+                    formData.append("threshold", 5);
+
+                    // specs
+                    formData.append("publisher", publisher.value);
+                    formData.append("language", language.value);
+                    formData.append("pages", pages.value || 0);
+                    formData.append("size", size.value);
+
+                    // images
+                    const files = document.getElementById("images").files;
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append("images", files[i]);
+                    }
+
+                    const url = editBookId ? `/api/books/${editBookId}` : `/api/books`;
+                    const method = editBookId ? "PUT" : "POST";
+
+                    const response = await fetch(url, {
+                        method,
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) throw new Error(result.error || "Failed");
+
+                    showToast(editBookId ? "Book updated!" : "Book added!", "success");
+                    window.location.href = "inventory.html";
+
+                } catch (err) {
+                    console.error(err);
+                    showToast(err.message, "error");
+                } finally {
+                    submitBtn.disabled = false;
+                    hideLoading();
+                }
+            });
+            
+            // Helper function to show messages
+            function showMessage(message, type) {
+                const messageDiv = document.getElementById('statusMessage');
+                messageDiv.textContent = message;
+                messageDiv.className = `status-message ${type}`;
+                
+                if (!message) {
+                    messageDiv.style.display = 'none';
+                } else {
+                    messageDiv.style.display = 'block';
+                }
+            }
+            
+            // Auto-fill original price when price changes
+            const priceInput = document.getElementById('price');
+            const originalPriceInput = document.getElementById('originalPrice');
+            
+            priceInput.addEventListener('change', function() {
+                if (!originalPriceInput.value) {
+                    originalPriceInput.value = this.value;
+                }
+            });
+        }
+        
+        // Helper functions (reusing from admin-utils.js)
+        function showLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.className = `toast toast-${type}`;
+                toast.style.display = 'block';
+                
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function logoutUser() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        function getCurrentUser() {
+            try {
+                return JSON.parse(localStorage.getItem('currentUser'));
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        window.getCurrentUser = getCurrentUser;
+
+    </script>
+
+    <script>
+        const API_BASE = "/api/books"; // backend route
+        let editBookId = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+        const params = new URLSearchParams(window.location.search);
+        editBookId = params.get("id");
+
+        if (editBookId) {
+            document.querySelector(".add-book-header h1").innerHTML =
+            '<i class="fas fa-edit"></i> Edit Book';
+            document.querySelector(".submit-btn").innerHTML =
+            '<i class="fas fa-save"></i> Update Book';
+
+            loadBookForEdit(editBookId);
+        }
+        });
+
+        // Load book data for editing
+        async function loadBookForEdit(id) {
+            try {
+                const res = await fetch(`${API_BASE}/${id}`);
+                if (!res.ok) throw new Error("Failed to fetch book");
+
+                const book = await res.json();
+
+                // Fill form fields
+                document.getElementById("title").value = book.title || "";
+                document.getElementById("author").value = book.author || "";
+                document.getElementById("category").value = book.category || "";
+                document.getElementById("description").value = book.description || "";
+                document.getElementById("price").value = book.price || "";
+                document.getElementById("originalPrice").value = book.originalPrice || "";
+                document.getElementById("discount").value = book.discount || 0;
+                document.getElementById("stock").value = book.stock || 0;
+                document.getElementById("isbn").value = book.isbn || "";
+                document.getElementById("weight").value = book.weight || 500;
+
+                // specs
+                document.getElementById("publisher").value = book.specs?.publisher || "";
+                document.getElementById("language").value = book.specs?.language || "";
+                document.getElementById("pages").value = book.specs?.pages || "";
+                document.getElementById("size").value = book.specs?.size || "";
+
+                // ✅ SHOW EXISTING IMAGES PREVIEW
+                const imagePreview = document.getElementById("imagePreview");
+                imagePreview.innerHTML = "";
+
+                if (book.images && book.images.length > 0) {
+                    book.images.forEach((imgPath, index) => {
+                        const div = document.createElement("div");
+                        div.className = "image-preview-item";
+                        div.innerHTML = `
+                            <img src="/${imgPath}" alt="Book Image ${index + 1}" 
+                                onerror="this.src='/images/no.book.png'">
+                        `;
+                        imagePreview.appendChild(div);
+                    });
+                } else {
+                    imagePreview.innerHTML = `
+                        <p style="color:#777;">No images uploaded for this book.</p>
+                    `;
+                }
+
+            } catch (err) {
+                console.error("❌ Failed to load book:", err);
+                alert("Failed to load book for editing");
+            }
+        }
+    </script>
+
+</body>
+</html>

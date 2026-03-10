@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SHASTRAPRATHISTA - About Us</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* About-specific styles only */
+    
+    .about-hero {
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 80px 20px;
+      margin-bottom: 30px;
+    }
+    
+    .about-hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    
+    .about-hero p {
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .about-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+    
+    /* Trusts Header Section */
+    .trusts-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .trust-logo-item {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 300px;
+      margin: 10px;
+    }
+    
+    .trust-logo-left {
+      justify-content: flex-start;
+    }
+    
+    .trust-logo-right {
+      justify-content: flex-end;
+    }
+    
+    .trust-logo-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin-right: 20px;
+      border: 2px solid #d4af37;
+      padding: 5px;
+    }
+    
+    .trust-logo-right .trust-logo-img {
+      margin-right: 0;
+      margin-left: 20px;
+      order: 2;
+    }
+    
+    .trust-name {
+      font-size: 1.3rem;
+      color: #2c3e50;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    
+    .decorative-divider {
+      font-size: 2.5rem;
+      color: #d4af37;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 50%;
+      border: 2px solid #d4af37;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .about-intro {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .about-intro h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    
+    .about-intro p {
+      max-width: 800px;
+      margin: 0 auto 30px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .trusts-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 40px;
+      margin-bottom: 60px;
+    }
+    
+    .trust-card {
+      background: white;
+      border-radius: 10px;
+      padding: 35px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .trust-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    
+    .trust-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #d4af37;
+    }
+    
+    .trust-icon {
+      font-size: 2.5rem;
+      color: #d4af37;
+      margin-right: 20px;
+      width: 60px;
+      text-align: center;
+    }
+    
+    .trust-title {
+      color: #2c3e50;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    
+    .trust-description {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 25px;
+      font-size: 1.05rem;
+    }
+    
+    .services-section {
+      margin: 60px 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 40px;
+      font-size: 2rem;
+      position: relative;
+    }
+    
+    .section-title:after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background: #d4af37;
+      margin: 10px auto;
+    }
+    
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .service-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .service-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .service-image {
+      height: 200px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+    }
+    
+    .service-info {
+      padding: 25px;
+    }
+    
+    .service-info h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+    
+    .service-info p {
+      color: #7f8c8d;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    .service-list {
+      list-style: none;
+      margin-top: 15px;
+    }
+    
+    .service-list li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .service-list li i {
+      color: #d4af37;
+      margin-right: 10px;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+    
+    .temple-section {
+      background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://images.unsplash.com/photo-1582139329536-e7284fece509?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      padding: 60px 5%;
+      margin: 60px 0;
+      border-radius: 10px;
+    }
+    
+    .temple-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+    
+    .temple-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .temple-image {
+      height: 180px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d4af37;
+    }
+    
+    .temple-info {
+      padding: 20px;
+    }
+    
+    .temple-info h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .temple-info p {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .mission-section {
+      background: #f9f9f9;
+      padding: 60px 5%;
+      margin: 60px 0;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .mission-content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .mission-content h2 {
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+    
+    .mission-content p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      color: #555;
+      line-height: 1.8;
+    }
+    
+    .contact-section {
+      background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+      color: white;
+      padding: 60px 5%;
+      text-align: center;
+      border-radius: 8px;
+      margin: 60px 0;
+    }
+    
+    .contact-section h2 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    
+    .contact-section p {
+      max-width: 700px;
+      margin: 0 auto 30px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .btn-contact {
+      background: #d4af37;
+      color: #2c3e50;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-contact:hover {
+      background: #c19b2e;
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 1024px) {
+      .trusts-header {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+      
+      .trust-logo-item {
+        min-width: 100%;
+        margin: 15px 0;
+        justify-content: center !important;
+      }
+      
+      .trust-divider {
+        margin: 20px 0;
+        transform: rotate(90deg);
+      }
+      
+      .trust-logo-right .trust-logo-img {
+        margin-left: 0;
+        margin-right: 20px;
+        order: 0;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .about-hero {
+        padding: 60px 20px;
+      }
+      
+      .about-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .about-hero p {
+        font-size: 1rem;
+      }
+      
+      .about-intro h2 {
+        font-size: 1.8rem;
+      }
+      
+      .trusts-section {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .trust-card {
+        padding: 25px;
+      }
+      
+      .trust-title {
+        font-size: 1.5rem;
+      }
+      
+      .trust-logo-img {
+        width: 70px;
+        height: 70px;
+      }
+      
+      .trust-name {
+        font-size: 1.1rem;
+      }
+      
+      .services-grid, .temple-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .feature-card, .service-card, .temple-card {
+        padding: 20px;
+      }
+      
+      .mission-section {
+        padding: 40px 5%;
+        margin: 40px 0;
+      }
+      
+      .contact-section {
+        padding: 40px 5%;
+        margin: 40px 0;
+      }
+      
+      .contact-section h2 {
+        font-size: 1.8rem;
+      }
+      
+      .service-image, .temple-image {
+        height: 150px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .about-hero {
+        padding: 40px 15px;
+      }
+      
+      .about-hero h1 {
+        font-size: 1.8rem;
+      }
+      
+      .about-content {
+        padding: 0 15px 30px;
+      }
+      
+      .trust-card {
+        padding: 20px;
+      }
+      
+      .trust-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .trust-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+      
+      .trust-logo-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .trust-logo-img {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        margin-bottom: 15px;
+      }
+      
+      .btn-contact {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
+    .highlight {
+      color: #d4af37;
+      font-weight: 600;
+    }
+
+    /* HOME PAGE FOUNDER STYLE (MOVED TO ABOUT US) */
+
+    .home-founder-style {
+      margin: 60px 0;
+    }
+
+    .home-founder-style .founder-box {
+      display: flex;
+      flex-direction: row;              /* FORCE horizontal */
+      align-items: flex-start;
+      gap: 40px;
+
+      background: linear-gradient(135deg, #d6561b, #ff8c00);
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 40px;
+      color: #fff;
+    }
+
+    /* LEFT IMAGE */
+    .home-founder-style .founder-image {
+      flex-shrink: 0;
+    }
+
+    /* RIGHT CONTENT */
+    .home-founder-style .founder-text {
+      flex: 1;
+    }
+
+    .home-founder-style .founder-image img {
+      width: 180px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 50% / 45%;
+      border: 5px solid #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .home-founder-style .founder-text h2 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .home-founder-style .founder-text h4 {
+      font-size: 14px;
+      margin-bottom: 15px;
+      font-style: italic;
+      color: #f1c40f;
+    }
+
+    .home-founder-style .founder-text p {
+      font-size: 14px;
+      line-height: 1.7;
+      text-align: justify;
+      background: rgba(0,0,0,0.2);
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 3px solid #f1c40f;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .home-founder-style .founder-box {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Load Shared Header -->
+  <div id="header-container"></div>
+
+  <section class="home-founder-style">
+    <!-- Founder -->
+    <div class="founder-box">
+      <div class="founder-image">
+        <img src="image/founder.png" alt="Founder">
+      </div>
+      <div class="founder-text">
+        <h2>SHRI P.A.C. RAMASAMY RAJA</h2>
+        <h4>Founder (1894 – 1962)</h4>
+        <p>
+          On April 24, 1894, when a son was born to Poosapadi Chinnaiah Raja and
+          Smt. Chittammal, there was great jubilation in the family.
+          Sri Ramasamy Raja (PACR) dedicated his life to dharmic service,
+          temple development, education, and cultural preservation.
+        </p>
+      </div>
+    </div>
+
+    <!-- Chairman -->
+    <div class="founder-box">
+      <div class="founder-image">
+        <img src="image/chairman.png" alt="Chairman">
+      </div>
+      <div class="founder-text">
+        <h2>SHRI P.R. RAMASUBRAMANIAH RAJAH</h2>
+        <h4>Chairman – Gurubhaktamani</h4>
+        <p>
+          Continuing the sacred legacy of Shastraprathista, the Chairman guides
+          all institutions with a balance of traditional values and modern vision,
+          ensuring continuity of dharma and service.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- About Hero Section -->
+  <section class="about-hero">
+    <h1>Our Trusts & Legacy</h1>
+    <p>Preserving and promoting spiritual knowledge, cultural heritage, and temple traditions</p>
+  </section>
+
+  <!-- About Content -->
+  <section class="about-content">
+    
+    <!-- Trusts Header Section -->
+    <div class="trusts-header">
+      <div class="trust-logo-item trust-logo-left">
+        <img src="image/logo.jpg" alt="Shastraprathista Logo" class="trust-logo-img" onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2280%22%20height%3D%2280%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23f7f7f7%22%3E%3C%2Frect%3E%3Ctext%20x%3D%2220%22%20y%3D%2245%22%20font-size%3D%2214%22%20fill%3D%22%23999%22%3EBook%20Logo%3C%2Ftext%3E%3C%2Fsvg%3E'">
+        <div class="trust-name">Smt. Lingammal Ramaraju<br>Shastraprathista Trust</div>
+      </div>
+      
+      <div class="trust-divider">
+        <div class="decorative-divider">✦</div>
+      </div>
+      
+      <div class="trust-logo-item trust-logo-right">
+        <img src="image/sethuramammal.jpg" alt="PACR Charities Logo" class="trust-logo-img" onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2280%22%20height%3D%2280%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23f7f7f7%22%3E%3C%2Frect%3E%3Ctext%20x%3D%2220%22%20y%3D%2245%22%20font-size%3D%2214%22%20fill%3D%22%23999%22%3ETemple%20Logo%3C%2Ftext%3E%3C%2Fsvg%3E'">
+        <div class="trust-name">PACR Sethuramammal<br>Charities</div>
+      </div>
+    </div>
+    
+    <div class="about-intro">
+      <h2>Our Dual Heritage</h2>
+      <p>We operate two distinct trusts dedicated to preserving and promoting India's rich spiritual, cultural, and religious heritage. Each trust serves specific aspects of our mission while complementing each other's work.</p>
+    </div>
+    
+    <!-- Trusts Section -->
+    <div class="trusts-section">
+      <!-- Trust 1 -->
+      <div class="trust-card">
+        <div class="trust-header">
+          <div class="trust-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <h2 class="trust-title">Smt. Lingammal Ramaraju Shastraprathista Trust</h2>
+        </div>
+        <p class="trust-description">
+          Established in 1995, this trust focuses on the preservation and dissemination of spiritual knowledge through publications, library services, and cultural education. Our mission is to make ancient wisdom accessible to modern seekers while nurturing traditional arts.
+        </p>
+        
+        <div class="service-list">
+          <h3 style="color: #2c3e50; margin-bottom: 15px;">Key Activities:</h3>
+          <li><i class="fas fa-check"></i> <strong>Publication of Spiritual Books:</strong> Vedic texts, Upanishads, commentaries, and Bhakti literature</li>
+          <li><i class="fas fa-check"></i> <strong>Library Services:</strong> Rare manuscripts collection and research resources</li>
+          <li><i class="fas fa-check"></i> <strong>PAC Ramasamy Raja Memorial Music School:</strong> Carnatic music and Bharatanatyam classes</li>
+          <li><i class="fas fa-check"></i> <strong>Sri Gurubhaktamani Meeting Halls:</strong> Spiritual discourses, cultural events, and ceremonies</li>
+        </div>
+      </div>
+      
+      <!-- Trust 2 -->
+      <div class="trust-card">
+        <div class="trust-header">
+          <div class="trust-icon">
+            <i class="fas fa-temple"></i>
+          </div>
+          <h2 class="trust-title">PACR Sethuramammal Charities</h2>
+        </div>
+        <p class="trust-description">
+          This trust is dedicated to maintaining sacred temple spaces and preserving Vedic traditions through systematic education. We ensure that ancient rituals and Vedic knowledge continue to thrive for future generations.
+        </p>
+        
+        <div class="service-list">
+          <h3 style="color: #2c3e50; margin-bottom: 15px;">Key Activities:</h3>
+          <li><i class="fas fa-check"></i> <strong>Temple Maintenance & Worship:</strong> Three major temples under our care</li>
+          <li><i class="fas fa-check"></i> <strong>Vedapadasala:</strong> Traditional Vedic education in Rigveda and Sukla Yajurveda</li>
+          <li><i class="fas fa-check"></i> <strong>Religious Ceremonies:</strong> Daily poojas, festivals, and special rituals</li>
+          <li><i class="fas fa-check"></i> <strong>Community Service:</strong> Supporting devotees and preserving temple traditions</li>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Shastraprathista Trust Services -->
+    <div class="services-section">
+      <h2 class="section-title">Smt. Lingammal Ramaraju Shastraprathista Trust Services</h2>
+      
+      <div class="services-grid">
+        <!-- Books Service -->
+        <div class="service-card">
+          <div class="service-image">
+            <i class="fas fa-book-open fa-4x"></i>
+          </div>
+          <div class="service-info">
+            <h3>Spiritual Books & Publications</h3>
+            <p>We publish authentic spiritual literature to preserve and disseminate ancient wisdom:</p>
+            <ul class="service-list">
+              <li><i class="fas fa-check"></i> Vedic texts and Upanishads</li>
+              <li><i class="fas fa-check"></i> Commentaries by renowned scholars</li>
+              <li><i class="fas fa-check"></i> Bhakti literature and stotras</li>
+              <li><i class="fas fa-check"></i> Philosophical works</li>
+              <li><i class="fas fa-check"></i> Children's spiritual books</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Library Service -->
+        <div class="service-card">
+          <div class="service-image">
+            <i class="fas fa-book-reader fa-4x"></i>
+          </div>
+          <div class="service-info">
+            <h3>Library & Research Resources</h3>
+            <p>Our library provides valuable resources for researchers and devotees:</p>
+            <ul class="service-list">
+              <li><i class="fas fa-check"></i> Rare manuscripts collection</li>
+              <li><i class="fas fa-check"></i> Reference section for scholars</li>
+              <li><i class="fas fa-check"></i> Reading rooms with peaceful ambiance</li>
+              <li><i class="fas fa-check"></i> Digital archives of ancient texts</li>
+              <li><i class="fas fa-check"></i> Membership options available</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Music Service -->
+        <div class="service-card">
+          <div class="service-image">
+            <i class="fas fa-music fa-4x"></i>
+          </div>
+          <div class="service-info">
+            <h3>PAC Ramasamy Raja Memorial Music School</h3>
+            <p>We offer traditional Carnatic music and dance classes:</p>
+            <ul class="service-list">
+              <li><i class="fas fa-check"></i> Vocal - Carnatic classical</li>
+              <li><i class="fas fa-check"></i> Veena - Divine string instrument</li>
+              <li><i class="fas fa-check"></i> Violin - Western instrument with Indian soul</li>
+              <li><i class="fas fa-check"></i> Mruthangam - Rhythmic foundation</li>
+              <li><i class="fas fa-check"></i> Keyboard - Modern approach to classical</li>
+              <li><i class="fas fa-check"></i> Bharatanatyam - Classical dance form</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PACR Sethuramammal Charities Section -->
+    <div class="temple-section">
+      <h2 class="section-title">PACR Sethuramammal Charities - Temples & Vedic Education</h2>
+      
+      <div class="trust-description" style="text-align: center; margin-bottom: 30px;">
+        <p>We maintain three sacred temples and operate a Vedapadasala to preserve Vedic traditions and provide spiritual nourishment to the community.</p>
+      </div>
+      
+      <div class="temple-grid">
+        <!-- Temple 1 -->
+        <div class="temple-card">
+          <div class="temple-image">
+            <i class="fas fa-temple fa-4x"></i>
+          </div>
+          <div class="temple-info">
+            <h4>Sringeri Sri Sharadambal Temple</h4>
+            <p>Dedicated to Goddess Sharadambal, the presiding deity of Sringeri Sharada Peetham. Regular poojas, abhishekams, and special festivals are conducted throughout the year.</p>
+          </div>
+        </div>
+        
+        <!-- Temple 2 -->
+        <div class="temple-card">
+          <div class="temple-image">
+            <i class="fas fa-temple fa-4x"></i>
+          </div>
+          <div class="temple-info">
+            <h4>Arulmigu Sri Meenakshi Sundareswarar Temple</h4>
+            <p>Dedicated to Lord Sundareswarar (Shiva) and Goddess Meenakshi (Parvati). This temple follows traditional Agama rituals and celebrates all major Shaivite festivals.</p>
+          </div>
+        </div>
+        
+        <!-- Temple 3 -->
+        <div class="temple-card">
+          <div class="temple-image">
+            <i class="fas fa-temple fa-4x"></i>
+          </div>
+          <div class="temple-info">
+            <h4>Sri Ramalingaswamy Temple</h4>
+            <p>This sacred temple is dedicated to Lord Shiva as Ramalingaswamy, established as a replica of the renowned Rameswaram Temple. The temple enshrines the sacred Ramalingam (Shiva Linga) for devotees to worship without traveling to Rameswaram.</p>
+            <ul class="service-list" style="margin-top: 10px;">
+              <li><i class="fas fa-water"></i> <strong>Special Rituals:</strong> Pradosham, Maha Shivaratri, and monthly abhishekams</li>
+              <li><i class="fas fa-mountain"></i> <strong>Rameswaram Tradition:</strong> Follows the same Agama rituals as the original temple</li>
+              <li><i class="fas fa-hands-praying"></i> <strong>Worship:</strong> Rama-Linga puja and special archana services</li>
+              <li><i class="fas fa-calendar-alt"></i> <strong>Festivals:</strong> All major Shaivite festivals celebrated</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Vedapadasala -->
+        <div class="temple-card">
+          <div class="temple-image">
+            <i class="fas fa-graduation-cap fa-4x"></i>
+          </div>
+          <div class="temple-info">
+            <h4>Vedapadasala - Vedic School</h4>
+            <p>We run a traditional Vedapadasala offering systematic education in:</p>
+            <ul class="service-list" style="margin-top: 10px;">
+              <li><i class="fas fa-book"></i> <strong>Rigveda:</strong> Complete chanting with proper pronunciation and rhythm</li>
+              <li><i class="fas fa-book"></i> <strong>Sukla Yajurveda:</strong> Ritual procedures and mantras for ceremonies</li>
+              <li><i class="fas fa-users"></i> <strong>Gurukula System:</strong> Residential education with personal guidance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Combined Mission Section -->
+    <div class="mission-section">
+      <div class="mission-content">
+        <h2>Our Unified Mission</h2>
+        <p>Through our two trusts, we strive to create a comprehensive ecosystem for spiritual growth, cultural preservation, and religious continuity. Our mission is threefold:</p>
+        <p><span class="highlight">Preserve:</span> Safeguarding ancient texts, Vedic knowledge, temple traditions, and classical arts for future generations.</p>
+        <p><span class="highlight">Promote:</span> Making spiritual wisdom accessible through publications, education, and community programs.</p>
+        <p><span class="highlight">Propagate:</span> Nurturing new generations of scholars, artists, priests, and devotees to carry forward our rich heritage.</p>
+      </div>
+    </div>
+    
+    <!-- Contact Section -->
+    <div class="contact-section">
+      <h2>Connect With Us</h2>
+      <p>We welcome you to visit our trusts, explore our resources, participate in temple activities, or enroll in our educational programs. For more information about our services, publications, temple activities, or Vedic classes, please contact us.</p>
+      <a href="#" class="btn-contact">Contact Us</a>
+    </div>
+  </section>
+
+  <!-- Load Shared Footer -->
+  <div id="footer-container"></div>
+
+  <!-- Common JS -->
+  <script src="common.js"></script>
+
+  <script>
+    // Load shared components
+    function loadSharedComponents() {
+      // Load header
+      fetch('header.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+          // Initialize common functionality after loading header
+          initCommon();
+        })
+        .catch(error => console.error('Error loading header:', error));
+      
+      // Load footer
+      fetch('footer.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading footer:', error));
+    }
+
+    // Setup about page interactions
+    function setupAboutInteractions() {
+      // Contact button functionality
+      const contactButton = document.querySelector('.btn-contact');
+      if (contactButton) {
+        contactButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          const user = getCurrentUser();
+          if (!user) {
+            showToast("Please log in to contact us", "error");
+            return;
+          }
+          showToast("Contact form will open in a real implementation", "info");
+          // In real implementation: window.location.href = "contact.html";
+        });
+      }
+      
+      // Highlight current page in menu
+      const currentPage = window.location.pathname.split('/').pop();
+      if (currentPage === 'aboutus.html') {
+        const aboutLink = document.getElementById('menu-about');
+        if (aboutLink) {
+          aboutLink.classList.add('active');
+        }
+      }
+    }
+    
+    // Helper function to get current user
+    function getCurrentUser() {
+      return JSON.parse(localStorage.getItem("currentUser")) || null;
+    }
+    
+    // Helper function to show toast
+    function showToast(message, type = 'info') {
+      if (typeof window.showToast === 'function') {
+        window.showToast(message, type);
+      } else {
+        alert(message);
+      }
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      loadSharedComponents();
+      setTimeout(() => {
+        setupAboutInteractions();
+      }, 100);
+    });
+  </script>
+
+</body>
+</html>

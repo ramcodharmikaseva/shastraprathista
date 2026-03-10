@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Order Details - SHASTRAPRATHISTA BOOKS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link rel="stylesheet" href="common.css">
+<style>
+/* Keep your existing styles, but fix the typo in status-shipped */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+}
+
+header {
+  background: #8B0000;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.back-btn {
+  color: white;
+  text-decoration: none;
+  border: 1px solid white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #8B0000;
+  font-size: 1.1rem;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.order-item {
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.address p {
+  margin: 5px 0;
+  line-height: 1.4;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 5px 0;
+}
+
+.total-row.grand-total {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #8B0000;
+  border-top: 2px solid #eee;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 12px 20px;
+  background: #8B0000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn:hover {
+  background: #a00000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 0, 0, 0.2);
+}
+
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn i {
+  font-size: 1rem;
+}
+
+/* FIXED: Changed Status-shipped to status-shipped (lowercase 's') */
+.status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-processing { background: #fff3cd; color: #856404; }
+.status-confirmed { background: #d1ecf1; color: #0c5460; }
+.status-shipped { background: #d4edda; color: #155724; } /* FIXED: lowercase 's' */
+.status-delivered { background: #c3e6cb; color: #155724; }
+.status-cancelled { background: #f8d7da; color: #721c24; }
+.status-pending { background: #fff3cd; color: #856404; }
+
+#loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+#loading i {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #8B0000;
+}
+
+#errorBox {
+  text-align: center;
+  padding: 40px;
+  color: #dc3545;
+  background: #f8d7da;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+#errorBox i {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+    margin: 10px auto;
+  }
+  
+  .card {
+    padding: 15px;
+  }
+  
+  header {
+    padding: 12px 15px;
+  }
+  
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h3><i class="fas fa-receipt"></i> Order Details</h3>
+  <a href="profile.html" class="back-btn"><i class="fas fa-arrow-left"></i> My Orders</a>
+</header>
+
+<div class="container">
+
+<div id="loading" class="card">
+  <i class="fas fa-spinner fa-spin"></i>
+  <p>Loading order details...</p>
+</div>
+
+<div id="errorBox" style="display:none;"></div>
+
+<div id="orderBox" style="display:none;">
+
+  <div class="card">
+    <div class="section-title">Order Information</div>
+    <p><strong>Order ID:</strong> <span id="orderIdText" class="order-id"></span></p>
+    <p><strong>Order Date:</strong> <span id="orderDateText"></span></p>
+    <p><strong>Status:</strong> <span id="orderStatusText" class="status"></span></p>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Ordered Items</div>
+    <div id="orderItems"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Shipping Address</div>
+    <div id="shippingAddress" class="address"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Billing Address</div>
+    <div id="billingAddress" class="address"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Order Summary</div>
+    <div id="orderTotals"></div>
+  </div>
+
+  <div class="card">
+    <button class="btn" id="downloadBtn">
+      <i class="fas fa-download"></i> Download Invoice (PDF)
+    </button>
+    <p style="text-align: center; margin-top: 10px; font-size: 0.85rem; color: #666;">
+      <i class="fas fa-info-circle"></i> Generate PDF invoice
+    </p>
+  </div>
+
+</div>
+
+</div>
+
+<!-- Load jsPDF library FIRST -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Load your refactored profile modules -->
+<script src="js/profile/profile-api.js"></script>
+<script src="js/profile/profile-utils.js"></script>
+<script src="js/profile/profile-invoice.js"></script>
+
+<script>
+const API_BASE = window.location.origin + "/api";
+let currentOrder = null;
+let currentOrderId = null;
+
+function getOrderIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  // Try multiple possible parameter names
+  return params.get("orderId") || params.get("id") || params.get("order");
+}
+
+function showError(message) {
+  document.getElementById("loading").style.display = "none";
+  const errorBox = document.getElementById("errorBox");
+  errorBox.style.display = "block";
+  errorBox.innerHTML = `
+    <i class="fas fa-exclamation-triangle"></i>
+    <h3>Error Loading Order</h3>
+    <p>${message}</p>
+    <button class="btn" onclick="window.location.href='profile.html'" style="margin-top: 15px; width: auto; padding: 8px 20px;">
+      <i class="fas fa-arrow-left"></i> Back to Orders
+    </button>
+  `;
+}
+
+function showSuccess(message) {
+  // You can add a toast notification here if needed
+  console.log('Success:', message);
+}
+
+function checkAuth() {
+  const token = localStorage.getItem("token");
+  const currentUser = localStorage.getItem("currentUser");
+  
+  if (!token || !currentUser) {
+    showError("Please login to view order details");
+    setTimeout(() => {
+      window.location.href = "login.html?redirect=" + encodeURIComponent(window.location.href);
+    }, 2000);
+    return false;
+  }
+  return true;
+}
+
+async function loadOrderDetails() {
+  if (!checkAuth()) return;
+  
+  currentOrderId = getOrderIdFromURL();
+  
+  if (!currentOrderId) {
+    showError("Order ID not found in URL");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("token");
+    console.log('🔍 Fetching order details for:', currentOrderId);
+    
+    const response = await fetch(`${API_BASE}/profile/orders/${currentOrderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("currentUser");
+      showError("Session expired. Please login again.");
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 2000);
+      return;
+    }
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("Order not found or has been deleted");
+      }
+      throw new Error(`Failed to load order: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || "Order not found");
+    }
+
+    // Normalize order structure using ProfileUtils if available
+    currentOrder = window.ProfileUtils ? 
+                   window.ProfileUtils.normalizeOrderStructure(data.order) : 
+                   data.order;
+    
+    console.log('✅ Order loaded:', currentOrder);
+    renderOrder(currentOrder);
+
+  } catch (error) {
+    console.error("Error loading order:", error);
+    showError(error.message || "Failed to load order details");
+  }
+}
+
+function renderOrder(order) {
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("orderBox").style.display = "block";
+
+  // Order Info
+  const orderId = order.orderId || order.id || "N/A";
+  document.getElementById("orderIdText").textContent = orderId;
+  
+  // Format order date
+  const orderDate = new Date(order.createdAt || order.date || order.orderDate || Date.now());
+  const formattedDate = orderDate.toLocaleDateString("en-IN", {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  document.getElementById("orderDateText").textContent = formattedDate;
+
+  // Status with proper class
+  const status = (order.status || 'processing').toLowerCase();
+  const statusElement = document.getElementById("orderStatusText");
+  statusElement.textContent = status.toUpperCase();
+  statusElement.className = `status status-${status}`;
+
+  // Items
+  const itemsContainer = document.getElementById("orderItems");
+  if (order.items && order.items.length > 0) {
+    itemsContainer.innerHTML = order.items.map((item, index) => {
+      const price = item.price || item.sellingPrice || 0;
+      const originalPrice = item.originalPrice || item.mrp || price;
+      const quantity = item.quantity || 1;
+      const total = price * quantity;
+      const savings = originalPrice > price ? ((originalPrice - price) * quantity) : 0;
+      
+      return `
+      <div class="order-item">
+        <div style="flex: 1;">
+          <strong>${item.title || `Item ${index + 1}`}</strong>
+          <div style="font-size: 0.9rem; color: #666; margin-top: 3px;">
+            Qty: ${quantity} × ₹${price.toFixed(2)}
+            ${savings > 0 ? `<br><span style="color: #28a745; font-size: 0.85rem;">
+              <i class="fas fa-tag"></i> Save ₹${savings.toFixed(2)}
+            </span>` : ''}
+          </div>
+        </div>
+        <div style="font-weight: bold; min-width: 80px; text-align: right;">
+          ₹${total.toFixed(2)}
+        </div>
+      </div>
+    `}).join("");
+  } else {
+    itemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No items found</p>';
+  }
+
+  // Addresses
+  document.getElementById("shippingAddress").innerHTML = formatAddress(order.shippingAddress);
+  document.getElementById("billingAddress").innerHTML = formatAddress(order.billingAddress);
+
+  // Totals - using calculateOrderTotals if available
+  const totalsContainer = document.getElementById("orderTotals");
+  let totals = {};
+  
+  if (window.ProfileUtils && window.ProfileUtils.calculateOrderTotals) {
+    totals = window.ProfileUtils.calculateOrderTotals(order);
+  } else {
+    // Fallback calculation
+    const items = order.items || [];
+    const originalSubtotal = items.reduce((sum, item) => {
+      const mrp = item.originalPrice || item.mrp || item.price || 0;
+      const qty = item.quantity || 1;
+      return sum + (mrp * qty);
+    }, 0);
+    
+    const netSubtotal = items.reduce((sum, item) => {
+      const price = item.price || item.sellingPrice || 0;
+      const qty = item.quantity || 1;
+      return sum + (price * qty);
+    }, 0);
+    
+    totals = {
+      originalSubtotal: originalSubtotal,
+      netSubtotal: netSubtotal,
+      discount: Math.max(0, originalSubtotal - netSubtotal),
+      shipping: order.totals?.shipping || order.shipping || 0,
+      total: order.totals?.total || order.total || (netSubtotal + (order.totals?.shipping || order.shipping || 0))
+    };
+  }
+  
+  totalsContainer.innerHTML = `
+    <div class="total-row"><span>Original Subtotal:</span><span>₹${totals.originalSubtotal.toFixed(2)}</span></div>
+    ${totals.discount > 0 ? `<div class="total-row"><span>Discount:</span><span style="color: #28a745;">-₹${totals.discount.toFixed(2)}</span></div>` : ''}
+    <div class="total-row"><span>Net Subtotal:</span><span>₹${totals.netSubtotal.toFixed(2)}</span></div>
+    <div class="total-row"><span>Shipping:</span><span>₹${totals.shipping.toFixed(2)}</span></div>
+    <div class="total-row grand-total"><span>Total Amount:</span><span>₹${totals.total.toFixed(2)}</span></div>
+  `;
+  
+  // Setup download button
+  const downloadBtn = document.getElementById("downloadBtn");
+  downloadBtn.onclick = () => downloadOrderInvoice(orderId);
+}
+
+function formatAddress(addr = {}) {
+  if (!addr || Object.keys(addr).length === 0) {
+    return '<p style="color: #999; font-style: italic; padding: 10px;">No address information available</p>';
+  }
+  
+  const name = addr.fullName || addr.name || "Not provided";
+  const address = addr.addressLine1 || addr.address || "";
+  const city = addr.city || "";
+  const district = addr.district || "";
+  const pincode = addr.pincode || "";
+  const state = addr.state || "";
+  const country = addr.country || "India";
+  const phone = addr.phone || "Not provided";
+  
+  let html = `<p><strong>${name}</strong></p>`;
+  if (address) html += `<p>${address}</p>`;
+  
+  const locationParts = [];
+  if (city) locationParts.push(city);
+  if (district) locationParts.push(district);
+  if (pincode) locationParts.push(pincode);
+  
+  if (locationParts.length > 0) {
+    html += `<p>${locationParts.join(', ')}</p>`;
+  }
+  
+  const regionParts = [];
+  if (state) regionParts.push(state);
+  if (country && country !== "India") regionParts.push(country);
+  
+  if (regionParts.length > 0) {
+    html += `<p>${regionParts.join(', ')}</p>`;
+  }
+  
+  html += `<p><i class="fas fa-phone"></i> ${phone}</p>`;
+  
+  return html;
+}
+
+async function downloadOrderInvoice(orderId) {
+  if (!orderId) {
+    alert("No order selected to download invoice");
+    return;
+  }
+
+  const button = document.getElementById("downloadBtn");
+  const originalText = button.innerHTML;
+  const originalDisabled = button.disabled;
+  
+  try {
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+    button.disabled = true;
+    
+    console.log('📄 Starting invoice download for:', orderId);
+    
+    // Check if ProfileInvoice is available
+    if (window.ProfileInvoice && window.ProfileInvoice.downloadInvoice) {
+      console.log('✅ Using ProfileInvoice module');
+      await window.ProfileInvoice.downloadInvoice(orderId);
+    } else if (window.downloadInvoice) {
+      // Fallback to global downloadInvoice function
+      console.log('⚠️ Using global downloadInvoice function');
+      await window.downloadInvoice(orderId);
+    } else {
+      // Ultimate fallback
+      console.log('⚠️ Using direct API fallback');
+      await downloadInvoiceFallback(orderId);
+    }
+    
+    console.log('✅ Invoice download completed');
+    
+  } catch (error) {
+    console.error("❌ Error downloading invoice:", error);
+    alert("Failed to generate PDF invoice: " + (error.message || "Unknown error"));
+  } finally {
+    button.innerHTML = originalText;
+    button.disabled = originalDisabled;
+  }
+}
+
+async function downloadInvoiceFallback(orderId) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Please login to download invoice");
+
+  console.log('🔍 Fetching order for invoice:', orderId);
+  
+  const response = await fetch(`${API_BASE}/profile/orders/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to fetch order: ${response.status} - ${errorText}`);
+  }
+
+  const result = await response.json();
+  if (!result.success) throw new Error(result.message || 'Failed to load order');
+
+  // Load jsPDF if not already loaded
+  if (typeof window.jspdf === 'undefined') {
+    await loadJSPDFLibrary();
+  }
+
+  // Get order data
+  const order = result.order || result;
+  
+  // Simple PDF generation as fallback
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Basic invoice
+  doc.setFontSize(20);
+  doc.text("INVOICE", 105, 20, { align: 'center' });
+  
+  doc.setFontSize(12);
+  doc.text(`Order ID: ${order.orderId || order.id || orderId}`, 20, 40);
+  doc.text(`Date: ${new Date(order.date || order.createdAt).toLocaleDateString()}`, 20, 50);
+  doc.text(`Customer: ${order.contact?.name || order.billingAddress?.name || ''}`, 20, 60);
+  doc.text(`Total: ₹${order.totals?.total || order.total || 0}`, 20, 70);
+  
+  // Save with proper filename
+  const fileName = `Invoice_${order.orderId || order.id || orderId}.pdf`;
+  doc.save(fileName);
+  
+  return fileName;
+}
+
+function loadJSPDFLibrary() {
+  return new Promise((resolve, reject) => {
+    if (typeof window.jspdf !== "undefined") {
+      resolve();
+      return;
+    }
+    
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => {
+      console.log('✅ jsPDF loaded successfully');
+      resolve();
+    };
+    script.onerror = (error) => {
+      console.error('❌ Failed to load jsPDF:', error);
+      reject(new Error('Failed to load PDF library'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+// Initialize when page loads
+document.addEventListener("DOMContentLoaded", function() {
+  console.log('🚀 Order Details page loaded');
+  
+  // Check if we're coming from another page with order data
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get('orderId') || urlParams.get('id');
+  
+  if (!orderId) {
+    showError("No order ID provided in URL");
+    return;
+  }
+  
+  // Start loading order details
+  loadOrderDetails();
+  
+  // Add event listener for Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      window.location.href = "profile.html";
+    }
+    // Ctrl/Cmd + D to download invoice
+    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+      e.preventDefault();
+      const orderId = getOrderIdFromURL();
+      if (orderId) {
+        downloadOrderInvoice(orderId);
+      }
+    }
+  });
+});
+</script>
+
+</body>
+</html>

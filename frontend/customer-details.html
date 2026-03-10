@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Details - SHASTRAPRATHISTA BOOKS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="customer-details.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo-title">
+      <a href="index.html" class="home-link">
+        <img src="image/logo.jpg" alt="Shastrapratista Logo" class="logo" />
+        <span class="site-name">Smt Lingammal Ramaraju Shastrapratista Trust</span>
+      </a>
+    </div>
+    <div class="nav-right">
+      <nav class="header-links"> 
+        <a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>
+        <a href="#" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Menu -->
+  <nav class="main-menu">
+    <ul id="menu">
+      <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="all_book_grid.html"><i class="fas fa-book"></i> Books</a></li>
+      <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+      <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Customer Profile Header -->
+    <div class="customer-profile-header">
+      <a href="admin.html#customers" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Customers
+      </a>
+      
+      <div style="display: flex; align-items: center;">
+        <div class="customer-avatar-large" id="customer-avatar">U</div>
+        <div>
+          <h1 id="customer-name">Loading Customer...</h1>
+          <p id="customer-contact">Loading contact information...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Stats -->
+    <div class="customer-stats">
+      <div class="stat-card">
+        <div class="stat-value" id="total-orders">0</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-spent">₹0</div>
+        <div class="stat-label">Total Spent</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avg-order">₹0</div>
+        <div class="stat-label">Average Order</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="customer-since">-</div>
+        <div class="stat-label">Customer Since</div>
+      </div>
+    </div>
+
+    <!-- Customer Actions -->
+    <div class="customer-actions">
+      <button class="btn btn-primary" onclick="contactCustomer()">
+        <i class="fas fa-envelope"></i> Send Email
+      </button>
+      <button class="btn btn-info" onclick="goToCustomerOrders()">
+        <i class="fas fa-shopping-cart"></i> View All Orders
+      </button>
+      <button class="btn btn-warning" onclick="addCustomerNote()">
+        <i class="fas fa-sticky-note"></i> Add Note
+      </button>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="customer-orders">
+      <h3><i class="fas fa-info-circle"></i> Customer Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Full Name:</label>
+          <span id="info-name">-</span>
+        </div>
+        <div class="info-item">
+          <label>Email:</label>
+          <span id="info-email">-</span>
+        </div>
+        <div class="info-item">
+          <label>Phone:</label>
+          <span id="info-phone">-</span>
+        </div>
+        <div class="info-item">
+          <label>Customer ID:</label>
+          <span id="info-id">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Management Section - Visible only to admins -->
+    <div class="customer-orders" id="role-management-section">
+      <div class="section-header">
+        <h3><i class="fas fa-user-cog"></i> User Role Management</h3>
+        <div class="role-badge" id="current-role-badge">
+          <i class="fas fa-user-tag"></i> Loading role...
+        </div>
+      </div>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Current Role:</label>
+          <span id="current-role">Loading...</span>
+        </div>
+        <div class="info-item">
+          <label>Account Status:</label>
+          <span id="account-status">Active</span>
+        </div>
+        <div class="info-item">
+          <label>Permissions:</label>
+          <span id="user-permissions">Loading...</span>
+        </div>
+        <div class="info-item">
+          <label>Last Login:</label>
+          <span id="last-login">-</span>
+        </div>
+      </div>
+      
+      <!-- Role Change Form -->
+      <div class="role-change-form" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+        <h4 style="margin-bottom: 15px;"><i class="fas fa-user-edit"></i> Change User Role</h4>
+        
+        <div class="form-group">
+          <label for="new-role-select">Select New Role:</label>
+          <select id="new-role-select" class="form-control" onchange="checkRolePermissions()">
+            <option value="">-- Select Role --</option>
+            <option value="user">👤 User (Regular Customer)</option>
+            <option value="music-admin">🎵 Music Admin</option>
+            <option value="hall-admin">🏛️ Hall Admin</option>
+            <option value="admin">👑 Administrator</option>
+            <option value="super_admin">👑 Super Administrator</option>
+          </select>
+          <small class="form-text text-muted" id="role-description"></small>
+        </div>
+        
+        <div class="form-group">
+          <label for="role-change-reason">Reason for Change:</label>
+          <textarea id="role-change-reason" class="form-control" rows="2" 
+                    placeholder="Brief reason for this role change (e.g., 'Promoted to Music Admin')"></textarea>
+        </div>
+        
+        <!-- Permissions Preview -->
+        <div class="permissions-preview" id="permissions-preview" 
+            style="display: none; margin: 15px 0; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #007bff;">
+          <h6 style="margin-bottom: 10px;"><i class="fas fa-shield-alt"></i> New Role Permissions:</h6>
+          <div id="permissions-list"></div>
+        </div>
+        
+        <!-- Super Admin Warning -->
+        <div class="alert alert-warning" id="super-admin-warning" 
+            style="display: none; margin: 15px 0; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <strong>Super Admin Privileges:</strong> Only current Super Admins can assign this role. 
+          This grants full system access including user management.
+        </div>
+        
+        <!-- Admin Warning -->
+        <div class="alert alert-info" id="admin-warning" 
+            style="display: none; margin: 15px 0; padding: 12px; background: #d1ecf1; border-left: 4px solid #17a2b8;">
+          <i class="fas fa-info-circle"></i>
+          <strong>Admin Privileges:</strong> Grants full administrative access except for user role management.
+        </div>
+        
+        <div class="form-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn btn-primary" onclick="updateUserRole()" id="update-role-btn">
+            <i class="fas fa-save"></i> Update User Role
+          </button>
+          <button class="btn btn-outline" onclick="resetRoleForm()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="customer-orders">
+      <div class="section-header">
+        <h3><i class="fas fa-clock"></i> Recent Orders</h3>
+        <button class="btn btn-outline" onclick="goToCustomerOrders()">
+          View All Orders
+        </button>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="customer-orders-body">
+            <tr>
+              <td colspan="6" style="text-align:center; padding:20px; color:#888;">
+                Loading orders...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Customer Notes -->
+    <div class="customer-orders">
+      <div class="section-header">
+        <h3><i class="fas fa-sticky-note"></i> Customer Notes</h3>
+        <button class="btn btn-primary" onclick="addCustomerNote()">
+          <i class="fas fa-plus"></i> Add Note
+        </button>
+      </div>
+      <div id="customer-notes">
+        <div style="text-align:center; padding:20px; color:#888;">
+          No notes added yet
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin-utils.js"></script>
+  <script src="admin-data.js"></script>
+
+  <script>
+    // Authentication check for customer-details.html
+    function checkAdminAccess() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      console.log('🔐 Customer Details Auth Check:', {
+        hasToken: !!token,
+        userRole: user.role,
+        userEmail: user.email
+      });
+      
+      if (!token) {
+        alert('Session expired. Please login again.');
+        window.location.href = 'login.html';
+        return false;
+      }
+      
+      // Allow only admin and super_admin to access customer details
+      const allowedRoles = ['admin', 'super_admin'];
+      
+      if (!allowedRoles.includes(user.role)) {
+        alert('Access denied! Only administrators can view customer details.');
+        window.location.href = 'all_book_grid.html';
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Check if admin API endpoints are available
+    async function checkAdminAPI() {
+      try {
+        const testResponse = await fetch(`${API_BASE}/role-admin/test-access`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (testResponse.ok) {
+          console.log('✅ Admin API is available');
+          return true;
+        } else {
+          console.warn('⚠️ Admin API not available');
+          return false;
+        }
+      } catch (error) {
+        console.error('❌ Admin API check failed:', error);
+        return false;
+      }
+    }
+
+    /* ✅ Fallback UI helpers for customer-details page */
+    function showToast(message, type = "info") {
+      let toast = document.getElementById('toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 12px 20px;
+          border-radius: 4px;
+          color: white;
+          z-index: 10000;
+          display: none;
+        `;
+        document.body.appendChild(toast);
+      }
+
+      const colors = {
+        success: '#28a745',
+        error: '#dc3545',
+        warning: '#ffc107',
+        info: '#17a2b8'
+      };
+
+      toast.style.backgroundColor = colors[type] || colors.info;
+      toast.textContent = message;
+      toast.style.display = 'block';
+
+      setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    function showLoading(show) {
+      let overlay = document.getElementById('loadingOverlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'loadingOverlay';
+        overlay.style.cssText = `
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.3);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 20px;
+          z-index: 9999;
+        `;
+        overlay.innerHTML = "Loading...";
+        document.body.appendChild(overlay);
+      }
+      overlay.style.display = show ? 'flex' : 'none';
+    }
+
+
+    const API_BASE = window.API_BASE || window.location.origin + '/api';
+
+    // Get customer ID from URL
+    function getCustomerIdFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      console.log("📌 Customer ID from URL:", id);
+      return id;
+    }
+
+    // Load customer details from backend
+    async function loadCustomerDetails() {
+      const customerId = getCustomerIdFromURL();
+      console.log("📌 Customer ID:", customerId);
+
+      if (!customerId) {
+        alert('No customer ID provided');
+        window.location.href = 'admin.html#customers';
+        return;
+      }
+
+      try {
+        // 1️⃣ Load customer
+        const customerRes = await makeAuthenticatedRequest(
+          `${API_BASE}/customers/${customerId}`
+        );
+
+        const customerData = await customerRes.json();
+        const customer = customerData.customer || customerData;
+
+        if (!customer || !customer._id) {
+          throw new Error('Customer not found');
+        }
+
+        console.log("👤 Customer:", customer);
+
+        // 2️⃣ Load ALL orders from backend (single source of truth)
+        const allOrders = await loadOrdersFromBackend();
+
+        // 3️⃣ Filter only this customer's orders
+        const customerOrders = allOrders.filter(order =>
+          order.userId === customerId ||
+          order.customerId === customerId ||
+          order.customerEmail === customer.email
+        );
+
+        console.log(`📦 Found ${customerOrders.length} orders for this customer`);
+
+        // 4️⃣ Calculate stats
+        const totalOrders = customerOrders.length;
+
+        const totalSpent = customerOrders.reduce(
+          (sum, order) =>
+            sum + (order.totals?.total || order.total || order.amount || 0),
+          0
+        );
+
+        const avgOrder = totalOrders ? totalSpent / totalOrders : 0;
+
+        const firstOrder = totalOrders
+          ? customerOrders
+              .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0]
+              .createdAt
+          : null;
+
+        // 5️⃣ Update UI
+        document.getElementById('customer-name').textContent =
+          customer.name || customer.email || 'Unknown Customer';
+
+        document.getElementById('customer-avatar').textContent =
+          (customer.name || customer.email || 'U').charAt(0).toUpperCase();
+
+        document.getElementById('customer-contact').innerHTML = `
+          ${customer.email || 'No email'}<br>
+          ${customer.phone || 'No phone number'}
+        `;
+
+        document.getElementById('total-orders').textContent = totalOrders;
+        document.getElementById('total-spent').textContent = `₹${totalSpent.toFixed(2)}`;
+        document.getElementById('avg-order').textContent = `₹${avgOrder.toFixed(2)}`;
+        document.getElementById('customer-since').textContent =
+          firstOrder ? new Date(firstOrder).toLocaleDateString('en-IN') : 'N/A';
+
+        document.getElementById('info-name').textContent =
+          customer.name || customer.email || 'Unknown Customer';
+        document.getElementById('info-email').textContent =
+          customer.email || 'Not provided';
+        document.getElementById('info-phone').textContent =
+          customer.phone || 'Not provided';
+        document.getElementById('info-id').textContent = customer._id;
+
+        // 6️⃣ Load orders table (recent 5)
+        loadCustomerOrders(customerOrders);
+        loadCustomerNotes();
+
+      } catch (error) {
+        console.error('❌ Error loading customer details:', error);
+        alert('Error loading customer data: ' + error.message);
+        window.location.href = 'admin.html#customers';
+      }
+    }
+
+    function goBackToCustomers() {
+      window.location.href = "admin.html#customers";
+    }
+
+    // Update UI
+    function updateCustomerProfile(customer, orders) {
+      const totalOrders = orders.length;
+      const totalSpent = orders.reduce((sum, o) => sum + (o.totals?.total || o.total || 0), 0);
+      const avgOrder = totalOrders ? totalSpent / totalOrders : 0;
+      const firstOrderDate = totalOrders ? orders[orders.length - 1].createdAt : null;
+
+      document.getElementById('customer-name').textContent = customer.name || customer.email || 'Customer';
+      document.getElementById('customer-avatar').textContent =
+        (customer.name || customer.email || 'U').charAt(0).toUpperCase();
+
+      document.getElementById('customer-contact').innerHTML = `
+        ${customer.email || 'No email'}<br>
+        ${customer.phone || 'No phone'}
+      `;
+
+      document.getElementById('total-orders').textContent = totalOrders;
+      document.getElementById('total-spent').textContent = `₹${totalSpent.toFixed(2)}`;
+      document.getElementById('avg-order').textContent = `₹${avgOrder.toFixed(2)}`;
+      document.getElementById('customer-since').textContent =
+        firstOrderDate ? new Date(firstOrderDate).toLocaleDateString('en-IN') : 'N/A';
+
+      document.getElementById('info-name').textContent = customer.name || 'Unknown';
+      document.getElementById('info-email').textContent = customer.email || 'Not provided';
+      document.getElementById('info-phone').textContent = customer.phone || 'Not provided';
+      document.getElementById('info-id').textContent = customer._id;
+    }
+
+    // Load customer orders table
+    function loadCustomerOrders(orders) {
+      const tbody = document.getElementById('customer-orders-body');
+
+      if (!orders.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:20px; color:#888;">
+              No orders found
+            </td>
+          </tr>`;
+        return;
+      }
+
+      const recentOrders = orders
+        .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+        .slice(0, 5);
+
+      tbody.innerHTML = recentOrders.map(order => {
+        const date = new Date(order.createdAt || order.date).toLocaleDateString('en-IN');
+        const total = order.totals?.total || order.total || 0;
+        const status = order.status || 'pending';
+
+        return `
+          <tr>
+            <td><strong>${order.orderId || order._id}</strong></td>
+            <td>${date}</td>
+            <td>${order.items?.length || 0}</td>
+            <td><strong>₹${total.toFixed(2)}</strong></td>
+            <td><span class="status-badge status-${status}">${status.toUpperCase()}</span></td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="viewOrder('${order._id}')">
+                <i class="fas fa-eye"></i> View
+              </button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    // Navigation helper - UPDATED
+    function viewOrder(orderId) {
+      // Always redirect to order-details.html
+      window.location.href = `order-details.html?orderId=${orderId}`;
+    }
+
+    function goToCustomerOrders() {
+      const id = getCustomerIdFromURL();
+      if (!id) {
+        alert('Customer ID missing');
+        return;
+      }
+      window.location.href = `admin.html#orders&customer=${id}`;
+    }
+
+    function contactCustomer() {
+      const email = document.getElementById('info-email').textContent;
+      if (email && email !== '-') {
+        window.location.href = `mailto:${email}`;
+      } else {
+        showToast('No email available', 'warning');
+      }
+    }
+
+    // Notes
+    function addCustomerNote() {
+      const note = prompt('Enter note for this customer:');
+      if (!note) return;
+
+      const customerId = getCustomerIdFromURL();
+      const notes = JSON.parse(localStorage.getItem('customerNotes') || '{}');
+
+      if (!notes[customerId]) notes[customerId] = [];
+      notes[customerId].push({
+        note,
+        date: new Date().toISOString(),
+        addedBy: 'Admin'
+      });
+
+      localStorage.setItem('customerNotes', JSON.stringify(notes));
+      loadCustomerNotes();
+      showToast('Note added successfully', 'success');
+    }
+
+    function loadCustomerNotes() {
+      const customerId = getCustomerIdFromURL();
+      const notes = JSON.parse(localStorage.getItem('customerNotes') || '{}')[customerId] || [];
+
+      const container = document.getElementById('customer-notes');
+
+      if (!notes.length) {
+        container.innerHTML = `<div style="padding:20px;color:#888">No notes added yet</div>`;
+        return;
+      }
+
+      container.innerHTML = notes.map(n => `
+        <div class="note-item" style="padding:15px;border-bottom:1px solid #eee;">
+          <strong>${n.addedBy}</strong>
+          <small style="float:right;color:#888">${new Date(n.date).toLocaleString()}</small>
+          <div>${n.note}</div>
+        </div>
+      `).join('');
+    }
+
+    // Logout
+    function logoutUser() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check admin access first
+      if (!checkAdminAccess()) return;
+      
+      // Check if admin API is available
+      const apiAvailable = await checkAdminAPI();
+      if (!apiAvailable) {
+        console.warn('Admin API not available, role management disabled');
+        document.getElementById('role-management-section').style.display = 'none';
+      }
+      
+      // Load customer details
+      loadCustomerDetails();
+      
+      // Load role management (only for admins)
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (['admin', 'super_admin'].includes(currentUser.role)) {
+        loadCustomerAndRole();
+      } else {
+        // Hide role management section
+        document.getElementById('role-management-section').style.display = 'none';
+      }
+    });
+
+    // Role Management Functions
+    let currentCustomer = null;
+
+    // Check current user's permissions
+    async function loadCustomerAndRole() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      // Hide role management section for non-admins
+      if (!['admin', 'super_admin'].includes(currentUser.role)) {
+        document.getElementById('role-management-section').style.display = 'none';
+        return;
+      }
+      
+      const customerId = getCustomerIdFromURL();
+      
+      try {
+        // Use role-admin endpoint (or admin if you change server.js)
+        const response = await fetch(`${API_BASE}/role-admin/users/${customerId}/details`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            currentCustomer = data.user;
+            updateRoleUI(currentCustomer);
+          } else {
+            throw new Error(data.message || 'Failed to load user details');
+          }
+        } else {
+          // Fallback: user is regular customer
+          updateRoleUI({ role: 'user' });
+        }
+      } catch (error) {
+        console.warn('Could not load user role:', error);
+        // Default to 'user' role
+        updateRoleUI({ role: 'user' });
+      }
+    }
+
+    // Update role UI
+    function updateRoleUI(user) {
+      const role = user.role || 'user';
+      
+      // Set role badge
+      const roleBadge = document.getElementById('current-role-badge');
+      roleBadge.innerHTML = getRoleBadgeHTML(role);
+      
+      // Set role text
+      document.getElementById('current-role').textContent = getRoleDisplayName(role);
+      
+      // Set permissions
+      document.getElementById('user-permissions').innerHTML = getRolePermissions(role);
+      
+      // Set account status
+      document.getElementById('account-status').textContent = 
+        user.status === 'suspended' ? 'Suspended' : 'Active';
+      
+      // Set last login
+      if (user.lastLogin) {
+        document.getElementById('last-login').textContent = 
+          new Date(user.lastLogin).toLocaleString('en-IN');
+      }
+    }
+
+    // Get role display name
+    function getRoleDisplayName(role) {
+      const roleNames = {
+        'super_admin': '👑 Super Administrator',
+        'admin': '👑 Administrator',
+        'music-admin': '🎵 Music Admin',
+        'hall-admin': '🏛️ Hall Admin',
+        'user': '👤 Regular User'
+      };
+      return roleNames[role] || role;
+    }
+
+    // Get role badge HTML
+    function getRoleBadgeHTML(role) {
+      const badgeColors = {
+        'super_admin': 'badge-danger',
+        'admin': 'badge-primary',
+        'music-admin': 'badge-success',
+        'hall-admin': 'badge-info',
+        'user': 'badge-secondary'
+      };
+      
+      const badgeIcon = {
+        'super_admin': 'fa-crown',
+        'admin': 'fa-user-shield',
+        'music-admin': 'fa-music',
+        'hall-admin': 'fa-building',
+        'user': 'fa-user'
+      };
+      
+      return `
+        <span class="badge ${badgeColors[role] || 'badge-secondary'}">
+          <i class="fas ${badgeIcon[role] || 'fa-user'}"></i>
+          ${getRoleDisplayName(role)}
+        </span>
+      `;
+    }
+
+    // Get role permissions description
+    function getRolePermissions(role) {
+      const permissions = {
+        'super_admin': `
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Full System Access
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> User Role Management
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> All Admin Access
+          </span>
+        `,
+        'admin': `
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Full System Access
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> User Role Management
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> All Admin Access
+          </span>
+        `,
+        'music-admin': `
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Music Admin Access
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Music Orders
+          </span>
+        `,
+        'hall-admin': `
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Hall Booking Management
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Hall Availability
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Hall Calendar
+          </span>
+        `,
+        'user': `
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Book Shopping
+          </span>
+          <span class="permission-item" style="display: block;">
+            <i class="fas fa-check-circle text-success"></i> Order History
+          </span>
+        `
+      };
+      
+      return permissions[role] || 'No special permissions';
+    }
+
+    // Check role change permissions
+    function checkRolePermissions() {
+      const selectedRole = document.getElementById('new-role-select').value;
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}'); // ✅ Get fresh
+      const currentUserRole = currentUser?.role;
+      
+      // Reset all warnings
+      document.getElementById('super-admin-warning').style.display = 'none';
+      document.getElementById('admin-warning').style.display = 'none';
+      document.getElementById('permissions-preview').style.display = 'none';
+      
+      if (!selectedRole) return;
+      
+      // Show permissions preview
+      document.getElementById('permissions-preview').style.display = 'block';
+      document.getElementById('permissions-list').innerHTML = getRolePermissions(selectedRole);
+      
+      // Show warnings based on selected role
+      if (selectedRole === 'super_admin') {
+        document.getElementById('super-admin-warning').style.display = 'block';
+        
+        // Check if current user can assign super_admin
+        if (currentUserRole !== 'super_admin') {
+          document.getElementById('update-role-btn').disabled = true;
+          document.getElementById('super-admin-warning').innerHTML += `
+            <div style="margin-top: 8px; color: #856404;">
+              <i class="fas fa-lock"></i> You need Super Admin privileges to assign this role.
+            </div>
+          `;
+        } else {
+          document.getElementById('update-role-btn').disabled = false;
+        }
+      } 
+      else if (selectedRole === 'admin') {
+        document.getElementById('admin-warning').style.display = 'block';
+        
+        // Only super_admin and admin can assign admin role
+        if (!['super_admin', 'admin'].includes(currentUserRole)) {
+          document.getElementById('update-role-btn').disabled = true;
+          document.getElementById('admin-warning').innerHTML += `
+            <div style="margin-top: 8px; color: #0c5460;">
+              <i class="fas fa-lock"></i> You need Admin privileges to assign this role.
+            </div>
+          `;
+        } else {
+          document.getElementById('update-role-btn').disabled = false;
+        }
+      }
+      else {
+        document.getElementById('update-role-btn').disabled = false;
+      }
+      
+      // Update role description
+      const roleDescriptions = {
+        'user': 'Regular customer with basic shopping and booking access.',
+        'music-admin': 'Manages music books, inventory, and music-related orders.',
+        'hall-admin': 'Manages hall bookings, availability, and hall calendar.',
+        'admin': 'Full administrative access to all system features.',
+        'super_admin': 'Highest level access with user management privileges.'
+      };
+      
+      document.getElementById('role-description').textContent = 
+        roleDescriptions[selectedRole] || '';
+    }
+
+    // Update user role
+    async function updateUserRole() {
+      const customerId = getCustomerIdFromURL();
+      const newRole = document.getElementById('new-role-select').value;
+      const reason = document.getElementById('role-change-reason').value.trim();
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}'); // ✅ Get fresh
+      
+      if (!newRole) {
+        showToast('Please select a role', 'warning');
+        return;
+      }
+      
+      if (!reason) {
+        showToast('Please provide a reason for the role change', 'warning');
+        return;
+      }
+      
+      // Confirm role change
+      const currentRoleName = getRoleDisplayName(currentCustomer?.role || 'user');
+      const newRoleName = getRoleDisplayName(newRole);
+      
+      if (!confirm(`Change role from ${currentRoleName} to ${newRoleName}?\n\nReason: ${reason}`)) {
+        return;
+      }
+      
+      try {
+        showLoading(true);
+        
+        // Use role-admin endpoint
+        const response = await fetch(`${API_BASE}/role-admin/users/${customerId}/role-management`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            role: newRole,
+            reason: reason,
+            changedBy: currentUser.email || 'Admin'
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+          // Update UI
+          currentCustomer.role = newRole;
+          updateRoleUI({ role: newRole });
+          
+          // Reset form
+          resetRoleForm();
+          
+          showToast(data.message || `Role updated to ${newRoleName}`, 'success');
+          
+        } else {
+          throw new Error(data.message || 'Failed to update role');
+        }
+        
+      } catch (error) {
+        console.error('Error updating role:', error);
+        showToast('Failed to update role: ' + error.message, 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Reset role form
+    function resetRoleForm() {
+      document.getElementById('new-role-select').value = '';
+      document.getElementById('role-change-reason').value = '';
+      document.getElementById('super-admin-warning').style.display = 'none';
+      document.getElementById('admin-warning').style.display = 'none';
+      document.getElementById('permissions-preview').style.display = 'none';
+      document.getElementById('role-description').textContent = '';
+      document.getElementById('update-role-btn').disabled = false;
+    }
+
+    // make it global (important for onclick)
+    window.goToCustomerOrders = goToCustomerOrders;
+
+    // Make functions global
+    window.checkRolePermissions = checkRolePermissions;
+    window.updateUserRole = updateUserRole;
+    window.resetRoleForm = resetRoleForm;
+
+    
+  </script>
+</body>
+</html>

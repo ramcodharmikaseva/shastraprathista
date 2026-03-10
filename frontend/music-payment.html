@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Fee - Shastraprathista</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .music-school-bar {
+            background: #fff8ef;
+            border-bottom: 1px solid #e6d3b1;
+            padding: 4px 10px;
+        }
+
+        .music-school-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .music-school-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .music-school-logo {
+            width: 55px !important;
+            height: 55px !important;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .music-school-bar h1 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #02295c;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .main-content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .box {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e6ed;
+        }
+
+        .payment-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        h2 i {
+            color: #d4af37;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e6ed;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: #ffffff;
+        }
+
+        input[readonly] {
+            background-color: #f1f2f6;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #d4af37 0%, #c19b2e 100%);
+            color: #02295c;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #02295c 0%, #02295c 100%);
+            color: white;
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .btn-back {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4af37 0%, #d4af37 100%);
+            color: #02295c;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #02295c 0%, #02295c 100%);
+            color: #d4af37;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e0e6ed, transparent);
+            margin: 25px 0;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4f8e8;
+            border-left: 4px solid #27ae60;
+            color: #155724;
+            display: block;
+        }
+
+        .status.error {
+            background: #ffeaea;
+            border-left: 4px solid #e74c3c;
+            color: #721c24;
+            display: block;
+        }
+
+        .status.info {
+            background: #e8f4fc;
+            border-left: 4px solid #3498db;
+            color: #0c5460;
+            display: block;
+        }
+
+        .fee-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .fee-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .fee-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading i {
+            font-size: 24px;
+            color: #d4af37;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .contact-info {
+            background: #e8f4fc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .contact-info h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .contact-info p {
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+
+        .contact-info i {
+            color: #d4af37;
+            width: 25px;
+        }
+
+        .new-student-card {
+            background: linear-gradient(135deg, #fff8e7 0%, #fff 100%);
+            border: 2px dashed #d4af37;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .receipt-box {
+            background: #f8f9fa;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .receipt-box i {
+            font-size: 48px;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .student-id-badge {
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .pay-now-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            font-size: 20px;
+            padding: 18px;
+        }
+
+        .pay-now-btn:hover {
+            background: linear-gradient(135deg, #02295c 0%, #02295c 100%);
+            color: #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Container -->
+    <div id="header-container"></div>
+
+    <div class="music-school-bar">
+        <div class="music-school-inner">
+            <div class="music-school-left">
+                <img src="image/founder.png" alt="Music School Logo" class="music-school-logo">
+                <h1>P.A.C. RAMASAMY RAJA MEMORIAL MUSIC SCHOOL</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Payment Form Section -->
+        <div class="box payment-box">
+            <h2><i class="fas fa-credit-card"></i> Fee Payment</h2>
+            
+            <div class="status info" id="infoStatus">
+                <i class="fas fa-info-circle"></i> Please enter Student ID, Email, or Phone to view fee details
+            </div>
+
+            <div class="status success" id="successStatus" style="display: none;"></div>
+            <div class="status error" id="errorStatus" style="display: none;"></div>
+
+            <label for="studentId"><i class="fas fa-id-card"></i> Student ID / Email / Phone</label>
+            <input type="text" id="studentId" placeholder="Enter Student ID (e.g., MS24001) or Email or Phone" autocomplete="off">
+
+            <button onclick="loadStudent()" id="loadBtn">
+                <i class="fas fa-search"></i> Load Student Details
+            </button>
+
+            <hr>
+
+            <!-- Multiple Students Section (for same parent) -->
+            <div id="multipleStudentsSection" style="display: none; margin-top: 30px;">
+                <h3 style="color: #2c3e50; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">
+                    <i class="fas fa-users"></i> Multiple Students Found
+                </h3>
+                <p>Please select a student to proceed:</p>
+                <div id="studentsList" class="students-grid">
+                    <!-- Student cards will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Single Student View -->
+            <div id="studentDetails" style="display: none;">
+                <label><i class="fas fa-user"></i> Student Name</label>
+                <input type="text" id="studentName" readonly>
+
+                <label><i class="fas fa-guitar"></i> Class</label>
+                <input type="text" id="className" readonly>
+
+                <label><i class="fas fa-calendar-alt"></i> Payment For Month</label>
+                <select id="paymentMonth" required>
+                    <!-- Months will be dynamically loaded via JavaScript -->
+                </select>
+
+                <div class="fee-details">
+                    <div class="fee-item">
+                        <span>Monthly Fee:</span>
+                        <span id="monthlyFeeDisplay">₹0</span>
+                    </div>
+                    <div class="fee-item">
+                        <span>GST (18%):</span>
+                        <span id="gstDisplay">₹0</span>
+                    </div>
+                    <div class="fee-item">
+                        <span>Total Amount:</span>
+                        <span id="totalAmount">₹0</span>
+                    </div>
+                </div>
+
+                <button id="payNowBtn" class="pay-now-btn" onclick="processPayment()" style="display: none;">
+                    <i class="fas fa-lock"></i> PAY NOW - ₹<span id="payAmount">0</span>
+                </button>
+            </div>
+
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Processing your request...</p>
+            </div>
+
+            <!-- Help Section -->
+            <div class="contact-info">
+                <h4><i class="fas fa-headset"></i> Need Help?</h4>
+                <p><i class="fas fa-envelope"></i> shastraprathista@gmail.com</p>
+                <p><i class="fas fa-phone"></i> 8870454321</p>
+                <p><i class="fas fa-clock"></i> Mon-Sat 9:00 AM - 7:30 PM</p>
+            </div>
+
+            <!-- Back to Music Class button -->
+            <a href="music.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Music Classes
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer Container -->
+    <div id="footer-container"></div>
+
+    <script src="common.js"></script>
+
+    <script>
+        // ========== CONFIGURATION ==========
+        const API_BASE = `${window.location.origin}/api/music`;
+
+        // ========== GST HELPER FUNCTIONS ==========
+        async function getGSTPercentage() {
+            try {
+                const response = await fetch(`${API_BASE}/gst-settings`);
+                const data = await response.json();
+                return data.gstPercentage || 18;
+            } catch (error) {
+                console.error('Error fetching GST:', error);
+                return 18;
+            }
+        }
+
+        function calculateWithGST(amount, gstPercentage) {
+            const gstAmount = (amount * gstPercentage / 100);
+            return {
+                baseAmount: amount,
+                gstAmount: gstAmount,
+                totalAmount: amount + gstAmount
+            };
+        }
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSharedHeaderFooter();
+            // REMOVED: populateMonthDropdown() - we'll populate months dynamically when student loads
+        });
+
+        // ========== SHARED HEADER/FOOTER LOADER ==========
+        function loadSharedHeaderFooter() {
+            if (document.getElementById('header-container') && !document.getElementById('header-container').innerHTML) {
+                fetch('header.html')
+                    .then(r => r.text())
+                    .then(html => {
+                        document.getElementById('header-container').innerHTML = html;
+                        if (typeof initCommon === 'function') {
+                            setTimeout(initCommon, 100);
+                        }
+                    })
+                    .catch(err => console.log('Header load error:', err));
+            }
+
+            if (document.getElementById('footer-container') && !document.getElementById('footer-container').innerHTML) {
+                fetch('footer.html')
+                    .then(r => r.text())
+                    .then(html => {
+                        document.getElementById('footer-container').innerHTML = html;
+                    })
+                    .catch(err => console.log('Footer load error:', err));
+            }
+        }
+
+        // ========== STUDENT LOADING - UPDATED WITH EXACT MATCH ==========
+        async function loadStudent() {
+            const searchValue = document.getElementById('studentId').value.trim();
+            
+            if (!searchValue) {
+                showStatus('error', 'Please enter Student ID, Email, or Phone number');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loadBtn').disabled = true;
+            
+            try {
+                // Clean the search value
+                const cleanSearch = searchValue.trim();
+                
+                // Determine search type
+                const isEmail = cleanSearch.includes('@');
+                const isPhone = /^\d{10}$/.test(cleanSearch.replace(/\D/g, ''));
+                const isStudentId = /^MS\d+$/i.test(cleanSearch);
+                
+                let response;
+                let data;
+                
+                // ===== STUDENT ID SEARCH (EXACT MATCH) =====
+                if (isStudentId) {
+                    console.log('🔍 Searching by Student ID (exact):', cleanSearch);
+                    response = await fetch(`${API_BASE}/students/${encodeURIComponent(cleanSearch)}`);
+                    
+                    if (response.ok) {
+                        data = await response.json();
+                        if (data.success && data.student) {
+                            document.getElementById('loading').style.display = 'none';
+                            document.getElementById('loadBtn').disabled = false;
+                            await checkAndDisplayPendingMonths(data.student);
+                            return;
+                        }
+                    }
+                    
+                    // If student ID not found, show error
+                    if (response.status === 404) {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('loadBtn').disabled = false;
+                        showStatus('error', `No student found with ID: ${cleanSearch}`);
+                        return;
+                    }
+                }
+                
+                // ===== EMAIL SEARCH (EXACT MATCH ONLY) =====
+                if (isEmail) {
+                    console.log('🔍 Searching by Email (exact):', cleanSearch);
+                    
+                    // Use the /students/:identifier endpoint for exact email match
+                    response = await fetch(`${API_BASE}/students/${encodeURIComponent(cleanSearch)}`);
+                    
+                    if (response.ok) {
+                        data = await response.json();
+                        if (data.success && data.student) {
+                            document.getElementById('loading').style.display = 'none';
+                            document.getElementById('loadBtn').disabled = false;
+                            await checkAndDisplayPendingMonths(data.student);
+                            return;
+                        }
+                    }
+                    
+                    // Try with lowercase email as fallback
+                    const lowerEmail = cleanSearch.toLowerCase();
+                    if (lowerEmail !== cleanSearch) {
+                        console.log('🔍 Trying lowercase email:', lowerEmail);
+                        response = await fetch(`${API_BASE}/students/${encodeURIComponent(lowerEmail)}`);
+                        
+                        if (response.ok) {
+                            data = await response.json();
+                            if (data.success && data.student) {
+                                document.getElementById('loading').style.display = 'none';
+                                document.getElementById('loadBtn').disabled = false;
+                                await checkAndDisplayPendingMonths(data.student);
+                                return;
+                            }
+                        }
+                    }
+                    
+                    // If email not found, show error
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('loadBtn').disabled = false;
+                    showStatus('error', `No student found with email: ${cleanSearch}`);
+                    return;
+                }
+                
+                // ===== PHONE SEARCH (EXACT MATCH) =====
+                if (isPhone) {
+                    const cleanPhone = cleanSearch.replace(/\D/g, '');
+                    console.log('🔍 Searching by Phone (exact):', cleanPhone);
+                    
+                    // Try different phone formats with the identifier endpoint
+                    const phoneFormats = [
+                        cleanPhone,
+                        `+91${cleanPhone}`,
+                        `0${cleanPhone}`
+                    ];
+                    
+                    for (const phoneFormat of phoneFormats) {
+                        console.log(`📞 Trying phone format: ${phoneFormat}`);
+                        response = await fetch(`${API_BASE}/students/${encodeURIComponent(phoneFormat)}`);
+                        
+                        if (response.ok) {
+                            data = await response.json();
+                            if (data.success && data.student) {
+                                document.getElementById('loading').style.display = 'none';
+                                document.getElementById('loadBtn').disabled = false;
+                                await checkAndDisplayPendingMonths(data.student);
+                                return;
+                            }
+                        }
+                    }
+                    
+                    // If phone not found, show error
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('loadBtn').disabled = false;
+                    showStatus('error', `No student found with phone: ${cleanPhone}`);
+                    return;
+                }
+                
+                // ===== INVALID FORMAT =====
+                // If we get here, the input doesn't match any valid format
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('loadBtn').disabled = false;
+                
+                showStatus('error', 
+                    'Please enter a valid:\n' +
+                    '• Student ID (e.g., MS24001)\n' +
+                    '• Email address (e.g., name@example.com)\n' +
+                    '• 10-digit phone number'
+                );
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('loadBtn').disabled = false;
+                
+                console.error('Error loading student:', error);
+                showStatus('error', '❌ Failed to load student. Please try again.');
+            }
+        }
+
+        // NEW FUNCTION: Check pending months and display appropriately
+        async function checkAndDisplayPendingMonths(student) {
+            try {
+                // Fetch pending months for this student
+                const pendingResponse = await fetch(`${API_BASE}/payments/pending-months/${student.studentId}`);
+                const pendingData = await pendingResponse.json();
+                
+                if (pendingData.success) {
+                    const pendingCount = pendingData.pendingCount || 0;
+                    const pendingRawMonths = pendingData.pendingRawMonths || [];
+                    const monthlyFee = student.totalMonthlyFee || student.monthlyFee || 0;
+                    
+                    if (pendingCount === 0) {
+                        // No pending payments - show success message
+                        showNoPendingPayments(student);
+                    } else {
+                        // Has pending payments - show payment form with pending months only
+                        displayStudentWithPending(student, pendingRawMonths, monthlyFee);
+                    }
+                } else {
+                    // Fallback to regular display
+                    displaySingleStudent(student);
+                }
+            } catch (error) {
+                console.error('Error checking pending months:', error);
+                displaySingleStudent(student);
+            }
+        }
+
+        // NEW FUNCTION: Display when no pending payments
+        function showNoPendingPayments(student) {
+            const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            // Hide multiple students section
+            document.getElementById('multipleStudentsSection').style.display = 'none';
+            
+            // Hide student details and pay button
+            document.getElementById('studentDetails').style.display = 'none';
+            document.getElementById('payNowBtn').style.display = 'none';
+            
+            const html = `
+                <div style="background: #d4f8e8; padding: 30px; border-radius: 12px; text-align: center; margin: 20px 0; border: 2px solid #27ae60;">
+                    <i class="fas fa-check-circle" style="font-size: 64px; color: #27ae60; margin-bottom: 20px;"></i>
+                    <h3 style="color: #27ae60; margin-bottom: 15px;">No Pending Payments!</h3>
+                    <p style="font-size: 1.2rem; color: #2c3e50; margin-bottom: 10px;">
+                        <strong>${student.name}</strong> (${student.studentId})
+                    </p>
+                    <p style="color: #2c3e50; margin-bottom: 20px;">
+                        All payments are up to date through ${currentMonth}.
+                    </p>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left;">
+                        <p style="margin: 5px 0;"><strong>Monthly Fee:</strong> ₹${student.totalMonthlyFee || student.monthlyFee || 0}</p>
+                        <p style="margin: 5px 0;"><strong>Status:</strong> <span style="color: #27ae60;">● Paid to date</span></p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('infoStatus').innerHTML = html;
+            document.getElementById('infoStatus').style.display = 'block';
+            document.getElementById('infoStatus').className = 'status success';
+            
+            document.getElementById('successStatus').style.display = 'none';
+            document.getElementById('errorStatus').style.display = 'none';
+        }
+
+        // Update the displayStudentWithPending function
+        async function displayStudentWithPending(student, pendingMonths, monthlyFee) {
+            // Hide multiple students section
+            document.getElementById('multipleStudentsSection').style.display = 'none';
+            
+            // Show single student view
+            document.getElementById('studentDetails').style.display = 'block';
+            
+            // Set student name and class
+            document.getElementById('studentName').value = student.name || '';
+            
+            let className = student.className || 'Not assigned';
+            if (student.classes && student.classes.length > 0) {
+                className = student.classes.map(c => c.className).join(', ');
+            }
+            document.getElementById('className').value = className;
+            
+            // Get pending months with due date info from API
+            const pendingResponse = await fetch(`${API_BASE}/payments/pending-months/${student.studentId}`);
+            const pendingData = await pendingResponse.json();
+            
+            const monthSelect = document.getElementById('paymentMonth');
+            monthSelect.innerHTML = ''; // Clear existing options
+            
+            // Show next due date info if available
+            if (pendingData.nextDueInfo && pendingData.pendingCount === 0) {
+                // No pending months, show next due date
+                const infoHTML = `
+                    <div style="background: #e8f4fc; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #3498db;">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                            <i class="fas fa-calendar-alt"></i> Next Payment Due
+                        </h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 8px;">
+                            <div>
+                                <span style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">${pendingData.nextDueInfo.displayMonth}</span>
+                                <div style="color: #7f8c8d; margin-top: 5px;">
+                                    <i class="fas fa-clock"></i> Payment Window:
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 1.5rem; font-weight: bold; color: #27ae60;">${pendingData.nextDueInfo.dueFrom} to ${pendingData.nextDueInfo.dueTo}</span>
+                                <div style="color: #7f8c8d; font-size: 0.9rem; margin-top: 5px;">
+                                    <i class="fas fa-info-circle"></i> You can pay starting ${pendingData.nextDueInfo.dueFrom}
+                                </div>
+                            </div>
+                        </div>
+                        <p style="color: #7f8c8d; margin-top: 15px; font-size: 0.95rem; background: white; padding: 10px; border-radius: 6px;">
+                            <i class="fas fa-exclamation-circle" style="color: #f39c12;"></i> 
+                            Payment for ${pendingData.nextDueInfo.displayMonth} is due by ${pendingData.nextDueInfo.dueTo}. 
+                            Late payments may incur additional fees.
+                        </p>
+                    </div>
+                `;
+                
+                const feeDetails = document.querySelector('.fee-details');
+                feeDetails.insertAdjacentHTML('beforebegin', infoHTML);
+                
+                // Hide pay button since no pending months
+                document.getElementById('payNowBtn').style.display = 'none';
+                document.getElementById('studentDetails').style.display = 'none';
+                
+                showStatus('success', pendingData.message);
+                return;
+            }
+            
+            // Show due date info for next month (even if there are pending months)
+            if (pendingData.nextDueInfo) {
+                const infoHTML = `
+                    <div style="background: #fef9e7; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f39c12;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-info-circle" style="color: #f39c12; font-size: 1.2rem;"></i>
+                            <div>
+                                <span style="font-weight: bold; color: #2c3e50;">Next Payment Information:</span><br>
+                                <span style="color: #7f8c8d;">
+                                    After paying pending months, payment for <strong>${pendingData.nextDueInfo.displayMonth}</strong> 
+                                    will be due <strong>${pendingData.nextDueInfo.dueFrom} to ${pendingData.nextDueInfo.dueTo}</strong>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                const feeDetails = document.querySelector('.fee-details');
+                feeDetails.insertAdjacentHTML('beforebegin', infoHTML);
+            }
+            
+            // Add pending months to dropdown with clear labels
+            pendingMonths.forEach((month, index) => {
+                const monthValue = pendingData.pendingRawMonths[index];
+                const [year, monthNum] = monthValue.split('-');
+                const date = new Date(year, monthNum - 1, 1);
+                
+                const option = document.createElement('option');
+                option.value = monthValue;
+                
+                // Format the display text
+                if (month.includes('(Join month - pay now)')) {
+                    option.textContent = `📅 ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} (Join Month - Pay Now)`;
+                } else {
+                    option.textContent = `📅 ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} (Pending)`;
+                }
+                
+                monthSelect.appendChild(option);
+            });
+            
+            // Get GST percentage
+            const gstPercentage = await getGSTPercentage();
+            const { gstAmount, totalAmount } = calculateWithGST(monthlyFee, gstPercentage);
+            
+            // Update fee displays
+            document.getElementById('monthlyFeeDisplay').textContent = '₹' + monthlyFee;
+            document.getElementById('gstDisplay').textContent = '₹' + gstAmount.toFixed(2);
+            document.getElementById('totalAmount').textContent = '₹' + totalAmount.toFixed(2);
+            document.getElementById('payAmount').textContent = totalAmount.toFixed(2);
+            
+            // Show pay button
+            document.getElementById('payNowBtn').style.display = 'block';
+            
+            // Store student data
+            window.currentStudent = student;
+            window.currentTotalAmount = totalAmount;
+            window.currentGST = {
+                percentage: gstPercentage,
+                amount: gstAmount
+            };
+            
+            showStatus('info', `You have ${pendingMonths.length} pending month(s). Select a month from the dropdown to pay.`);
+        }
+
+        // Display multiple students (unchanged)
+        function displayMultipleStudents(students) {
+            // Hide single student view
+            document.getElementById('studentDetails').style.display = 'none';
+            document.getElementById('payNowBtn').style.display = 'none';
+            
+            // Show multiple students section
+            const multiSection = document.getElementById('multipleStudentsSection');
+            multiSection.style.display = 'block';
+            
+            // Build student cards
+            const studentsList = document.getElementById('studentsList');
+            let studentsHTML = '';
+            
+            students.forEach((student) => {
+                const totalFee = student.totalMonthlyFee || student.monthlyFee || 0;
+                
+                studentsHTML += `
+                    <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e0e6ed;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 style="color: #2c3e50; margin: 0;">
+                                <i class="fas fa-user-graduate" style="color: #d4af37;"></i> ${student.name || 'Unknown'}
+                            </h4>
+                            <span class="student-id-badge">
+                                ID: ${student.studentId || 'N/A'}
+                            </span>
+                        </div>
+                        
+                        <div style="margin: 15px 0;">
+                            <strong>Class:</strong> ${student.className || 'Not assigned'}<br>
+                            <strong>Fee:</strong> ₹${totalFee}/mo
+                        </div>
+                        
+                        <button onclick="selectStudent('${student.studentId}')" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #d4af37 0%, #c19b2e 100%); color: #02295c; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            <i class="fas fa-check"></i> Select This Student
+                        </button>
+                    </div>
+                `;
+            });
+            
+            studentsList.innerHTML = studentsHTML;
+            showStatus('success', `Found ${students.length} student(s). Please select one.`);
+        }
+
+        // Select a student from multiple view (unchanged)
+        function selectStudent(studentId) {
+            document.getElementById('studentId').value = studentId;
+            loadStudent();
+        }
+
+        // Show no student found (unchanged)
+        function showNoStudentFound() {
+            const html = `
+                <div class="new-student-card">
+                    <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #e74c3c;"></i>
+                    <h3>Student Not Found</h3>
+                    <p>No student found with the provided information.</p>
+                    <p style="color: #7f8c8d; margin-top: 15px;">Please check and try again:</p>
+                    <ul style="text-align: left; display: inline-block; margin-top: 10px;">
+                        <li>✓ Student ID (e.g., MS24001)</li>
+                        <li>✓ Parent Email (e.g., parent@example.com)</li>
+                        <li>✓ Parent Phone (10-digit number)</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('infoStatus').innerHTML = html;
+            document.getElementById('infoStatus').style.display = 'block';
+            document.getElementById('successStatus').style.display = 'none';
+            document.getElementById('errorStatus').style.display = 'none';
+            document.getElementById('studentDetails').style.display = 'none';
+            document.getElementById('multipleStudentsSection').style.display = 'none';
+            document.getElementById('payNowBtn').style.display = 'none';
+        }
+
+        // ========== PAYMENT PROCESSING ==========
+        async function processPayment() {
+            const student = window.currentStudent;
+            if (!student) {
+                showStatus('error', 'Please load student details first');
+                return;
+            }
+            
+            const monthSelect = document.getElementById('paymentMonth');
+            const selectedMonth = monthSelect ? monthSelect.value : '';
+            
+            if (!selectedMonth) {
+                showStatus('error', 'Please select a month to pay');
+                return;
+            }
+            
+            const monthlyFee = student.totalMonthlyFee || student.monthlyFee || 0;
+            
+            // Get GST percentage
+            const gstPercentage = window.currentGST?.percentage || await getGSTPercentage();
+            const { gstAmount, totalAmount } = calculateWithGST(monthlyFee, gstPercentage);
+            
+            // Get class name
+            let className = 'Music Class';
+            if (student.classes && student.classes.length > 0) {
+                className = student.classes[0].className;
+            } else if (student.className) {
+                className = student.className;
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('payNowBtn').disabled = true;
+            
+            try {
+                // Check if payment already exists
+                const checkResponse = await fetch(`${API_BASE}/payments/check?studentId=${student.studentId}&month=${selectedMonth}`);
+                const checkData = await checkResponse.json();
+                
+                if (checkData.exists) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('payNowBtn').disabled = false;
+                    showStatus('error', 'Payment already exists for this month');
+                    
+                    // Refresh pending months
+                    await checkAndDisplayPendingMonths(student);
+                    return;
+                }
+                
+                // Create payment record
+                const paymentResponse = await fetch(`${API_BASE}/payments/mark`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        studentId: student.studentId,
+                        studentName: student.name,
+                        className: className,
+                        amount: totalAmount,
+                        baseAmount: monthlyFee,
+                        gstAmount: gstAmount,
+                        gstPercentage: gstPercentage,
+                        month: selectedMonth,
+                        paymentMethod: 'online',
+                        notes: `Online payment for ${selectedMonth}`
+                    })
+                });
+                
+                const paymentData = await paymentResponse.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('payNowBtn').disabled = false;
+                
+                if (paymentData.success) {
+                    // Show success
+                    const monthName = new Date(selectedMonth + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                    
+                    showPaymentSuccess(paymentData, student, monthName, totalAmount, className);
+                    
+                    // After 3 seconds, reload student to show updated pending months
+                    setTimeout(() => {
+                        document.getElementById('studentId').value = student.studentId;
+                        loadStudent();
+                    }, 3000);
+                    
+                } else {
+                    showStatus('error', paymentData.message || 'Payment failed');
+                }
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('payNowBtn').disabled = false;
+                console.error('Payment error:', error);
+                showStatus('error', 'Payment processing failed');
+            }
+        }
+
+        function showPaymentSuccess(data, student, monthName, amount, className) {
+            const successHTML = `
+                <div style="text-align: center;">
+                    <i class="fas fa-check-circle" style="color: #27ae60; font-size: 64px; margin-bottom: 20px;"></i>
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">Payment Successful!</h3>
+                    
+                    <div class="receipt-box">
+                        <p><strong>Receipt No:</strong> ${data.receiptNo || 'RCPT' + Date.now()}</p>
+                        <p><strong>Student:</strong> ${student.name}</p>
+                        <p><strong>Student ID:</strong> ${student.studentId}</p>
+                        <p><strong>Class:</strong> ${className}</p>
+                        <p><strong>Month:</strong> ${monthName}</p>
+                        <p><strong>Amount:</strong> ₹${amount.toFixed(2)} (incl. GST)</p>
+                        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    </div>
+                    
+                    <p style="color: #27ae60; margin: 15px 0;">
+                        <i class="fas fa-info-circle"></i> Reloading to show updated pending months...
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('successStatus').innerHTML = successHTML;
+            document.getElementById('successStatus').style.display = 'block';
+            document.getElementById('infoStatus').style.display = 'none';
+            document.getElementById('errorStatus').style.display = 'none';
+            document.getElementById('studentDetails').style.display = 'none';
+            document.getElementById('multipleStudentsSection').style.display = 'none';
+            document.getElementById('payNowBtn').style.display = 'none';
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        function showStatus(type, message) {
+            document.getElementById('infoStatus').style.display = 'none';
+            document.getElementById('successStatus').style.display = 'none';
+            document.getElementById('errorStatus').style.display = 'none';
+            
+            const statusDiv = document.getElementById(type + 'Status');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `<i class="fas fa-${getStatusIcon(type)}"></i> ${message}`;
+        }
+
+        function getStatusIcon(type) {
+            const icons = {
+                'info': 'info-circle',
+                'success': 'check-circle',
+                'error': 'exclamation-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+    </script>
+</body>
+</html>

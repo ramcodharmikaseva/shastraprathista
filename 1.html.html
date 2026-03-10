@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMCO - DHARMIKA SEVA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; 
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .header-top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+        
+        .logo-main {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a3a6c;
+            line-height: 1;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .logo-sub {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        nav {
+            margin-top: 15px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        nav ul li {
+            margin: 0 12px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+            padding: 5px 0;
+            display: inline-block;
+        }
+        
+        nav ul li a:hover {
+            color: #1a3a6c;
+            border-bottom: 2px solid #1a3a6c;
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            margin: 30px 0;
+            gap: 30px;
+        }
+        
+        .left-column {
+            flex: 2;
+        }
+        
+        .right-column {
+            flex: 1;
+        }
+        
+        /* News Section */
+        .news-section {
+            background-color: #5b69e9;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 3px solid #1a3a6c;
+        }
+        
+        .section-title {
+            color: #1a3a6c;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+        
+        .news-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .news-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .news-date {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        /* Founder Section */
+        .founder-section {
+            background-color: #fff;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 3px solid #1a3a6c;
+        }
+        
+        .founder-title {
+            color: #1a3a6c;
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .founder-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .founder-years {
+            color: #777;
+            font-style: italic;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        
+        .founder-text {
+            text-align: justify;
+            color: #555;
+        }
+        
+        /* Social Media Section */
+        .social-section {
+            background-color: #fff;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 3px solid #1a3a6c;
+        }
+        
+        .social-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .social-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .social-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            color: #3b5998;
+        }
+        
+        .social-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .social-stats {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .like-button {
+            background-color: #3b5998;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .like-button:hover {
+            background-color: #2d4373;
+        }
+        
+        .twitter-feed {
+            margin-top: 20px;
+        }
+        
+        .twitter-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .twitter-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            color: #1da1f2;
+        }
+        
+        .twitter-stats {
+            margin-left: auto;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .twitter-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .twitter-item:last-child {
+            border-bottom: none;
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            border-left: 3px solid #ffc107;
+            padding: 12px 15px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #1a3a6c;
+            color: #fff;
+            padding: 40px 0 20px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-logo {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .footer-subtitle {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 14px;
+        }
+        
+        .footer-links a:hover {
+            color: #fff;
+        }
+        
+        .contact-info {
+            color: #ddd;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            margin-top: 10px;
+        }
+        
+        .newsletter-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 3px 0 0 3px;
+            font-size: 14px;
+        }
+        
+        .newsletter-button {
+            background-color: #3b5998;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 3px 3px 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .newsletter-button:hover {
+            background-color: #2d4373;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #2a4a7c;
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .footer-bottom-links {
+            margin-top: 10px;
+        }
+        
+        .footer-bottom-links a {
+            color: #aaa;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        
+        .footer-bottom-links a:hover {
+            color: #fff;
+        }
+        
+        .designer {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #999;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .logo-main {
+                font-size: 42px;
+            }
+            
+            .logo-sub {
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            nav ul li {
+                margin: 0 8px;
+            }
+            
+            nav ul li a {
+                font-size: 14px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+            
+            .logo-main {
+                font-size: 36px;
+            }
+            
+            .logo-sub {
+                font-size: 15px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .logo-main {
+                font-size: 32px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav ul li {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo-main">RAMCO</div>
+                <div class="logo-sub">DHARMIKA SEVA</div>
+                <nav>
+                    <ul>
+                        <li><a href="#">HOME</a></li>
+                        <li><a href="#">HISTORY</a></li>
+                        <li><a href="#">SLRSPT</a></li>
+                        <li><a href="#">MUSIC SCHOOL</a></li>
+                        <li><a href="#">PATHA SALA</a></li>
+                        <li><a href="#">TEMPLES</a></li>
+                        <li><a href="#">TRIBAL HOSTELS</a></li>
+                        <li><a href="#">SCHOOLS</a></li>
+                        <li><a href="#">CONTACTS</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- News Section -->
+                <section class="news-section">
+                    <h2 class="section-title">Our Latest News</h2>
+                    
+                    <div class="news-item">
+                        <div class="news-title">UBHAYA JACADURUS OBSERVE CHATURMASYA VRATA</div>
+                        <div class="news-date">25 August, 2016</div>
+                    </div>
+                    
+                    <div class="news-item">
+                        <div class="news-title">24TH VARDHAMTI CELEBRATIONS OF JAGADOURU</div>
+                        <div class="news-date">25 September, 2016</div>
+                    </div>
+                    
+                    <div class="news-item">
+                        <div class="news-title">UBHAYA JACADURUS OBSERVE CHATURMASYA VRATA</div>
+                        <div class="news-date">25 August, 2016</div>
+                    </div>
+                </section>
+                
+                <!-- Founder Section -->
+                <section class="founder-section">
+                    <h2 class="founder-title">SRI P.A.C.RAMASAMY RAJA</h2>
+                    <div class="founder-name">Our Founder (1894 - 1962)</div>
+                    <div class="founder-text">
+                        <p>On April 24, 1894, when a son was born to Pocegradi Chinnain Rajh, there was great jubilation in the family. Sri Chinnain Rajh believed that the child was born with the blessings of the Lord of Ramaswaran, and named the child Ramasamy Raja. Little did anyone imagine that the infant was one day going to change the face of Rajapalayan, a panoramic town on the foothills of the Western Ghats in South Tamilnadu. Sri Ramasamy Raja, known as PACE, was only 24 years old when his father died.</p>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Facebook Section -->
+                <section class="social-section">
+                    <div class="social-box">
+                        <div class="social-title">
+                            <i class="fab fa-facebook-f social-icon"></i>
+                            <div class="social-name">Find Us On Facebook</div>
+                        </div>
+                        <div class="social-stats">
+                            <strong>Ramco</strong><br>
+                            AJMS People like<br>
+                            Share
+                        </div>
+                        <button class="like-button">Like Page</button>
+                        <div class="social-stats" style="margin-top: 10px;">
+                            Be the first of your friends to like this
+                        </div>
+                    </div>
+                    
+                    <!-- Twitter Section -->
+                    <div class="twitter-feed">
+                        <div class="twitter-header">
+                            <i class="fab fa-twitter twitter-icon"></i>
+                            <div class="social-name">Twitter Feed</div>
+                            <div class="twitter-stats">2,581 followers</div>
+                        </div>
+                        <button class="like-button" style="background-color: #1da1f2;">Follow</button>
+                        
+                        <div class="twitter-item">
+                            Nemo enim ipsam voluptatem quia voluptas at aspernatur aut odit aut magni dolores
+                        </div>
+                        
+                        <div class="twitter-item">
+                            Nemo enim ipsam voluptatem quia voluptas at aspernatur aut odit aut magni dolores
+                        </div>
+                        
+                        <div class="highlight">
+                            Founders Day Celebration Details
+                        </div>
+                        
+                        <div class="twitter-item">
+                            Nemo enim ipsam voluptatem quia voluptas at aspernatur aut odit aut magni dolores
+                        </div>
+                        
+                        <div class="twitter-item">
+                            Nemo enim ipsam voluptatem quia voluptas at aspernatur aut odit aut magni dolores
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">RAMCO</div>
+                    <div class="footer-subtitle">DHARMIKA SEVA</div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">QUICK LINKS</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">History</a></li>
+                        <li><a href="#">SLRSPT</a></li>
+                        <li><a href="#">Music School</a></li>
+                        <li><a href="#">Patha Sala</a></li>
+                        <li><a href="#">Temples</a></li>
+                        <li><a href="#">Tribal Hostels</a></li>
+                        <li><a href="#">Schools</a></li>
+                        <li><a href="#">Contacts</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">CONTACT US</h3>
+                    <div class="contact-info">
+                        Post Box No.1 P.A.C. Ramasamy Raja Salai,<br>
+                        RAJAPALAYAM – 626 117,<br>
+                        Tamil Nadu INDIA<br><br>
+                        Phone: +91 4563 235666<br>
+                        Fax: +91 4563 236520<br>
+                        Email: rajacot@ramcotex.com<br>
+                        rajacot@sanchamet.in
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">EMAIL NEWSLETTER</h3>
+                    <p style="color: #ddd; margin-bottom: 10px; font-size: 14px;">
+                        Get updates on ramco groups to help you stay ahead of the curve.
+                    </p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Enter Your Email address" class="newsletter-input">
+                        <button type="submit" class="newsletter-button">GO</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div>© 2016 RAMCO GROUPS PVT LTD.</div>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a>
+                </div>
+                <div class="designer">Designed By : www.bugtreat.com</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple interaction for like button
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                if(this.textContent === 'Like Page' || this.textContent === 'Follow') {
+                    this.textContent = 'Liked';
+                    if(this.style.backgroundColor === 'rgb(29, 161, 242)') {
+                        this.style.backgroundColor = '#1da1f2';
+                    } else {
+                        this.style.backgroundColor = '#28a745';
+                    }
+                } else if(this.textContent === 'Liked') {
+                    if(this.getAttribute('style') && this.getAttribute('style').includes('1da1f2')) {
+                        this.textContent = 'Follow';
+                        this.style.backgroundColor = '#1da1f2';
+                    } else {
+                        this.textContent = 'Like Page';
+                        this.style.backgroundColor = '#3b5998';
+                    }
+                }
+            });
+        });
+        
+        // Newsletter form submission
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const emailInput = this.querySelector('.newsletter-input');
+            if(emailInput.value) {
+                alert('Thank you for subscribing to our newsletter!');
+                emailInput.value = '';
+            } else {
+                alert('Please enter your email address.');
+            }
+        });
+        
+        // Navigation active state
+        document.querySelectorAll('nav ul li a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('nav ul li a').forEach(item => {
+                    item.style.borderBottom = 'none';
+                });
+                this.style.borderBottom = '2px solid #1a3a6c';
+            });
+        });
+    </script>
+</body>
+</html>

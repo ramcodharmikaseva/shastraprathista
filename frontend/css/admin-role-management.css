@@ -1,0 +1,34 @@
+/* Role descriptions */
+.role-description {
+  color: #6c757d;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* Role change form */
+.role-change-form .form-group {
+  margin-bottom: 15px;
+}
+
+.role-change-form .form-control {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.role-change-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.permission-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.permission-item i {
+  font-size: 12px;
+}

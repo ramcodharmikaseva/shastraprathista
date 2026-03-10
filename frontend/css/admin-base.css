@@ -1,0 +1,125 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+  --primary: #2c3e50;
+  --secondary: #d4af37;
+  --accent: #3498db;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --light: #f8f9fa;
+  --dark: #2c3e50;
+  --gray: #95a5a6;
+  --border: #e9ecef;
+  --shadow: 0 4px 6px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+  --shadow-xl: 0 20px 40px rgba(0,0,0,0.15);
+  --z-modal: 1000;
+  --z-toast: 9999;
+  --z-loading: 9999;
+  --z-dropdown: 100;
+  --z-header: 50;
+}
+
+body {
+  background: linear-gradient(135deg, #dfe1e7 0%, #cbc1d4 100%);
+  min-height: 100vh;
+  color: var(--dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+/* Enhanced Selection */
+::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: var(--primary);
+}
+
+/* Enhanced Focus Styles */
+*:focus {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+/* Enhanced Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c19b2e;
+}
+
+/* Enhanced Backdrop Support */
+@supports (backdrop-filter: blur(20px)) {
+  .site-header,
+  .main-menu,
+  .admin-nav,
+  .section-header,
+  .card,
+  .chart-container,
+  .table-container,
+  .modal-content,
+  .settings-tabs,
+  .report-filters,
+  .summary-card,
+  .chart-card,
+  .report-table-section,
+  .admin-users-section,
+  .loading-spinner {
+    backdrop-filter: blur(20px);
+  }
+}
+
+/* ===== CROSS-BROWSER GRADIENT TEXT SUPPORT ===== */
+/* Default fallback styles */
+.summary-content h3,
+.stat-value,
+.card-value,
+.section-title,
+.site-name {
+  color: var(--accent); /* Solid color fallback */
+}
+
+/* Gradient text for supporting browsers */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .summary-content h3,
+  .stat-value,
+  .card-value,
+  .section-title,
+  .site-name {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* Ensure solid color doesn't show through */
+  }
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

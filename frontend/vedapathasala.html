@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="common.css">
+  <title>Vedapathasala</title>
+  <style>
+    /* ============================= */
+    /* SCHOOL BAR */
+    /* ============================= */
+
+    .school-bar {
+      background: #fff8ef;
+      border-bottom: 1px solid #e6d3b1;
+      padding: 4px 10px;
+    }
+
+    .school-bar-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .school-logo {
+      width: 55px;
+      height: 55px;
+      object-fit: contain;
+    }
+
+    .school-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #02295c;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .school-title span {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* ============================= */
+    /* SLIDER SECTION */
+    /* ============================= */
+
+    .slider-section {
+      background: none;
+      padding: 0;
+    }
+
+    /* MAIN SLIDER */
+    .slider {
+      width: 100%;
+      max-width: 1200px;
+      height: 520px;                /* Desktop */
+      margin: 15px auto;
+      position: relative;
+      overflow: hidden;             /* keeps arrows & dots inside */
+      border-radius: 6px;
+      background: #010a13;
+    }
+
+    /* SLIDES */
+    .slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .slide.active {
+      opacity: 1;
+    }
+
+    /* OVERLAY */
+    .slide-overlay {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 40px 20px 30px;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.85),
+        rgba(0,0,0,0.35),
+        transparent
+      );
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .slide-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #d4af37;
+      margin-bottom: 6px;
+    }
+
+    .slide-description {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.4;
+    }
+
+    /* ============================= */
+    /* SLIDER ARROWS */
+    /* ============================= */
+
+    .slider-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    /* LEFT ARROW */
+    .slider-arrow.prev {
+      left: 12px;
+    }
+
+    /* RIGHT ARROW */
+    .slider-arrow.next {
+      right: 12px;
+    }
+
+
+    /* ============================= */
+    /* SLIDER DOTS */
+    /* ============================= */
+
+    .slider-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .slider-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.6);
+      cursor: pointer;
+    }
+
+    .slider-dot.active {
+      background: #fff;
+    }
+
+
+    /* ============================= */
+    /* TEACHERS SECTION */
+    /* ============================= */
+
+    .teachers-section {
+      background: #ffffff;
+      padding: 60px 0;
+    }
+
+    .teachers-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 20px;
+    }
+
+    .section-heading {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 40px;
+      font-size: 2rem;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    .section-heading::after {
+      content: '';
+      width: 100px;
+      height: 3px;
+      background: #d4af37;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .teachers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .teacher-card {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .teacher-img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+    }
+
+    .teacher-info {
+      padding: 20px;
+    }
+
+    .teacher-name {
+      font-size: 1.4rem;
+      color: #2c3e50;
+    }
+
+    .teacher-role {
+      color: #d4af37;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    /* ============================= */
+    /* ACCORDION */
+    /* ============================= */
+
+    .about-section {
+      background: #f8f9fa;
+      padding: 60px 0;
+    }
+
+    .about-container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 0 20px;
+    }
+
+    .accordion {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid #eee;
+    }
+
+    .accordion-header {
+      padding: 22px 25px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    .accordion-icon {
+      color: #d4af37;
+      font-size: 1.2rem;
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 25px;
+      transition: all 0.3s ease;
+    }
+
+    .accordion-item.active .accordion-content {
+      max-height: 1000px;
+      padding: 20px 25px;
+    }
+
+    /* ============================= */
+    /* RESPONSIVE */
+    /* ============================= */
+
+    @media (max-width: 768px) {
+      .slider { 
+        height: 320px; 
+      }
+      
+      .slide-title { 
+        font-size: 1.1rem; 
+      }
+
+      .slide-description { 
+        font-size: 0.9rem; 
+      }
+
+      .school-logo { 
+        width: 45px; height: 45px; 
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slider { 
+        height: 260px; 
+      }
+
+      .slider-arrow { 
+        width: 30px; 
+        height: 30px; 
+      }
+      
+      .slide-title {
+        font-size: 0.95rem; 
+      }
+
+      .slide-description { 
+        font-size: 0.8rem; 
+      }
+
+      .slider-dots {
+        bottom: 8px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Shared Header -->
+  <div id="header-container"></div>
+
+  <section class="school-bar">
+    <div class="school-bar-inner">
+      <img src="image/pathasala-logo.png" class="school-logo" alt="">
+      <h1 class="school-title">
+        SRI SRI ABHINAVA VIDYATHEERTHA BHARATI VEDAPATHASALA
+      </h1>
+    </div>
+  </section>
+
+  <!-- Large Auto-Sliding Image Slider -->
+  <section class="slider-section">
+    <div class="slider-container">
+      <div class="slider" id="imageSlider">
+        <!-- Slide 1 -->
+        <div class="slide active" style="background-image: url('image/pathasala1.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">Traditional Vedic Education</h2>
+              <p class="slide-description">Preserving the ancient wisdom of the Vedas through authentic Gurukula system. Our students learn Rigveda and Sukla Yajurveda with proper pronunciation and intonation.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="slide" style="background-image: url('image/pathasala2.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">Guru-Shishya Parampara</h2>
+              <p class="slide-description">Following the ancient tradition of personalized teaching. Each student receives individual attention from experienced Veda teachers in a traditional ashram setting.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide" style="background-image: url('image/pathasala3.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">24-Acre Serene Campus</h2>
+              <p class="slide-description">Situated on a beautiful campus donated by RAMCO Cement family, featuring Saradamba Temple, residential facilities, gardens, and sports grounds.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slide 4 -->
+        <div class="slide" style="background-image: url('image/pathasala4.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">Holistic Development</h2>
+              <p class="slide-description">Beyond Vedic studies, students learn Sanskrit, Yoga, and appear for board examinations. Free residential education for all deserving students.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slide 5 -->
+        <div class="slide" style="background-image: url('image/pathasala5.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">Certified by Sringeri Peetham</h2>
+              <p class="slide-description">Examinations conducted by MSRVVP Ujjain and Sri Sringeri Sharada Peetham. 13-year rigorous course leading to Ghanapati certification.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide" style="background-image: url('image/pathasala6.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">Class Room</h2>
+              <p class="slide-description">Following the ancient tradition of personalized teaching. Each student receives individual attention from experienced Veda teachers in a traditional ashram setting.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide" style="background-image: url('image/pathasala7.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">Class Room</h2>
+              <p class="slide-description">Following the ancient tradition of personalized teaching. Each student receives individual attention from experienced Veda teachers in a traditional ashram setting.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide" style="background-image: url('image/pathasala8.jpg');">
+          <div class="slide-overlay">
+            <div class="slide-content">
+              <h2 class="slide-title">Athyayas</h2>
+              <p class="slide-description">Our Vedapathasala Teachers</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slider Arrows (INSIDE the slider div) -->
+        <button class="slider-arrow prev">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="slider-arrow next">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <!-- Slider Navigation Dots (INSIDE the slider div) -->
+        <div class="slider-dots">
+          <div class="slider-dot active" data-slide="0"></div>
+          <div class="slider-dot" data-slide="1"></div>
+          <div class="slider-dot" data-slide="2"></div>
+          <div class="slider-dot" data-slide="3"></div>
+          <div class="slider-dot" data-slide="4"></div>
+          <div class="slider-dot" data-slide="5"></div>
+          <div class="slider-dot" data-slide="6"></div>
+          <div class="slider-dot" data-slide="7"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Teachers Section -->
+  <section class="teachers-section">
+    <div class="teachers-container">
+      <h2 class="section-heading">Our Veda Teachers</h2>
+      
+      <div class="teachers-grid">
+        <!-- Teacher 1 -->
+        <div class="teacher-card">
+          <img src="image/teacher1.jpg" alt="Sri Raghavendra Sharma" class="teacher-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250&q=80'">
+          <div class="teacher-info">
+            <h3 class="teacher-name">Sri Raghavendra Sharma</h3>
+            <p class="teacher-role">Chief Veda Teacher (Rigveda)</p>
+            <p class="teacher-details">With over 25 years of experience in Vedic teaching, Sri Raghavendra Sharma has trained more than 100 students in Rigveda chanting. He completed his Vedic education from Sri Sringeri Sharada Peetham and specializes in teaching Padapāṭha and Kramapāṭha methods.</p>
+          </div>
+        </div>
+        
+        <!-- Teacher 2 -->
+        <div class="teacher-card">
+          <img src="image/teacher2.jpg" alt="Sri Venkateswara Sastry" class="teacher-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250&q=80'">
+          <div class="teacher-info">
+            <h3 class="teacher-name">Sri Venkateswara Sastry</h3>
+            <p class="teacher-role">Senior Veda Teacher (Sukla Yajurveda)</p>
+            <p class="teacher-details">A Ghanapati in Sukla Yajurveda, Sri Venkateswara Sastry has been teaching for 20 years. He is an expert in ritual procedures (karma-kanda) and has conducted numerous Vedic ceremonies. He completed his education from the Veda Pathasala at Tirupati.</p>
+          </div>
+        </div>
+        
+        <!-- Teacher 3 -->
+        <div class="teacher-card">
+          <img src="image/teacher3.jpg" alt="Sri Narayana Sharma" class="teacher-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250&q=80'">
+          <div class="teacher-info">
+            <h3 class="teacher-name">Sri Narayana Sharma</h3>
+            <p class="teacher-role">Sanskrit & Veda Teacher</p>
+            <p class="teacher-details">Sri Narayana Sharma holds a Master's degree in Sanskrit from Banaras Hindu University and has 15 years of teaching experience. He teaches Sanskrit grammar, literature, and assists in Vedic chanting classes. He is also responsible for preparing students for board examinations.</p>
+          </div>
+        </div>
+        
+        <!-- Teacher 4 -->
+        <div class="teacher-card">
+          <img src="image/teacher4.jpg" alt="Sri Krishna Sharma" class="teacher-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250&q=80'">
+          <div class="teacher-info">
+            <h3 class="teacher-name">Sri Krishna Sharma</h3>
+            <p class="teacher-role">Veda Teacher & Alumni</p>
+            <p class="teacher-details">An alumnus of this very Vedapathasala, Sri Krishna Sharma completed his Ghanapati course in 2015 and returned to serve as a teacher. He specializes in teaching beginner students and maintaining the traditional Gurukula atmosphere.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Pathasala Accordion Section -->
+  <section class="about-section">
+    <div class="about-container">
+      <h2 class="section-heading">About Sri Sri Abhinava Vidyatheertha Bharati Vedapatashala</h2>
+      
+      <div class="accordion">
+        <!-- About Section -->
+        <div class="accordion-item active">
+          <div class="accordion-header">
+            <h3><i class="fas fa-school"></i> About Sri Sri Abhinava Vidyatheertha Bharati Vedapatashala</h3>
+            <span class="accordion-icon">+</span>
+          </div>
+          <div class="accordion-content">
+            <p>Sri Sri Abhinava Vidyatheertha Bharati Vedapatashala, established in 1997 under the auspices of PACR Sethuramammal Charities, functions with the divine blessings of the Jagadgurus of Sri Sringeri Sharada Peetham. The Patashala is dedicated to preserving and propagating India's ancient Vedic heritage through the traditional Gurukula system of education.</p>
+            <p>Situated on a serene 24-acre campus generously donated by the RAMCO Cement family, the Patashala features a beautifully built Saradamba Temple, residential facilities for students and teachers, spacious gardens, and a nurturing environment ideal for spiritual and academic learning.</p>
+          </div>
+        </div>
+        
+        <!-- Our Mission Section -->
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3><i class="fas fa-bullseye"></i> Our Mission</h3>
+            <span class="accordion-icon">+</span>
+          </div>
+          <div class="accordion-content">
+            <p>Our mission is to train young students in authentic Vedic chanting, pronunciation, and understanding, ensuring that this sacred knowledge is transmitted with purity to future generations. The Vedapatashala provides free residential education, including food, accommodation, and traditional Vedic training to deserving students.</p>
+          </div>
+        </div>
+        
+        <!-- Academics & Training Section -->
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3><i class="fas fa-graduation-cap"></i> Academics & Training</h3>
+            <span class="accordion-icon">+</span>
+          </div>
+          <div class="accordion-content">
+            <p><strong>Around 80 students</strong> are currently studying various branches of the Vedas.</p>
+            <p>Students are admitted from the age of 6 and undergo a <strong>13-year rigorous course</strong>, completing their education as Ghanapatis.</p>
+            <p>Examinations are conducted by <strong>MSRVVP Ujjain</strong> and <strong>Sri Sringeri Sharada Peetham</strong>, and certificates are awarded on successful completion.</p>
+            <p>Students receive Sanskrit education, Yoga classes twice a month, and are supported to appear for 10th and 11th standard board examinations.</p>
+            <p><strong>Two alumni</strong> of the Patashala currently serve as teachers, continuing the lineage of traditional learning.</p>
+          </div>
+        </div>
+        
+        <!-- Facilities & Student Care Section -->
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3><i class="fas fa-hotel"></i> Facilities & Student Care</h3>
+            <span class="accordion-icon">+</span>
+          </div>
+          <div class="accordion-content">
+            <p>The Patashala provides a wholesome living environment enriched with modern and traditional facilities:</p>
+            <ul>
+              <li>Residential quarters for four Veda teachers, a Sanskrit teacher, and two cook families.</li>
+              <li>Excellent kitchen and dining facilities offering nutritious meals.</li>
+              <li>A Cricket ground, Volleyball court, and spacious outdoor areas for recreation.</li>
+              <li>An on-call doctor who visits whenever required.</li>
+              <li>Accommodation for parents visiting their children.</li>
+              <li>Ramco and Rajapalayam Mills generously take care of students' travel expenses during holidays.</li>
+            </ul>
+            <p>The campus is managed by dedicated wardens, a committed manager, and support staff who ensure a disciplined, safe, and spiritually uplifting environment for all students.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Run By Section -->
+  <div class="run-by-section">
+    <span class="run-by-label">Run by:</span>
+    <div class="run-by-content">
+      <img src="image/sethuramammal.jpg" alt="Trust Logo" class="run-by-logo">
+      <span class="run-by-text">
+        P.A.C.R. Sethuramammal Charities
+      </span>
+    </div>
+  </div>
+
+  <!-- Shared Footer -->
+  <div id="footer-container"></div>
+
+  <script src="common.js"></script>
+
+  <script>
+    function loadSharedHeaderFooter() {
+      fetch('header.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          setTimeout(() => {
+            if (typeof initCommon === 'function') {
+              initCommon();   // ✅ CORRECT
+            }
+          }, 100);
+        });
+
+      fetch('footer.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('footer-container').innerHTML = html;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadSharedHeaderFooter);
+
+
+    // Image Slider Functionality
+    function initImageSlider() {
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.slider-dot');
+      const prevBtn = document.querySelector('.slider-arrow.prev');  // Updated
+      const nextBtn = document.querySelector('.slider-arrow.next');  // Updated
+      
+      let currentSlide = 0;
+      let slideInterval;
+      
+      // Initialize first slide
+      updateSlider();
+      
+      // Start auto-sliding (5 seconds interval)
+      startAutoSlide();
+      
+      // Function to update slider
+      function updateSlider() {
+        // Hide all slides
+        slides.forEach(slide => slide.classList.remove('active'));
+        
+        // Deactivate all dots
+        dots.forEach(dot => dot.classList.remove('active'));
+        
+        // Show current slide
+        slides[currentSlide].classList.add('active');
+        
+        // Activate current dot
+        dots[currentSlide].classList.add('active');
+      }
+      
+      // Function to go to next slide
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlider();
+      }
+      
+      // Function to go to previous slide
+      function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        updateSlider();
+      }
+      
+      // Function to go to specific slide
+      function goToSlide(index) {
+        currentSlide = index;
+        updateSlider();
+      }
+      
+      function startAutoSlide() {
+        slideInterval = setInterval(nextSlide, 5000);
+      }
+      
+      // Function to stop auto-sliding (when user interacts)
+      function stopAutoSlide() {
+        clearInterval(slideInterval);
+      }
+      
+      // Event listeners for dots
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          stopAutoSlide();
+          goToSlide(index);
+          startAutoSlide(); // Restart auto-sliding after manual change
+        });
+      });
+      
+      // Event listeners for arrows
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          stopAutoSlide();
+          prevSlide();
+          startAutoSlide();
+        });
+      }
+      
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          stopAutoSlide();
+          nextSlide();
+          startAutoSlide();
+        });
+      }
+      
+      // Pause auto-slide on hover
+      const slider = document.getElementById('imageSlider');
+      if (slider) {
+        slider.addEventListener('mouseenter', stopAutoSlide);
+        slider.addEventListener('mouseleave', startAutoSlide);
+      }
+    }
+    
+    // Setup accordion functionality
+    function setupAccordion() {
+      const accordionHeaders = document.querySelectorAll('.accordion-header');
+      
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+          const item = this.parentElement;
+          const isActive = item.classList.contains('active');
+          
+          // Close all accordion items
+          document.querySelectorAll('.accordion-item').forEach(otherItem => {
+            otherItem.classList.remove('active');
+          });
+          
+          // Open clicked item if it was closed
+          if (!isActive) {
+            item.classList.add('active');
+          }
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initImageSlider();   // ✅ REQUIRED
+      setupAccordion();    // ✅ Also required
+    });
+
+
+    
+    // Make functions available globally
+    window.setupAccordion = setupAccordion;
+    window.initImageSlider = initImageSlider;
+  </script>
+</body>
+</html>

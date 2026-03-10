@@ -1,0 +1,979 @@
+/* common.css - Shared styles across all pages */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Header Styles - UPDATED LAYOUT */
+.site-header {
+  background: linear-gradient(135deg, #f7f7f8, #fbfbfc);
+  color: rgb(92, 28, 28);
+  padding: 15px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  margin-left: 96px;
+}
+
+/* REMOVED LOGO STYLES - Logo image is removed */
+.logo {
+  display: none;
+}
+
+/* NEW: Site name container for RAMCO and DHARMIKA SEVA - UPDATED */
+.site-name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+}
+
+.site-name-main {
+  font-size: 2rem;
+  font-weight: 800;
+  color: rgb(2, 41, 92);
+}
+
+.site-name-sub {
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 700;
+  color: rgb(2, 41, 92);
+  margin-top: 3px;
+}
+
+.home-link {
+  color: rgb(2, 41, 92);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+/* UPDATED: Right navigation layout */
+.nav-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: auto;
+}
+
+/* Top row: User welcome and links in order */
+.nav-top-links {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Increased gap for better spacing */
+  justify-content: flex-end;
+}
+
+/* User welcome message - FIRST */
+.user-welcome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(2, 41, 92);
+  font-size: 0.9rem;
+  font-weight: 500;
+  order: 1; /* First item */
+}
+
+/* Header links container */
+.header-links {
+  display: flex;
+  gap: 20px; /* Increased gap for better spacing */
+  order: 2; /* After username */
+}
+
+/* Individual links in specific order */
+#auth-link {
+  order: 1; /* Logout/Sign In - SECOND */
+}
+
+.header-links a:nth-child(2) { /* Profile link */
+  order: 2; /* Profile - THIRD */
+}
+
+#cart-link {
+  order: 3; /* Cart - FOURTH */
+}
+
+.header-links a {
+  color: rgb(2, 41, 92);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.header-links a:hover {
+  color: #d4af37;
+}
+
+/* Add to common.css */
+.cart-count {
+  background: #e7bf3c;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  margin-left: 5px;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+#cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Main Menu */
+.main-menu {
+  background: #013057;
+  padding: 0 9%;
+  position: relative;
+}
+
+.main-menu ul {
+  display: flex;
+  list-style: none;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
+}
+
+.main-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 5px;
+  display: block;
+  transition: background 0.3s;
+  position: relative; 
+  font-size: 14px;
+}
+
+.main-menu a:hover,
+.main-menu a.active {
+  background: #2c3e50;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  transition: transform 0.3s;
+}
+
+/* Desktop dropdown styles */
+@media (min-width: 769px) {
+  .dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #013057;
+    min-width: 220px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    border-top: 2px solid #d4af37;
+    border-radius: 0 0 4px 4px;
+    overflow: hidden;
+    display: block !important;
+  }
+
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    display: block !important;
+  }
+
+  .dropdown-menu li {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: block;
+    width: 100%;
+  }
+
+  .dropdown-menu li:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-menu a {
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: all 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dropdown-menu a:hover {
+    background: #2c3e50;
+    padding-left: 25px;
+    color: #d4af37;
+  }
+
+  .dropdown-menu i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    color: #d4af37;
+  }
+
+  .dropdown-menu a.active {
+    background: #2c3e50;
+    color: #d4af37;
+    font-weight: bold;
+  }
+
+  .dropdown-menu a.active i {
+    color: #d4af37;
+  }
+}
+
+/* Menu toggle for mobile */
+.menu-toggle {
+  display: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+/* Compact Footer */
+.site-footer {
+  background: #2c3e50;
+  color: white;
+  padding: 25px 5% 15px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+}
+
+.footer-column h3 {
+  color: #d4af37;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding-bottom: 5px;
+}
+
+.footer-links {
+  list-style: none;
+  margin-bottom: 15px;
+}
+
+.footer-links li {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.footer-links a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+  display: block;
+  padding: 2px 0;
+}
+
+.footer-links a:hover {
+  color: #d4af37;
+  padding-left: 5px;
+}
+
+.footer-links i {
+  color: #d4af37;
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.social-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-links a {
+  color: white;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+  background: rgba(255, 255, 255, 0.1);
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-links a:hover {
+  color: #d4af37;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #bdc3c7;
+  font-size: 0.8rem;
+}
+
+/* Toast Notification - TOP CENTER POSITION */
+#toast, #top-toast {
+  visibility: hidden;
+  max-width: 350px;
+  min-width: 250px;
+  background-color: #f5bf5b;
+  color: #070707;
+  text-align: center;
+  border-radius: 8px;
+  padding: 14px 16px;
+  position: fixed;
+  z-index: 999999;
+  top: 20px; /* Keep top position */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%) translateY(-20px); /* Center and move up for animation */
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.4s, transform 0.4s;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+
+#toast.show, #top-toast.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0); /* Center and show in final position */
+}
+
+#toast.error, #top-toast.error {
+  background-color: #e74c3c;
+  color: white;
+}
+
+#toast.success, #top-toast.success {
+  background-color: #2ecc71;
+  color: white;
+}
+
+#toast.info, #top-toast.info {
+  background-color: #f5bf5b;
+  color: #070707;
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  #toast, #top-toast {
+    max-width: calc(100vw - 40px);
+    left: 50%; /* Keep centered */
+    right: auto; /* Remove right positioning */
+    margin: 0 auto;
+    font-size: 13px;
+    padding: 12px 14px;
+    top: 10px; /* Slightly lower on mobile */
+    transform: translateX(-50%) translateY(-20px); /* Keep centered animation */
+  }
+  
+  #toast.show, #top-toast.show {
+    transform: translateX(-50%) translateY(0); /* Keep centered */
+  }
+}
+
+/* Focus accessibility */
+a:focus, button:focus, input:focus {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    padding-top: 70px; /* INCREASED from 60px to 70px */
+    position: relative;
+  }
+  
+  .logo-title {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    margin-top: 5px;
+  }
+  
+  .nav-right {
+    align-items: center;
+    width: 100%;
+  }
+  
+  .nav-top-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .user-welcome {
+    order: 1;
+    margin-bottom: 5px;
+  }
+  
+  .header-links {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    order: 2;
+  }
+  
+  /* Reset order for mobile */
+  #auth-link,
+  .header-links a:nth-child(2),
+  #cart-link {
+    order: 0; /* Reset to natural order on mobile */
+  }
+  
+  .main-menu ul {
+    flex-direction: column;
+    display: none;
+    width: 100%;
+  }
+  
+  .main-menu ul.show {
+    display: flex;
+  }
+  
+  .menu-toggle {
+    display: block;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .site-name-container {
+    align-items: center;
+  }
+
+  .site-name-main {
+    font-size: 1.8rem;
+    padding-top: 0;
+  }
+
+  .site-name-sub {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 3px;
+    position: static;
+    transform: none;
+  }
+}
+
+/* Mobile-specific dropdown styles */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    background: #02295c;
+    display: none;
+    border-top: none;
+    margin-left: 20px;
+    transition: none;
+    width: calc(100% - 20px);
+  }
+  
+  .dropdown.active .dropdown-menu {
+    display: block;
+  }
+  
+  .dropdown > a .dropdown-arrow {
+    display: inline-block;
+  }
+  
+  .dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  
+  .dropdown-menu a {
+    padding: 10px 15px;
+    width: 100%;
+  }
+  
+  .dropdown-menu li {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+  }
+  
+  .dropdown-menu li:last-child {
+    border-bottom: none;
+  }
+  
+  .dropdown-menu a.active {
+    background: #2c3e50;
+    color: #d4af37;
+    font-weight: bold;
+  }
+}
+
+/* Remove old site-name styles if they conflict */
+.old-site-name {
+  display: none;
+}
+
+/* FIX: Mobile dropdown align all items LEFT */
+@media (max-width: 768px) {
+  .main-menu ul {
+    align-items: flex-start !important;
+  }
+
+  .dropdown-menu {
+    text-align: left !important;
+    align-items: flex-start !important;
+  }
+
+  .dropdown-menu a {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+}
+
+/* Run By Section */
+.run-by-section {
+  margin: 40px auto 20px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.run-by-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.run-by-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.run-by-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.run-by-text {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Mobile tuning */
+@media (max-width: 768px) {
+  .run-by-text {
+    font-size: 0.9rem;
+  }
+
+  .run-by-logo {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Inventory Status Styles */
+.stock-status {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.stock-status.in-stock {
+  color: #27ae60;
+  background-color: rgba(39, 174, 96, 0.1);
+}
+
+.stock-status.low-stock {
+  color: #f39c12;
+  background-color: rgba(243, 156, 18, 0.1);
+}
+
+.stock-status.out-of-stock {
+  color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Disabled buttons */
+.add-to-cart-btn:disabled,
+button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  background-color: #95a5a6 !important;
+}
+
+/* Inventory warning in cart */
+.inventory-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e74c3c;
+  font-size: 14px;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 6px;
+  border-left: 4px solid #e74c3c;
+}
+
+.inventory-warning i {
+  font-size: 16px;
+}
+
+/* Low stock indicator */
+.low-stock-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #f39c12;
+  color: white;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+/* Out of stock overlay */
+.book-image.out-of-stock::after {
+  content: 'Out of Stock';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 1;
+}
+
+/* Add to your existing CSS */
+.modal-buttons button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  background-color: #95a5a6 !important;
+}
+
+.modal-buttons button:disabled:hover {
+  background-color: #95a5a6 !important;
+  transform: none !important;
+}
+
+.qty-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+/* ================= ADMIN SHIELDS IN HEADER ================= */
+.admin-shields-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.admin-shields-header .shield-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin-shields-header a {
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  color: rgb(2, 41, 92);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.admin-shields-header a:hover {
+  color: #d4af37;
+  transform: translateY(-2px);
+  border-color: #d4af37;
+}
+
+.admin-shields-header .shield-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c3e50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  z-index: 1000;
+  pointer-events: none;
+  font-weight: 500;
+}
+
+.admin-shields-header a:hover .shield-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Hide shields when empty */
+.admin-shields-header:empty {
+  display: none !important;
+}
+
+/* ================= DESKTOP: Shields in header with user links ================= */
+@media (min-width: 769px) {
+  /* Make nav-right relative for absolute positioning */
+  .nav-right {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-height: 60px; /* Space for two rows */
+  }
+  
+  /* User links row */
+  .nav-top-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: flex-end;
+    width: 100%;
+    height: 40px; /* Fixed height for user links row */
+  }
+  
+  /* IMPORTANT: Shields should be positioned ABSOLUTELY within nav-right */
+  .admin-shields-header {
+    position: absolute;
+    top: 40px; /* Start right below the user links */
+    right: 0;
+    width: auto;
+    z-index: 10;
+  }
+  
+  /* Shield group layout */
+  .admin-shields-header .shield-group {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  
+  /* Shield icon styling */
+  .admin-shields-header a {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    color: rgb(2, 41, 92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .admin-shields-header a:hover {
+    color: #d4af37;
+    transform: translateY(-2px);
+  }
+}
+
+/* ================= MOBILE: Shields VERTICAL in top right corner ================= */
+@media (max-width: 768px) {
+  .site-header {
+    position: relative;
+    padding-top: 10px; /* Minimal padding as you prefer */
+  }
+  
+  .logo-title {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .nav-right {
+    align-items: center;
+    width: 100%;
+  }
+  
+  .nav-top-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  /* Shields positioned absolutely in top right corner */
+  .admin-shields-header {
+    position: absolute;
+    top: 10px; /* Close to top */
+    right: 10px;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1000;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  
+  /* Shield group also vertical */
+  .admin-shields-header .shield-group {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+  }
+  
+  /* Adjust shield sizes for mobile */
+  .admin-shields-header a {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  
+  /* Position tooltip to the left on mobile */
+  .admin-shields-header .shield-tooltip {
+    font-size: 10px;
+    padding: 4px 8px;
+    left: auto;
+    right: 100%;
+    bottom: 50%;
+    transform: translateY(50%);
+    margin-left: 0;
+    margin-right: 8px;
+    margin-bottom: 0;
+  }
+  
+  /* Original mobile order */
+  .user-welcome {
+    order: 1;
+  }
+  
+  .header-links {
+    order: 2;
+    flex-direction: row;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .site-header {
+    padding-top: 10px; /* Keep minimal padding */
+  }
+  
+  .admin-shields-header {
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+  
+  .admin-shields-header a {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+  
+  .admin-shields-header .shield-tooltip {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+}

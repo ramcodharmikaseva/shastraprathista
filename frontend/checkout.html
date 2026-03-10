@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Checkout - SHASTRAPRATHISTA BOOKS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Complete your book purchase - Shastraprathista Books">
+  <meta name="keywords" content="books, checkout, purchase, order">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Preconnect for CDN -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com/ajax/libs" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="checkout.css">
+
+</head>
+<body>
+
+<!-- Shared Header -->
+<div id="header-container"></div>
+
+<!-- ✅ Improved Toast Container -->
+<div id="top-toast" class="toast-container" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;"></div>
+
+<div class="checkout-container">
+  <h1 class="checkout-title"><i class="fas fa-shopping-cart"></i> Checkout</h1>
+  
+  <!-- Step Indicator with ARIA -->
+  <div class="step-indicator" role="tablist" aria-label="Checkout steps">
+    <div class="step" data-step="contactSection" role="tab" aria-selected="true" aria-controls="contactSection">
+      <div class="step-number">1</div>
+      <div class="step-label">Contact</div>
+    </div>
+    <div class="step" data-step="addressSection" role="tab" aria-selected="false" aria-controls="addressSection">
+      <div class="step-number">2</div>
+      <div class="step-label">Address</div>
+    </div>
+    <div class="step" data-step="summarySection" role="tab" aria-selected="false" aria-controls="summarySection">
+      <div class="step-number">3</div>
+      <div class="step-label">Summary</div>
+    </div>
+    <div class="step" data-step="paymentSection" role="tab" aria-selected="false" aria-controls="paymentSection">
+      <div class="step-number">4</div>
+      <div class="step-label">Payment</div>
+    </div>
+  </div>
+
+  <!-- Step 1: Contact Details -->
+  <div id="contactSection" class="step-content active" role="tabpanel">
+    <h2><i class="fas fa-user"></i> Contact Information</h2>
+    
+    <div class="form-group">
+      <label for="contactName">Full Name *</label>
+      <input type="text" id="contactName" required 
+             placeholder="Enter your full name" 
+             aria-required="true" />
+    </div>
+    
+    <div class="form-group">
+      <label for="contactPhone">Phone Number *</label>
+      <input type="tel" id="contactPhone" required 
+             pattern="[0-9]{10}"
+             title="Please enter a valid 10-digit phone number"
+             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+             placeholder="Enter your 10-digit phone number" 
+             maxlength="10" 
+             aria-required="true" />
+    </div>
+    
+    <div class="form-group">
+      <label for="contactEmail">Email Address *</label>
+      <input type="email" id="contactEmail" required 
+             placeholder="Enter your email address" 
+             aria-required="true" />
+    </div>
+    
+    <div class="btn-container">
+      <button class="btn" onclick="goToAddress()" type="button">
+        <i class="fas fa-arrow-right"></i> Continue to Address
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Billing Address -->
+  <div id="addressSection" class="step-content" role="tabpanel" style="display: none;">
+    <h2><i class="fas fa-map-marker-alt"></i> Billing Address</h2>
+
+    <div class="form-group">
+      <label for="billingName">Full Name *</label>
+      <input type="text" id="billingName" required 
+             placeholder="Enter buyer name" 
+             aria-required="true" />
+    </div>
+
+    <div class="form-group">
+      <label for="billingAddress">Full Address *</label>
+      <textarea id="billingAddress" required 
+                placeholder="Enter your complete address with street, area, etc." 
+                rows="3"
+                aria-required="true"></textarea>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label for="billingCity">City *</label>
+        <input type="text" id="billingCity" required 
+               placeholder="Enter your city" 
+               aria-required="true" />
+      </div>
+      
+      <div class="form-group">
+        <label for="billingDistrict">District *</label>
+        <input type="text" id="billingDistrict" required 
+               placeholder="Enter your district" 
+               aria-required="true" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="billingState">State *</label>
+        <input type="text" id="billingState" required 
+               placeholder="Enter your state" 
+               aria-required="true" />
+      </div>
+      
+      <div class="form-group">
+        <label for="billingPincode">Pincode *</label>
+        <input type="text" id="billingPincode" required 
+               pattern="[0-9]{6}"
+               title="Please enter a valid 6-digit pincode"
+               maxlength="6" 
+               placeholder="Enter 6-digit pincode" 
+               aria-required="true" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="billingPhone">Phone Number *</label>
+      <input type="tel" id="billingPhone" required 
+             pattern="[0-9]{10}"
+             title="Please enter a valid 10-digit phone number"
+             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+             placeholder="Enter your 10-digit phone number" 
+             maxlength="10" 
+             aria-required="true" />
+    </div>
+    
+    <div class="form-group">
+      <label for="billingCountry">Country *</label>
+      <select id="billingCountry" required aria-required="true">
+        <option value="India" selected>India</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    
+    <!-- Shipping Address Section -->
+    <div id="shippingAddressSection" class="shipping-address">
+      <h3><i class="fas fa-truck"></i> Shipping Address</h3>
+
+      <!-- Same as billing address button -->
+      <button type="button" class="same-as-billing-btn" onclick="copyBillingToShipping()">
+        <i class="fas fa-copy"></i> Same as Billing Address
+      </button>
+
+      <div class="address-type" role="radiogroup" aria-label="Address type">
+        <label class="address-type-option">
+          <input type="radio" name="addressType" value="home" checked>
+          <span class="address-type-icon"><i class="fas fa-home"></i></span>
+          <span class="address-type-label">Home</span>
+        </label>
+        <label class="address-type-option">
+          <input type="radio" name="addressType" value="work">
+          <span class="address-type-icon"><i class="fas fa-briefcase"></i></span>
+          <span class="address-type-label">Work</span>
+        </label>
+        <label class="address-type-option">
+          <input type="radio" name="addressType" value="other">
+          <span class="address-type-icon"><i class="fas fa-map-marker"></i></span>
+          <span class="address-type-label">Other</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="shippingName">Full Name</label>
+        <input type="text" id="shippingName" 
+               placeholder="Enter shipping name" />
+      </div>
+  
+      <div class="form-group">
+        <label for="shippingAddress">Full Address</label>
+        <textarea id="shippingAddress" 
+                  placeholder="Enter complete shipping address" 
+                  rows="3"></textarea>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group">
+          <label for="shippingCity">City</label>
+          <input type="text" id="shippingCity" 
+                 placeholder="Enter shipping city" />
+        </div>
+        
+        <div class="form-group">
+          <label for="shippingDistrict">District</label>
+          <input type="text" id="shippingDistrict" 
+                 placeholder="Enter shipping district" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="shippingState">State</label>
+          <input type="text" id="shippingState" 
+                 placeholder="Enter shipping state" />
+        </div>
+        
+        <div class="form-group">
+          <label for="shippingPincode">Pincode</label>
+          <input type="text" id="shippingPincode" 
+                 pattern="[0-9]{6}"
+                 maxlength="6"
+                 placeholder="Enter shipping pincode" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="shippingPhone">Phone Number</label>
+        <input type="tel" id="shippingPhone" 
+               pattern="[0-9]{10}"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+               maxlength="10"
+               placeholder="Enter shipping phone number" />
+      </div>
+
+      <div class="form-group">
+        <label for="shippingCountry">Country</label>
+        <select id="shippingCountry">
+          <option value="India" selected>India</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Terms Acceptance -->
+    <div class="terms-acceptance">
+      <input type="checkbox" id="saveAddress" checked>
+      <label for="saveAddress">Save this address for future orders</label>
+    </div>
+    
+    <div class="btn-container">
+      <button type="button" class="btn btn-secondary" onclick="goBackToStep('contactSection')">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <button type="button" class="btn" onclick="goToSummary()">
+        <i class="fas fa-arrow-right"></i> Continue to Summary
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3: Order Summary -->
+  <div id="summarySection" class="step-content" role="tabpanel" style="display: none;">
+    <h2><i class="fas fa-receipt"></i> Order Summary</h2>
+    
+    <!-- Loading Indicator -->
+    <div id="summaryLoading" style="display: none; text-align: center; padding: 20px;">
+      <i class="fas fa-spinner fa-spin"></i> Loading order summary...
+    </div>
+    
+    <!-- Shipping Region Selection -->
+    <div class="shipping-region">
+      <h3><i class="fas fa-truck"></i> Shipping Details</h3>
+      <div class="form-group">
+        <label for="region">Select Delivery Region: *</label>
+        <select id="region" class="form-control" required aria-required="true">
+          <option value="">Select Shipping Region</option>
+          <option value="south">South India</option>
+          <option value="north">North India</option>
+          <option value="other_country">Other Country</option>
+        </select>
+        <p class="shipping-info">
+          <i class="fas fa-info-circle"></i> Shipping calculated based on total weight and selected region
+        </p>
+      </div>
+    </div>
+    
+    <div class="discount-section">
+      <h3><i class="fas fa-tag"></i> Apply Discount Code</h3>
+      <div class="discount-input-group">
+        <input type="text" id="discountCode" placeholder="Enter discount code">
+        <button type="button" class="btn" onclick="applyDiscount()">Apply</button>
+      </div>
+      <div id="discountMessage" class="discount-message"></div>
+    </div>
+    
+    <div class="order-items-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Title</th>
+            <th>Qty</th>
+            <th>Price ₹</th>
+            <th>Discount ₹</th>
+            <th>Subtotal ₹</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody">
+          <!-- Will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="summary-box">
+      <div class="summary-item">
+        <span>Original Subtotal:</span>
+        <span>₹ <span id="summaryOriginalSubtotal">0</span></span>
+      </div>
+      <div class="summary-item" id="discountRow" style="display: none;">
+        <span>Discount:</span>
+        <span>-₹ <span id="summaryDiscount">0</span></span>
+      </div>
+      <div class="summary-item">
+        <span>Net Subtotal:</span>
+        <span>₹ <span id="summaryNetSubtotal">0</span></span>
+      </div>
+      <div class="summary-item">
+        <span>Total Weight:</span>
+        <span><span id="summaryWeight">0</span> g</span>
+      </div>
+      <div class="summary-item">
+        <span>Shipping:</span>
+        <span>₹ <span id="summaryShipping">0</span></span>
+      </div>
+      <div class="summary-item summary-total">
+        <span>Total Amount:</span>
+        <span>₹ <span id="summaryTotal">0</span></span>
+      </div>
+    </div>
+ 
+    <div class="btn-container">
+      <button type="button" class="btn btn-secondary" onclick="goBackToStep('addressSection')">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <button type="button" class="btn" onclick="goToPayment()">
+        <i class="fas fa-credit-card"></i> Proceed to Payment
+      </button>
+    </div>
+  </div>
+
+  
+  <!-- Step 4: Payment -->
+  <div id="paymentSection" class="step-content" role="tabpanel" style="display: none;">
+    <h2><i class="fas fa-credit-card"></i> Payment Options</h2>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+      <div class="spinner-content">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Processing your order...</p>
+      </div>
+    </div>
+  
+    <div class="payment-option">
+      <h3><i class="fas fa-qrcode"></i> UPI / QR Code Payment</h3>
+      <div class="qr-container">
+        <div style="width: 180px; height: 180px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; border-radius: 8px; margin: 0 auto;">
+          <div style="text-align: center; color: #666;">
+            <i class="fas fa-qrcode" style="font-size: 40px; margin-bottom: 10px;"></i>
+            <div>QR Code Image</div>
+            <div style="font-size: 12px;">(Will be added later)</div>
+          </div>
+        </div>
+      </div>
+      <p><strong>UPI ID:</strong> shastrapratista@upi</p>
+    </div>
+    
+    <div class="payment-option">
+      <h3><i class="fas fa-university"></i> Bank Transfer</h3>
+      <div class="bank-details">
+        <p><strong>Account Name:</strong> Smt Lingammal Ramaraju Shastrapratista Trust</p>
+        <p><strong>Account Number:</strong> XXXXXXXXXXXX</p>
+        <p><strong>IFSC Code:</strong> XXXXXX01234</p>
+        <p><strong>Bank Name:</strong> State Bank of India</p>
+        <p><strong>Branch:</strong> Chennai Main Branch</p>
+      </div>
+    </div>
+
+    <!-- Address Confirmation Section -->
+    <div id="addressConfirmation" class="address-confirmation">
+      <h4><i class="fas fa-address-card"></i> Address Details</h4>
+      <p><strong>Billing Address:</strong> <span id="confirmBillingAddress"></span></p>
+      <p><strong>Shipping Address:</strong> <span id="confirmShippingAddress"></span></p>
+      <p><strong>Shipping Region:</strong> <span id="confirmShippingRegion"></span></p>
+    </div>
+  
+    <div id="successBox" style="display: none;">
+      <div class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <h3>Order Placed Successfully!</h3>
+      
+        <!-- Backend Status Display -->
+        <div id="backendStatus"></div> <!-- ✅ MUST HAVE THIS ID -->
+      
+        <!-- Order Confirmation Details -->
+        <div class="order-confirmation">
+          <h4><i class="fas fa-receipt"></i> Order Details</h4>
+          <p><strong>Order ID:</strong> <span id="confirmOrderId"></span></p> <!-- ✅ -->
+          <p><strong>Order Date:</strong> <span id="confirmOrderDate"></span></p> <!-- ✅ -->
+          <p><strong>Total Amount:</strong> ₹<span id="confirmOrderTotal"></span></p> <!-- ✅ -->
+          <p><strong>Shipping Region:</strong> <span id="confirmOrderRegion"></span></p> <!-- ✅ -->
+          <p>Thank you for your purchase! We will process your order shortly.</p>
+        </div>
+      
+        <!-- Success Actions -->
+        <div class="success-actions">
+          <button type="button" onclick="window.location.href='profile.html'" class="btn btn-primary">
+            <i class="fas fa-user"></i> View Order History
+          </button>
+          <button type="button" onclick="window.location.href='index.html'" class="btn btn-secondary">
+            <i class="fas fa-home"></i> Continue Shopping
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Debug Panel (Hidden in production) -->
+    <div id="debugPanel" class="debug-panel" style="display: none;">
+      <h4><i class="fas fa-bug"></i> Debug Information</h4>
+      <p><strong>Status:</strong> <span id="debugStatus">Not started</span></p>
+      <p><strong>Error:</strong> <span id="debugError">None</span></p>
+      <p><strong>Response:</strong> <span id="debugResponse">None</span></p>
+    </div>
+  
+    <div class="btn-container">
+      <button type="button" class="btn btn-secondary" onclick="goBackToStep('summarySection')">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <button type="button" class="btn" id="completeBtn" onclick="completeCheckout()">
+        <i class="fas fa-check"></i> Place Order
+      </button>
+      <button type="button" class="debug-toggle" onclick="toggleDebug()" style="display: none;">
+        <i class="fas fa-bug"></i> Debug
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Shared Footer -->
+<div id="footer-container"></div>
+
+<!-- Shared Header/Footer Loader -->
+<script>
+  function loadSharedHeaderFooter() {
+    fetch('header.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('header-container').innerHTML = html;
+        // Initialize common functions if available
+        if (typeof updateAuthUI === "function") updateAuthUI();
+        if (typeof updateCartCount === "function") updateCartCount();
+      })
+      .catch(err => console.error('Error loading header:', err));
+
+    fetch('footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('footer-container').innerHTML = html;
+      })
+      .catch(err => console.error('Error loading footer:', err));
+  }
+
+  // Show debug button only in development
+  document.addEventListener('DOMContentLoaded', function() {
+    loadSharedHeaderFooter();
+    
+    // Show debug button only on localhost
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      const debugBtn = document.querySelector('.debug-toggle');
+      if (debugBtn) debugBtn.style.display = 'inline-block';
+    }
+  });
+</script>
+
+<!-- Core Scripts -->
+<script src="common.js"></script>
+<script src="checkout.js"></script>
+<!-- Make sure orderService.js is in the correct path -->
+<script src="js/orderService.js"></script>
+</body>
+</html>

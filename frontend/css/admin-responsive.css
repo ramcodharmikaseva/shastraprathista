@@ -1,0 +1,342 @@
+/* ===== ADMIN RESPONSIVE CSS (MERGED & CLEAN) ===== */
+
+/* ---------- SAFETY: ALLOW SCROLL ---------- */
+html, body {
+  height: auto;
+  overflow-y: auto;
+}
+
+/* =====================================================
+   <= 1200px (Tablet / Small Laptop)
+===================================================== */
+@media (max-width: 1200px) {
+
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .addresses-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* =====================================================
+   <= 768px (Mobile / Tablet)
+===================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- CONTAINER ---------- */
+  .container {
+    padding: 15px 10px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .site-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 20px;
+    margin: 0 10px;
+    border-radius: 0 0 15px 15px;
+  }
+
+  .nav-right {
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .header-links {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .header-links a {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  /* ---------- MAIN MENU (HOME / BOOKS / INVENTORY / DASHBOARD) ---------- */
+  .main-menu {
+    margin: 15px 10px;
+    border-radius: 15px;
+  }
+
+  .main-menu ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;   /* half screen */
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .main-menu li {
+    flex: none;
+  }
+
+  .main-menu a {
+    padding: 18px 20px;
+    justify-content: center;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    min-height: 56px;
+  }
+
+  /* ---------- ADMIN NAV (DASHBOARD / ORDERS / ETC) ---------- */
+  .admin-nav {
+    margin: 20px 10px;
+    border-radius: 15px;
+  }
+
+  .admin-nav ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;   /* half screen */
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .admin-nav li {
+    flex: none;
+    min-width: 0;
+  }
+
+  .admin-nav a {
+    padding: 18px 20px;
+    justify-content: center;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    min-height: 56px;
+  }
+
+  /* ---------- SECTION HEADER ---------- */
+  .section-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 25px 20px;
+    margin: 0 10px 20px;
+    border-radius: 15px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  /* ---------- SEARCH ---------- */
+  .search-box {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .search-input {
+    padding: 14px 45px 14px 16px;
+  }
+
+  /* ---------- DASHBOARD ---------- */
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin: 0 10px 20px;
+  }
+
+  .card {
+    padding: 25px 20px;
+    border-radius: 15px;
+  }
+
+  .charts-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin: 0 10px 20px;
+  }
+
+  .chart-container {
+    padding: 20px;
+    border-radius: 15px;
+    height: 250px !important;
+  }
+
+  /* ---------- MODALS ---------- */
+  .modal-content {
+    margin: 20px 10px;
+    width: calc(100% - 20px);
+    border-radius: 15px;
+  }
+
+  .modal-content.large {
+    margin: 5% auto;
+    width: calc(100% - 20px);
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ---------- ORDERS ---------- */
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .status-controls {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .order-totals {
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .order-sections {
+    gap: 20px;
+  }
+
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* ---------- TABLES ---------- */
+  .data-table {
+    min-width: 100%;
+    font-size: 0.85rem;
+  }
+
+  .table-container {
+    margin: 0 10px;
+    border-radius: 15px;
+  }
+
+  /* ---------- BUTTONS ---------- */
+  .btn {
+    padding: 16px 20px;
+    font-size: 0.9rem;
+    min-height: 52px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ---------- SETTINGS ---------- */
+  .tab-nav {
+    flex-direction: column;
+  }
+
+  .tab-link {
+    justify-content: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    border-left: 3px solid transparent;
+  }
+
+  .tab-link.active {
+    border-left-color: var(--secondary);
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .notification-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .method-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .tab-content {
+    padding: 25px 20px;
+  }
+
+  /* ---------- ROLE MANAGEMENT ---------- */
+  .role-change-form {
+    padding: 15px !important;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+/* =====================================================
+   <= 480px (Small Mobile)
+===================================================== */
+@media (max-width: 480px) {
+
+  .site-name {
+    font-size: 1.1rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .card-value {
+    font-size: 2rem;
+  }
+
+  .btn {
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    min-height: 48px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .empty-state {
+    padding: 60px 15px;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+  }
+
+  .empty-state div {
+    font-size: 1.1rem;
+  }
+
+  .report-filters {
+    padding: 20px;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    width: 100%;
+  }
+
+  .tab-content {
+    padding: 20px 15px;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+  }
+
+  .form-section h3 {
+    font-size: 1.2rem;
+  }
+}

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home - Shastraprathista</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body class="orange-theme-bg">
+  
+  <!-- Main Container -->
+  <div class="main-container">
+    
+    <!-- Load Shared Components -->
+    <div id="header-container"></div>
+
+    <!-- Compact Image Gallery Section -->
+    <section class="compact-gallery-section">
+      <div class="compact-image-grid" id="compact-image-grid">
+        <!-- Original 10 images -->
+        <div class="compact-image-item">
+          <img src="image/god/1.jpg" alt="Gallery Image 1" loading="lazy" onclick="openImageModal('image/god/1.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/2.JPG" alt="Gallery Image 2" loading="lazy" onclick="openImageModal('image/god/2.JPG')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/3.JPG" alt="Gallery Image 3" loading="lazy" onclick="openImageModal('image/god/3.JPG')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/4.jpg" alt="Gallery Image 4" loading="lazy" onclick="openImageModal('image/god/4.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/5.jpg" alt="Gallery Image 5" loading="lazy" onclick="openImageModal('image/god/5.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/6.jpg" alt="Gallery Image 6" loading="lazy" onclick="openImageModal('image/god/6.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/7.jpg" alt="Gallery Image 7" loading="lazy" onclick="openImageModal('image/god/7.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/8.jpg" alt="Gallery Image 8" loading="lazy" onclick="openImageModal('image/god/8.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/9.jpg" alt="Gallery Image 9" loading="lazy" onclick="openImageModal('image/god/9.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/10.jpg" alt="Gallery Image 10" loading="lazy" onclick="openImageModal('image/god/10.jpg')">
+        </div>
+        
+        <!-- Duplicate the same 10 images for seamless loop (mobile only) -->
+        <div class="compact-image-item">
+          <img src="image/god/1.jpg" alt="Gallery Image 1" loading="lazy" onclick="openImageModal('image/god/1.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/2.JPG" alt="Gallery Image 2" loading="lazy" onclick="openImageModal('image/god/2.JPG')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/3.JPG" alt="Gallery Image 3" loading="lazy" onclick="openImageModal('image/god/3.JPG')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/4.jpg" alt="Gallery Image 4" loading="lazy" onclick="openImageModal('image/god/4.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/5.jpg" alt="Gallery Image 5" loading="lazy" onclick="openImageModal('image/god/5.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/6.jpg" alt="Gallery Image 6" loading="lazy" onclick="openImageModal('image/god/6.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/7.jpg" alt="Gallery Image 7" loading="lazy" onclick="openImageModal('image/god/7.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/8.jpg" alt="Gallery Image 8" loading="lazy" onclick="openImageModal('image/god/8.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/9.jpg" alt="Gallery Image 9" loading="lazy" onclick="openImageModal('image/god/9.jpg')">
+        </div>
+        <div class="compact-image-item">
+          <img src="image/god/10.jpg" alt="Gallery Image 10" loading="lazy" onclick="openImageModal('image/god/10.jpg')">
+        </div>
+      </div>
+    </section>
+
+    <!-- Image Modal for enlarged view -->
+    <div id="image-modal" class="image-modal">
+      <span class="close-image-modal" onclick="closeImageModal()">&times;</span>
+      <div class="image-modal-content">
+        <img id="modal-image" src="" alt="Enlarged Image">
+      </div>
+    </div>
+
+    <!-- Home Highlight Section -->
+    <div class="home-highlight">
+      <div class="latest-news">
+        <div class="news-title-bar">Our Latest News</div>
+        <div class="news-scroll">
+          <div class="news-list">
+            <div class="news-row">
+              <h4>UBHAYA JAGADURUS OBSERVE CHATURMASYA VRATA</h4>
+              <span>25 August, 2016</span>
+            </div>
+            <div class="news-row">
+              <h4>24TH VARDHANTI CELEBRATIONS OF JAGADGURU</h4>
+              <span>25 September, 2016</span>
+            </div>
+            <div class="news-row">
+              <h4>UBHAYA JAGADURUS OBSERVE CHATURMASYA VRATA</h4>
+              <span>25 August, 2016</span>
+            </div>.
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Slider Section -->
+      <div class="slider-container">
+        <div class="slider-wrapper">
+          <!-- Slider Images - Add 8 images -->
+          <div class="slider">
+            <div class="slide active">
+              <img src="image/pathasala1.jpg">
+              <div class="slide-caption">Sri P.A.C. Ramasamy Raja and Sri P.R. Ramasubramaniya Rajha Statues in our Vedapathasala</div>
+            </div>
+            <div class="slide">
+              <img src="image/gallery/1.jpg" alt="Slide 2">
+              <div class="slide-caption">Sri Sringeri Sharadambal Temple</div>
+            </div>
+            <div class="slide">
+              <img src="image/gallery/3.jpg" alt="Slide 3">
+              <div class="slide-caption">Arulmigu Chokkar @ Sri Meenakshi Sundareswarar Temple</div>
+            </div>
+            <div class="slide">
+              <img src="image/gallery/4.jpg"> alt="Slide 4">
+              <div class="slide-caption">Sri Ramalingaswamy Temple</div>
+            </div>
+            <div class="slide">
+              <img src="image/gallery/5.jpg" alt="Slide 5">
+              <div class="slide-caption">Library & Music School</div>
+            </div>
+            <div class="slide">
+              <img src="image/gallery/6.jpg" alt="Slide 6">
+              <div class="slide-caption">Tirumala Tirupati Devasthanam - Information Centre</div>
+            </div>
+            <div class="slide">
+              <img src="image/gallery/7.jpg" alt="Slide 7">
+              <div class="slide-caption">TTD - P.A.C. Ramasamy Raja Kalyana Mandapam</div>
+            </div>
+            <div class="slide">
+              <img src="image/pathasala2.jpg" alt="Slide 8">
+              <div class="slide-caption">Our Vedapathasala Class Rooms</div>
+            </div>
+            <div class="slide">
+              <img src="image/pathasala9.jpg" alt="Slide 9">
+              <div class="slide-caption">Our Vedapathasala Class Rooms</div>
+            </div>
+            <div class="slide">
+              <img src="image/library/library1.JPG" alt="Slide 10">
+              <div class="slide-caption">Library</div>
+            </div>
+          </div>
+          
+          <!-- Slider Controls -->
+          <button class="slider-btn prev-btn" aria-label="Previous slide">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="slider-btn next-btn" aria-label="Next slide">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <!-- Slider Dots -->
+          <div class="slider-dots">
+            <span class="dot active" data-slide="0"></span>
+            <span class="dot" data-slide="1"></span>
+            <span class="dot" data-slide="2"></span>
+            <span class="dot" data-slide="3"></span>
+            <span class="dot" data-slide="4"></span>
+            <span class="dot" data-slide="5"></span>
+            <span class="dot" data-slide="6"></span>
+            <span class="dot" data-slide="7"></span>
+            <span class="dot" data-slide="8"></span>
+            <span class="dot" data-slide="9"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Features Section -->
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-book"></i>
+        </div>
+        <h3>Wide Book Collection</h3>
+        <p>Explore our extensive collection of religious texts, educational materials, and literature</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-shipping-fast"></i>
+        </div>
+        <h3>Free Shipping</h3>
+        <p>Enjoy free shipping on all orders over ₹1000 anywhere in India</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-music"></i>
+        </div>
+        <h3>Music Classes</h3>
+        <p>Learn traditional music with our expert instructors through online and in-person classes</p>
+      </div>
+    </section>
+
+    <!-- Featured Books Section -->
+    <section class="books-container">
+      <h2 class="section-title">Featured Books</h2>
+      
+      <div class="book-grid" id="featured-books">
+        <!-- Books will be loaded dynamically -->
+      </div>
+    </section>
+
+    <!-- Load Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Book Detail Modal -->
+    <div id="book-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="book-detail-content" class="book-detail">
+          <!-- Book details will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- End Main Container -->
+
+  <!-- Common JS -->
+  <script src="common.js"></script>
+
+  // Hi
+  <script>
+
+    // Load shared header & footer
+    function loadSharedComponents() {
+
+      /* ===== HEADER ===== */
+      fetch('header.html')
+        .then(res => {
+          if (!res.ok) throw new Error('Header load failed');
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+
+          // Initialize common logic AFTER header is in DOM
+          if (typeof initCommon === 'function') {
+            console.log('✅ initCommon() after header render');
+            setTimeout(initCommon, 50);
+          }
+        })
+        .catch(err => {
+          console.error('Header load failed, using fallback:', err);
+
+          // ---- Fallback Header ----
+          document.getElementById('header-container').innerHTML = `
+            <header class="site-header">
+              <div class="logo-title">
+                <a href="index.html" class="home-link">
+                  <div class="site-name-container">
+                    <div class="site-name-main">RAMCO</div>
+                    <div class="site-name-sub">DHARMIKA SEVA</div>
+                  </div>
+                </a>
+              </div>
+
+              <div class="nav-right">
+                <div class="nav-top-links">
+                  <nav class="header-links"> 
+                    <a href="login.html" id="auth-link"><i class="fas fa-user"></i> Sign In</a>
+                    <a href="profile.html"><i class="fas fa-box"></i> Profile</a>
+                    <a href="cart.html" id="cart-link">
+                      <i class="fas fa-shopping-cart"></i> Cart
+                      <span id="cart-count" class="cart-count" style="display:none;">0</span>
+                    </a>
+                  </nav>
+
+                  <div class="user-welcome" id="user-welcome">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="welcome-text">Guest</span>
+                  </div>
+                </div>
+
+                <div class="nav-search">
+                  <div class="search-box-compact">
+                    <input type="text" id="search-input" placeholder="Search...">
+                    <button id="search-btn">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <nav class="main-menu">
+              <div class="menu-toggle" id="menu-toggle">
+                <i class="fas fa-bars"></i>
+              </div>
+              <ul id="menu">
+                <li><a href="index.html" id="menu-home"><i class="fas fa-home"></i> HOME</a></li>
+                <li><a href="all_book_grid.html" id="menu-books"><i class="fas fa-book"></i> BOOKS</a></li>
+                <li><a href="library.html" id="menu-library"><i class="fas fa-university"></i> LIBRARY</a></li>
+                <li><a href="music.html" id="menu-music"><i class="fas fa-music"></i> MUSIC SCHOOL</a></li>
+                <li><a href="vedapathasala.html" id="menu-videos"><i class="fas fa-book-open"></i> VEDAPATHASALA</a></li>
+
+                <li class="dropdown">
+                  <a href="#" id="menu-temples">
+                    <i class="fas fa-place-of-worship"></i> TEMPLES
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="temple_sharadambal.html"><i class="fas fa-om"></i> Sri Sringeri Sharadambal Temple</a></li>
+                    <li><a href="temple_meenakshi.html"><i class="fas fa-om"></i> Sri Meenakshi Sundareswarar Temple</a></li>
+                    <li><a href="temple_ramalingeshwarar.html"><i class="fas fa-om"></i> Sri Ramalingeshwarar Temple</a></li>
+                  </ul>
+                </li>
+
+                <li class="dropdown">
+                  <a href="#" id="menu-marriage-hall">
+                    <i class="fas fa-heart-circle-check"></i> MARRIAGE HALL
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="chokkar-hall.html"><i class="fas fa-heart-circle-check"></i> Arulmigu Chokkar Kovil Kalyana Mandapam</a></li>
+                    <li><a href="ttd-hall.html"><i class="fas fa-heart-circle-check"></i> TTD - P.A.C. Ramasamy Raja Kalyana Mandapam</a></li>
+                  </ul>
+                </li>
+
+                <li><a href="aboutus.html" id="menu-about"><i class="fas fa-info-circle"></i> ABOUT US</a></li>
+              </ul>
+            </nav>
+          `;
+
+          // Init common logic for fallback too
+          if (typeof initCommon === 'function') {
+            console.log('✅ initCommon() for fallback header');
+            setTimeout(initCommon, 50);
+          }
+        });
+
+      /* ===== FOOTER ===== */
+      fetch('footer.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('footer-container').innerHTML = html;
+        })
+        .catch(err => console.error('Footer load failed:', err));
+    }
+
+
+    // Book data with local image paths and discounts
+    const books = [
+      {
+        id: 'slrspt-book-001',
+        title: 'Srimad Bhagavad Gita',
+        author: 'Smt Sudarsanam Ramasubrahmania Rajha',
+        price: 1050,
+        discount: 20, // 20% discount
+        images: [
+          'image/book1/book1.jpg',
+          'image/book1/book2.jpg',
+          'image/book1/book3.jpg',
+          'image/book1/book4.jpg',
+          'image/book1/book5.jpg'
+        ],
+        weight: 2150,
+        specs: {
+          publisher: 'Shastrapratista Publications',
+          language: 'Sanskrit with Tamil Explanation',
+          pages: 450,
+          size: '6x9 inches',
+          description: 'A detailed commentary on the Bhagavad Gita with original Sanskrit verses and detailed explanations in Tamil. This edition includes word-by-word meaning and philosophical interpretations.'
+        }
+      },
+      {
+        id: 'slrspt-book-002',
+        title: 'Kadopanishad',
+        author: 'Smt Sudarsanam Ramasubrahmania Rajha',
+        price: 250,
+        discount: 15, // 15% discount
+        images: [
+          'image/book2/book1.jpg',
+          'image/book2/book2.jpg',
+          'image/book2/book3.jpg',
+          'image/book2/book4.jpg',
+          'image/book2/book5.jpg'
+        ],
+        weight: 490,
+        specs: {
+          publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+          language: 'Sanskrit with Tamil Translation',
+          pages: 180,
+          size: '5.5x8.5 inches',
+          description: 'A comprehensive study of the Kadopanishad with original text, translation, and commentary. This book explores the philosophical teachings of the Upanishad in depth.'
+        }
+      },
+      {
+        id: 'slrspt-book-003',
+        title: 'Taittriyopanishad',
+        author: 'Smt Sudarsanam Ramasubrahmania Rajha',
+        price: 250,
+        discount: 10, // 10% discount
+        images: [
+          'image/book3/book1.jpg',
+          'image/book3/book2.jpg',
+          'image/book3/book3.jpg',
+          'image/book3/book4.jpg',
+          'image/book3/book5.jpg'
+        ],
+        weight: 480,
+        specs: {
+          publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+          language: 'Sanskrit with Tamil Translation',
+          pages: 220,
+          size: '6x9 inches',
+          description: 'A detailed study of the Taittriya Upanishad with original text and detailed commentary. This book is essential for students of Vedanta philosophy.'
+        }
+      }
+    ];
+
+    // Load featured books - show only 3 books + view all card
+    function loadFeaturedBooks() {
+      const featuredBooksContainer = document.getElementById('featured-books');
+      if (!featuredBooksContainer) return;
+      
+      featuredBooksContainer.innerHTML = '';
+      
+      // Get first 3 books for featured section
+      const featuredBooks = books.slice(0, 3);
+      
+      // Add the 3 featured books
+      featuredBooks.forEach(book => {
+        const bookCard = createBookCard(book);
+        featuredBooksContainer.appendChild(bookCard);
+      });
+      
+      // Add the "View All Books" card as the 4th item
+      const viewAllCard = document.createElement('div');
+      viewAllCard.className = 'view-all-card';
+      viewAllCard.onclick = function() {
+        window.location.href = 'all_book_grid.html';
+      };
+      
+      viewAllCard.innerHTML = `
+        <div class="view-all-icon">
+          <i class="fas fa-book-open"></i>
+        </div>
+        <h3 class="view-all-title">Explore Our Collection</h3>
+        <p class="view-all-description">Discover our complete library of spiritual texts, educational materials, and sacred literature</p>
+        <a href="all_book_grid.html" class="view-all-btn">
+          <i class="fas fa-arrow-right"></i> View All Books
+        </a>
+      `;
+      
+      featuredBooksContainer.appendChild(viewAllCard);
+    }
+
+    // Create book card with enhanced error handling
+    function createBookCard(book) {
+      const discountPrice = book.discount > 0 
+        ? Math.round(book.price - (book.price * book.discount / 100))
+        : book.price;
+      
+      const bookCard = document.createElement('div');
+      bookCard.className = 'book-card';
+      bookCard.setAttribute('data-book-id', book.id);
+      
+      bookCard.innerHTML = `
+        <div class="book-image">
+          ${book.discount > 0 ? `<div class="discount-badge">${book.discount}% OFF</div>` : ''}
+          <div class="image-placeholder">Image not available</div>
+          <img src="${book.images[0]}" alt="${book.title}" 
+              loading="lazy" 
+              onerror="handleImageError(this)">
+        </div>
+        <div class="book-details">
+          <div class="book-title" title="${book.title}">${book.title}</div>
+          <div class="book-author" title="by ${book.author}">by ${book.author}</div>
+          <div class="price-container">
+            ${book.discount > 0 ? `<span class="original-price">₹${book.price}</span>` : ''}
+            <span class="discount-price">₹${discountPrice}</span>
+          </div>
+          <div class="book-meta">
+            <button class="view-book" onclick="viewBook('${book.id}')" aria-label="View details of ${book.title}">
+              <i class="fas fa-eye"></i> View Book
+            </button>
+            <button class="buy-now-btn" onclick="buyNow('${book.id}')" aria-label="Buy ${book.title}">
+              <i class="fas fa-shopping-bag"></i> Buy Now
+            </button>
+          </div>
+        </div>
+      `;
+      
+      return bookCard;
+    }
+
+    // Handle image loading errors
+    function handleImageError(img) {
+      img.style.display = 'none';
+      const placeholder = img.parentElement.querySelector('.image-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'flex';
+        placeholder.style.alignItems = 'center';
+        placeholder.style.justifyContent = 'center';
+        placeholder.style.height = '100%';
+      }
+    }
+
+    // Buy Now function - redirects to all_book_grid.html
+    function buyNow(bookId) {
+      window.location.href = 'all_book_grid.html';
+    }
+
+    // View book function - opens modal with book details
+    function viewBook(bookId) {
+      const book = books.find(b => b.id === bookId);
+      if (!book) return;
+      
+      const discountPrice = book.discount > 0 
+        ? Math.round(book.price - (book.price * book.discount / 100))
+        : book.price;
+      
+      const modalContent = document.getElementById('book-detail-content');
+      modalContent.innerHTML = `
+        <div class="book-detail-image">
+          <img src="${book.images[0]}" alt="${book.title}" loading="lazy" onerror="handleImageError(this)">
+        </div>
+        <div class="book-detail-info">
+          <h2 class="book-detail-title">${book.title}</h2>
+          <p class="book-detail-author">by ${book.author}</p>
+          
+          <div class="book-detail-price">
+            ${book.discount > 0 ? `<span class="original-price">₹${book.price}</span>` : ''}
+            <span class="discount-price">₹${discountPrice}</span>
+            ${book.discount > 0 ? `<span class="discount-badge">${book.discount}% OFF</span>` : ''}
+          </div>
+          
+          <p class="book-detail-description">${book.specs.description}</p>
+          
+          <div class="book-detail-specs">
+            <div class="spec-item">
+              <span class="spec-label">Publisher:</span>
+              <span>${book.specs.publisher}</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Language:</span>
+              <span>${book.specs.language}</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Pages:</span>
+              <span>${book.specs.pages}</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Size:</span>
+              <span>${book.specs.size}</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Weight:</span>
+              <span>${book.weight}g</span>
+            </div>
+          </div>
+          
+          <div class="book-detail-actions">
+            <button class="buy-now-btn" onclick="buyNow('${book.id}')">
+              <i class="fas fa-shopping-bag"></i> Buy Now
+            </button>
+          </div>
+        </div>
+      `;
+      
+      // Show the modal
+      document.getElementById('book-modal').style.display = 'block';
+    }
+
+    // Setup modal functionality
+    function setupModal() {
+      const modal = document.getElementById('book-modal');
+      const closeBtn = document.querySelector('.close-modal');
+      
+      if (!modal || !closeBtn) return;
+      
+      // Close modal when clicking on X
+      closeBtn.onclick = function() {
+        modal.style.display = 'none';
+      }
+      
+      // Close modal when clicking outside of it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = 'none';
+        }
+      }
+      
+      // Close modal with Escape key
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          modal.style.display = 'none';
+        }
+      });
+    }
+
+    // Search function
+    function performSearch() {
+      let searchTerm = document.getElementById('search-input').value.trim();
+      
+      if (!searchTerm) {
+        showToast('Please enter a search term', 'error');
+        document.getElementById('search-input').focus();
+        return;
+      }
+      
+      if (searchTerm.length < 2) {
+        showToast('Please enter at least 2 characters', 'error');
+        return;
+      }
+      
+      // Sanitize search term
+      searchTerm = searchTerm
+        .replace(/[<>]/g, '')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+=/gi, '')
+        .substring(0, 100);
+      
+      // Show loading state
+      const searchBtn = document.getElementById('search-btn');
+      const originalText = searchBtn.innerHTML;
+      searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+      searchBtn.disabled = true;
+      
+      setTimeout(() => {
+        window.location.href = `all_book_grid.html?search=${encodeURIComponent(searchTerm)}`;
+        // Reset button after navigation
+        setTimeout(() => {
+          searchBtn.innerHTML = originalText;
+          searchBtn.disabled = false;
+        }, 2000);
+      }, 500);
+    }
+
+    // Setup search box to respond to Enter key
+    function setupSearch() {
+      const searchInput = document.getElementById('search-input');
+      if (!searchInput) return;
+      
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+    }
+
+    // Image Slider Functionality
+    function initSlider() {
+      const slider = document.querySelector('.slider');
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.dot');
+      const prevBtn = document.querySelector('.prev-btn');
+      const nextBtn = document.querySelector('.next-btn');
+      
+      if (!slider || !slides.length) return;
+      
+      let currentSlide = 0;
+      const totalSlides = slides.length;
+      let slideInterval;
+      
+      // Show specific slide
+      function goToSlide(n) {
+        currentSlide = (n + totalSlides) % totalSlides;
+        updateSlider();
+        resetAutoSlide();
+      }
+      
+      // Show next slide
+      function showNextSlide() {
+        goToSlide(currentSlide + 1);
+      }
+      
+      // Show previous slide
+      function showPrevSlide() {
+        goToSlide(currentSlide - 1);
+      }
+      
+      // Update slider position and dots
+      function updateSlider() {
+        const translateX = -currentSlide * 12.5; // Each slide is 12.5% of container
+        slider.style.transform = `translateX(${translateX}%)`;
+        
+        // Update active dot
+        dots.forEach((dot, index) => {
+          dot.classList.toggle('active', index === currentSlide);
+        });
+      }
+      
+      // Auto-slide functionality
+      function startAutoSlide() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(showNextSlide, 4000); // Change slide every 4 seconds
+      }
+      
+      function pauseAutoSlide() {
+        clearInterval(slideInterval);
+      }
+      
+      function resetAutoSlide() {
+        pauseAutoSlide();
+        startAutoSlide();
+      }
+      
+      // Initialize slider
+      if (prevBtn) prevBtn.addEventListener('click', showPrevSlide);
+      if (nextBtn) nextBtn.addEventListener('click', showNextSlide);
+      
+      // Add click events to dots
+      dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+          const slideIndex = parseInt(this.getAttribute('data-slide'));
+          goToSlide(slideIndex);
+        });
+      });
+      
+      // Pause auto-slide on hover
+      const sliderWrapper = document.querySelector('.slider-wrapper');
+      if (sliderWrapper) {
+        sliderWrapper.addEventListener('mouseenter', pauseAutoSlide);
+        sliderWrapper.addEventListener('mouseleave', startAutoSlide);
+      }
+      
+      // Start auto-slide
+      startAutoSlide();
+    }
+
+    // Image Modal Functions
+    function openImageModal(imageSrc) {
+      const modal = document.getElementById('image-modal');
+      const modalImg = document.getElementById('modal-image');
+      
+      if (!modal || !modalImg) return;
+      
+      modal.style.display = 'flex';
+      modalImg.src = imageSrc;
+      
+      // Prevent scrolling when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+      const modal = document.getElementById('image-modal');
+      if (!modal) return;
+      
+      modal.style.display = 'none';
+      
+      // Re-enable scrolling
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside the image
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('image-modal');
+      if (event.target === modal) {
+        closeImageModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeImageModal();
+      }
+    });
+
+    // Simple function to handle compact gallery
+    function initCompactGallery() {
+      const compactGrid = document.getElementById('compact-image-grid');
+      if (!compactGrid) return;
+      
+      // Check if we're on mobile view
+      const isMobileView = window.matchMedia("(max-width: 576px)").matches;
+      
+      if (!isMobileView) {
+        // On desktop/tablet, remove duplicate images if they exist
+        const items = compactGrid.querySelectorAll('.compact-image-item');
+        if (items.length > 10) {
+          // Remove duplicates (keep only first 10)
+          for (let i = 10; i < items.length; i++) {
+            items[i].remove();
+          }
+        }
+      } else {
+        // On mobile, ensure we have 20 images (10 + 10 duplicates)
+        const items = compactGrid.querySelectorAll('.compact-image-item');
+        if (items.length < 20) {
+          // If somehow duplicates were removed, restore them
+          const originalItems = Array.from(items).slice(0, 10);
+          originalItems.forEach(item => {
+            const clone = item.cloneNode(true);
+            compactGrid.appendChild(clone);
+          });
+        }
+      }
+    }
+
+    // Update your initPage function to use initCompactGallery instead
+    function initPage() {
+      loadFeaturedBooks();
+      setupSearch();
+      setupModal();
+      initSlider();
+      initCompactGallery(); // Changed from initCompactGalleryAutoScroll
+    }
+
+    // Make functions available globally
+    window.handleImageError = handleImageError;
+    window.buyNow = buyNow;
+    window.viewBook = viewBook;
+    window.performSearch = performSearch;
+    window.openImageModal = openImageModal;
+    window.closeImageModal = closeImageModal;
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('=== HOME PAGE INITIALIZATION STARTED ===');
+      
+      // Debug user session
+      const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      console.log('LocalStorage currentUser:', localStorage.getItem('currentUser'));
+      console.log('User object:', user);
+      console.log('initCommon function exists?', typeof initCommon);
+      console.log('Current user:', user);
+      
+      // Load shared components
+      loadSharedComponents();
+      
+      // Initialize page features after components load
+      setTimeout(() => {
+        console.log('Initializing page features...');
+        initPage(); // Initialize page-specific features
+      }, 1000);
+    });
+
+    // Also initialize compact gallery on window resize
+    window.addEventListener('resize', initCompactGallery);
+
+  </script>
+
+</body>
+</html>
