@@ -414,65 +414,6 @@ app.get('*', (req, res, next) => {
   res.sendFile(indexPath);
 });
 
-// Add this near your other routes - UPDATED to use only SendGrid
-app.get('/api/test-email-service', async (req, res) => {
-  try {
-    // Check ONLY SendGrid environment variables
-    const envCheck = {
-      hasSendGridKey: !!process.env.SENDGRID_API_KEY,
-      hasFromEmail: !!process.env.FROM_EMAIL,
-      hasReplyTo: !!process.env.REPLY_TO_EMAIL,
-      hasAdminEmail: !!process.env.ADMIN_EMAIL,
-      sendGridKeyLength: process.env.SENDGRID_API_KEY ? process.env.SENDGRID_API_KEY.length : 0,
-      nodeEnv: process.env.NODE_ENV
-    };
-    
-    console.log('📧 SendGrid Configuration Check:', envCheck);
-    
-    // Try to load email service
-    let emailService;
-    try {
-      emailService = require('./utils/emailService');
-      console.log('✅ SendGrid email service loaded successfully');
-    } catch (e) {
-      console.error('❌ Failed to load email service:', e);
-      return res.status(500).json({ 
-        error: 'Failed to load email service',
-        details: e.message,
-        env: envCheck
-      });
-    }
-    
-    // Test SendGrid connection
-    if (emailService.testSendGridConnection) {
-      const testResult = await emailService.testSendGridConnection();
-      console.log('SendGrid test result:', testResult);
-      return res.json({
-        success: true,
-        message: 'Using SendGrid for all emails',
-        env: envCheck,
-        sendGridTest: testResult,
-        emailServiceLoaded: true
-      });
-    } else {
-      return res.json({
-        success: true,
-        message: 'Using SendGrid for all emails',
-        env: envCheck,
-        emailServiceLoaded: true,
-        note: 'Email service is configured with SendGrid'
-      });
-    }
-    
-  } catch (error) {
-    console.error('❌ Test endpoint error:', error);
-    res.status(500).json({ 
-      error: error.message,
-      stack: error.stack 
-    });
-  }
-});
-
 // ✅ 404 handler for API routes (AFTER the static routes)
 app.use('/api/*', (req, res) => {
   res.status(404).json({
