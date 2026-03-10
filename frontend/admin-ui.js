@@ -767,7 +767,7 @@ function renderOrderDetailsInModal(order) {
                     <!-- Tracking Actions -->
                     <div class="tracking-actions" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="markAsShippedWithTracking('${order._id || order.orderId}')">
-                            <i class="fas fa-shipping-fast"></i> Mark as Shipped & Send Email
+                            <i class="fas fa-shipping-fast"></i> Mark as Shipped
                         </button>
                         <button class="btn btn-info" onclick="copyTrackingNumber('${trackingNumber}')" ${!trackingNumber ? 'disabled' : ''}>
                             <i class="fas fa-copy"></i> Copy Tracking

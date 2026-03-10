@@ -455,27 +455,4 @@ router.get('/check-role', authMiddleware, async (req, res) => {
   }
 });
 
-// ===============================
-// ✅ DEBUG/TEST ENDPOINTS
-// ===============================
-
-// Test if API is working
-router.get('/test-connection', (req, res) => {
-  console.log('🔍 Test connection endpoint called');
-  res.json({
-    success: true,
-    message: 'API is working correctly!',
-    timestamp: new Date().toISOString(),
-    user: req.user || 'No user logged in',
-    endpoints: {
-      signup: 'POST /api/auth/signup',
-      login: 'POST /api/auth/login',
-      sendSignupOTP: 'POST /api/auth/send-signup-otp',
-      sendLoginOTP: 'POST /api/auth/send-login-otp',
-      verifySignupOTP: 'POST /api/auth/verify-signup-otp',
-      verifyLoginOTP: 'POST /api/auth/verify-login-otp'
-    }
-  });
-});
-
 module.exports = router;

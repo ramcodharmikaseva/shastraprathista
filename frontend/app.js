@@ -271,7 +271,16 @@
               class="book-img"
               alt="${title}"
               loading="lazy"
-              onerror="this.onerror=null;this.src='/images/no-book.png';"
+              onload="this.style.opacity='1'"
+              onerror="console.log('⚠️ Image failed to load:', this.src); 
+                      if (!this.src.includes('no-book.png') && !this.src.includes('book4') && !this.src.includes('book5')) {
+                        setTimeout(() => { 
+                          if (!this.complete || this.naturalWidth === 0) {
+                            this.src = '/images/no-book.png';
+                          }
+                        }, 1000);
+                      }"
+              style="opacity:0; transition:opacity 0.3s"
             >
           </div>
 

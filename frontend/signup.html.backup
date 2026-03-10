@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup | Shastraprathista</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Your existing CSS remains the same */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .signup-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 380px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      position: relative;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    .error, .success {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+      padding: 8px;
+      border-radius: 4px;
+      display: none;
+    }
+    .error { 
+      color: #721c24; 
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+    }
+    .success { 
+      color: #155724; 
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .login-link a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .otp-section {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    .timer {
+      text-align: center;
+      color: #e74c3c;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .resend-otp {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .resend-otp button {
+      background: #28a745;
+      width: auto;
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+    .resend-otp button:hover {
+      background: #218838;
+    }
+    .resend-otp button:disabled {
+      background: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-container">
+    <h2>Create Your Account</h2>
+    
+    <form id="signupForm" onsubmit="sendSignupOTP(event); return false;">
+      <div class="form-group">
+        <input type="text" id="signupName" placeholder="Full Name" 
+              autocomplete="name" required>
+      </div>
+      
+      <div class="form-group">
+        <input type="email" id="signupEmail" placeholder="Email Address" 
+              autocomplete="email" required>
+      </div>
+      
+      <div class="form-group">
+        <input type="tel" id="signupPhone" placeholder="Phone Number (10 digits)" 
+              autocomplete="tel" required 
+              pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+      </div>
+      
+      <div class="form-group">
+        <input type="password" id="signupPassword" placeholder="Password (min. 6 characters)" 
+              autocomplete="new-password" required 
+              minlength="6">
+      </div>
+      
+      <button type="submit" id="sendOtpBtn">Send OTP</button>
+    </form>
+    
+    <div id="otpSection" class="otp-section">
+      <h3 style="text-align: center; margin-bottom: 15px;">Verify OTP</h3>
+      <p style="text-align: center; color: #666; margin-bottom: 15px;">
+        We've sent OTP to your email
+      </p>
+      
+      <form onsubmit="verifySignupOTP(event); return false;">
+        <div class="form-group">
+          <input type="text" id="otp" placeholder="Enter 6-digit OTP" maxlength="6" 
+                autocomplete="one-time-code"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        
+        <div id="timer" class="timer">10:00</div>
+        
+        <button type="submit" id="verifyOtpBtn">Verify & Create Account</button>
+      </form>
+      
+      <div class="resend-otp">
+        <button onclick="resendSignupOTP()" id="resendOtpBtn" disabled>Resend OTP (60s)</button>
+      </div>
+    </div>
+    
+    <div class="error" id="signupError"></div>
+    <div class="success" id="signupSuccess"></div>
+    
+    <div class="login-link">
+      Already have an account? <a href="login.html">Login here</a>
+    </div>
+  </div>
+
+  <script>
+      // ================================
+      // DYNAMIC BASE URL CONFIGURATION
+      // ================================
+      window.API_BASE_URL = window.location.origin;
+      
+      // ================================
+      // IMPROVED API CALL FUNCTION
+      // ================================
+      async function apiCall(endpoint, options = {}) {
+          // Use relative path (works on same origin)
+          const url = `/api${endpoint}`;
+          
+          console.log(`📡 API Call: ${url}`, options);
+          
+          try {
+              const response = await fetch(url, {
+                  ...options,
+                  headers: {
+                      'Content-Type': 'application/json',
+                      ...(options.headers || {})
+                  }
+              });
+              
+              console.log(`📡 Response Status: ${response.status}`);
+              
+              if (!response.ok) {
+                  const errorText = await response.text();
+                  console.error(`📡 Error Response:`, errorText);
+                  
+                  try {
+                      // Try to parse as JSON for better error message
+                      const errorJson = JSON.parse(errorText);
+                      throw new Error(errorJson.message || errorJson.error || `HTTP ${response.status}`);
+                  } catch (e) {
+                      throw new Error(errorText || `HTTP ${response.status}`);
+                  }
+              }
+              
+              const data = await response.json();
+              console.log(`📡 Success Response:`, data);
+              return data;
+              
+          } catch (error) {
+              console.error('❌ API Error:', error);
+              throw error;
+          }
+      }
+
+      let signupTimer;
+      let timeLeft = 600; // 10 minutes
+      let resendTimer;
+      let resendTimeLeft = 60; // 60 seconds for resend
+      let userData = {};
+
+      // Phone number validation
+      document.getElementById('signupPhone').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 10) {
+          this.value = this.value.slice(0, 10);
+        }
+      });
+
+      // OTP input validation
+      document.getElementById('otp').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 6) {
+          this.value = this.value.slice(0, 6);
+        }
+      });
+
+      async function sendSignupOTP(event) {
+        if (event) event.preventDefault(); // Prevent form submission
+        
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const phone = document.getElementById('signupPhone').value.trim();
+        const password = document.getElementById('signupPassword').value.trim();
+      
+        // Reset messages
+        hideMessage(document.getElementById('signupError'));
+        hideMessage(document.getElementById('signupSuccess'));
+
+        // Validation
+        if (!name || !email || !phone || !password) {
+          showError('Please fill in all fields.');
+          return;
+        }
+
+        if (name.length < 2) {
+          showError('Please enter a valid name (at least 2 characters).');
+          return;
+        }
+
+        if (!/^\d{10}$/.test(phone)) {
+          showError('Please enter a valid 10-digit phone number.');
+          return;
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError('Please enter a valid email address.');
+          return;
+        }
+
+        if (password.length < 6) {
+          showError('Password must be at least 6 characters long.');
+          return;
+        }
+
+        try {
+          const sendOtpBtn = document.getElementById('sendOtpBtn');
+          sendOtpBtn.disabled = true;
+          sendOtpBtn.textContent = 'Sending OTP...';
+
+          // FIXED: Use apiCall function instead of hardcoded localhost
+          const result = await apiCall('/auth/send-signup-otp', {
+              method: 'POST',
+              body: JSON.stringify({ email }) // Only send email for OTP
+          });
+        
+          if (result.success) {
+            // Store user data for verification
+            userData = { name, email, phone, password };
+          
+            // Show OTP section
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('otpSection').style.display = 'block';
+          
+            // Update message to reflect email-only OTP
+            document.querySelector('#otpSection p').textContent = 'We\'ve sent OTP to your email';
+          
+            // Start timers
+            startOTPTimer();
+            startResendTimer();
+          
+            showSuccess('OTP sent successfully to your email!');
+          } else {
+            showError(result.message);
+          }
+        } catch (error) {
+          console.error('Send OTP error:', error);
+          showError('Error sending OTP. Please try again.');
+        } finally {
+          const sendOtpBtn = document.getElementById('sendOtpBtn');
+          sendOtpBtn.disabled = false;
+          sendOtpBtn.textContent = 'Send OTP';
+        }
+      }
+
+      async function verifySignupOTP(event) {
+        if (event) event.preventDefault(); // Prevent form submission
+        
+        const otp = document.getElementById('otp').value.trim();
+        
+        if (!otp || otp.length !== 6) {
+          showError('Please enter a valid 6-digit OTP.');
+          return;
+        }
+
+        try {
+          const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+          verifyOtpBtn.disabled = true;
+          verifyOtpBtn.textContent = 'Verifying...';
+
+          // FIXED: Use apiCall function instead of hardcoded localhost
+          const result = await apiCall('/auth/verify-signup-otp', {
+              method: 'POST',
+              body: JSON.stringify({ ...userData, otp })
+          });
+        
+          if (result.success) {
+            showSuccess('Account created successfully! Redirecting...');
+          
+            // Save token and user data
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('currentUser', JSON.stringify(result.user));
+          
+            // Redirect to home page
+            setTimeout(() => {
+              window.location.href = 'all_book_grid.html';
+            }, 2000);
+          } else {
+            showError(result.message);
+          }
+        } catch (error) {
+          console.error('Verify OTP error:', error);
+          showError('Error verifying OTP. Please try again.');
+        } finally {
+          const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+          verifyOtpBtn.disabled = false;
+          verifyOtpBtn.textContent = 'Verify & Create Account';
+        }
+      }
+
+      async function resendSignupOTP() {
+        try {
+          const resendOtpBtn = document.getElementById('resendOtpBtn');
+          resendOtpBtn.disabled = true;
+          resendOtpBtn.textContent = 'Resending...';
+
+          // FIXED: Use apiCall function instead of hardcoded localhost
+          const result = await apiCall('/auth/send-signup-otp', {
+              method: 'POST',
+              body: JSON.stringify({ email: userData.email }) // Only email for resend
+          });
+        
+          if (result.success) {
+            showSuccess('OTP resent successfully to your email!');
+            // Reset and restart timers
+            clearInterval(signupTimer);
+            clearInterval(resendTimer);
+            timeLeft = 600;
+            resendTimeLeft = 60;
+            startOTPTimer();
+            startResendTimer();
+          } else {
+            showError(result.message);
+          }
+        } catch (error) {
+          console.error('Resend OTP error:', error);
+          showError('Error resending OTP. Please try again.');
+        }
+      }
+
+      function startOTPTimer() {
+        updateTimerDisplay();
+        
+        signupTimer = setInterval(() => {
+          timeLeft--;
+          updateTimerDisplay();
+          
+          if (timeLeft <= 0) {
+            clearInterval(signupTimer);
+            showError('OTP has expired. Please request a new one.');
+            // Enable resend button when OTP expires
+            const resendOtpBtn = document.getElementById('resendOtpBtn');
+            resendOtpBtn.disabled = false;
+            resendOtpBtn.textContent = 'Resend OTP';
+            clearInterval(resendTimer);
+          }
+        }, 1000);
+      }
+
+      function startResendTimer() {
+        const resendOtpBtn = document.getElementById('resendOtpBtn');
+        resendOtpBtn.disabled = true;
+        resendOtpBtn.textContent = `Resend OTP (${resendTimeLeft}s)`;
+        
+        resendTimer = setInterval(() => {
+          resendTimeLeft--;
+          resendOtpBtn.textContent = `Resend OTP (${resendTimeLeft}s)`;
+          
+          if (resendTimeLeft <= 0) {
+            clearInterval(resendTimer);
+            resendOtpBtn.disabled = false;
+            resendOtpBtn.textContent = 'Resend OTP';
+          }
+        }, 1000);
+      }
+
+      function updateTimerDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = 
+          `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+
+      function showError(message) {
+        const errorMsg = document.getElementById('signupError');
+        errorMsg.textContent = message;
+        errorMsg.style.display = 'block';
+        setTimeout(() => hideMessage(errorMsg), 5000);
+      }
+
+      function showSuccess(message) {
+        const successMsg = document.getElementById('signupSuccess');
+        successMsg.textContent = message;
+        successMsg.style.display = 'block';
+      }
+
+      function hideMessage(element) {
+        if (element) {
+          element.style.display = 'none';
+          element.textContent = '';
+        }
+      }
+
+      // Allow Enter key to submit
+      document.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+          if (document.getElementById('otpSection').style.display === 'block') {
+            verifySignupOTP();
+          } else {
+            sendSignupOTP();
+          }
+        }
+      });
+
+      // Clear error when user starts typing
+      ['signupName', 'signupEmail', 'signupPhone', 'signupPassword', 'otp'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function() {
+          hideMessage(document.getElementById('signupError'));
+        });
+      });
+
+      // Auto-focus on OTP input when OTP section is shown
+      document.getElementById('otp').addEventListener('focus', function() {
+        this.select();
+      });
+  </script>
+
+</body>
+</html>
