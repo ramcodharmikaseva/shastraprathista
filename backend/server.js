@@ -97,28 +97,6 @@ app.get('/api/test-simple', (req, res) => {
   });
 });
 
-// Test OTP endpoint directly
-app.post('/api/test-otp-simple', (req, res) => {
-  console.log('📧 Test OTP endpoint called:', req.body);
-  
-  const { email } = req.body || {};
-  
-  if (!email) {
-    return res.status(400).json({
-      success: false,
-      message: 'Email is required'
-    });
-  }
-  
-  res.json({
-    success: true,
-    message: 'Test OTP endpoint is working!',
-    email: email,
-    testOtp: '123456',
-    note: 'Add this OTP to test verification'
-  });
-});
-
 // In server.js, add this temporary test route before other routes
 app.get('/api/inventory/test', (req, res) => {
   res.json({
