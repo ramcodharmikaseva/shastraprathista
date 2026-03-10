@@ -6,8 +6,7 @@ const Order = require('../models/Order');
 const User = require('../models/User');
 const Book = require('../models/Book');
 
-// ✅ FIX THIS IMPORT - Add sendOrderDeliveredEmail
-const { sendOrderShippedEmail, sendOrderDeliveredEmail } = require('../utils/orderEmailService');
+// ✅ REMOVED: Email service imports
 
 // Apply auth middleware to all admin routes
 router.use(authMiddleware);
@@ -26,116 +25,11 @@ router.use((req, res, next) => {
 // ✅ FIXED: Apply role-based access control - Using array
 router.use(requireRole(['super_admin', 'admin']));
 
-// Update the test-email endpoint in routes/admin.js
-router.post('/test-email', async (req, res) => {
-  try {
-    console.log('📧 Testing email configuration...');
-    
-    // Test with YOUR PERSONAL email instead
-    const testOrder = {
-      orderId: 'TEST123',
-      customerEmail: 'your-personal-email@gmail.com', // ← CHANGE THIS TO YOUR PERSONAL EMAIL
-      customerName: 'Test Customer',
-      shippingAddress: {
-        fullName: 'Test User',
-        addressLine1: 'Test Address',
-        city: 'Test City',
-        state: 'Test State',
-        pincode: '123456'
-      },
-      items: [
-        {
-          title: 'Test Book',
-          author: 'Test Author',
-          quantity: 1,
-          price: 100
-        }
-      ],
-      totals: {
-        total: 100,
-        subtotal: 100,
-        shipping: 0,
-        discount: 0
-      }
-    };
+// ✅ REMOVED: /test-email endpoint
 
-    console.log('📧 Sending test email to:', testOrder.customerEmail);
-    
-    const emailResult = await sendOrderShippedEmail(testOrder, 'TESTTRACK123');
-    
-    if (emailResult.success) {
-      console.log('✅ Test email sent successfully!');
-      res.json({
-        success: true,
-        message: 'Test email sent successfully! Check your inbox and spam folder.',
-        trackingNumber: emailResult.trackingNumber,
-        sentTo: testOrder.customerEmail
-      });
-    } else {
-      console.log('❌ Test email failed:', emailResult.error);
-      res.status(500).json({
-        success: false,
-        message: 'Test email failed: ' + (emailResult.error || 'Unknown error')
-      });
-    }
-    
-  } catch (error) {
-    console.error('❌ Test email error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Test email error: ' + error.message
-    });
-  }
-});
+// ✅ REMOVED: /test-delivered-email endpoint
 
-// ✅ ADD THIS TEST ENDPOINT FOR DELIVERED EMAILS:
-router.post('/test-delivered-email', async (req, res) => {
-  try {
-    const { orderId } = req.body;
-    
-    console.log('📧 Testing delivered email for order ID:', orderId);
-    
-    const order = await Order.findById(orderId);
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
-    }
-
-    console.log('📧 Found order:', {
-      orderId: order.orderId,
-      customerEmail: order.customerEmail,
-      status: order.status
-    });
-    
-    const emailResult = await sendOrderDeliveredEmail(order);
-    
-    if (emailResult) {
-      console.log('✅ Delivered email sent successfully to:', order.customerEmail);
-      res.json({
-        success: true,
-        message: 'Delivered test email sent successfully!',
-        sentTo: order.customerEmail
-      });
-    } else {
-      console.log('❌ Failed to send delivered email');
-      res.status(500).json({
-        success: false,
-        message: 'Failed to send delivered test email'
-      });
-    }
-    
-  } catch (error) {
-    console.error('❌ Test delivered email error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Test delivered email error: ' + error.message
-    });
-  }
-});
-
-// ✅ UPDATED: Shipping endpoint with comprehensive error handling
+// ✅ UPDATED: Shipping endpoint without email
 router.patch('/orders/:id/ship', async (req, res) => {
   try {
     const { id } = req.params;
@@ -144,8 +38,7 @@ router.patch('/orders/:id/ship', async (req, res) => {
     console.log('🚚 Shipping request received:', { 
       id, 
       trackingNumber, 
-      courierName,
-      hasEmailService: !!sendOrderShippedEmail // Check if service is available
+      courierName
     });
 
     // Validate required fields
@@ -194,39 +87,13 @@ router.patch('/orders/:id/ship', async (req, res) => {
 
     console.log(`✅ Order ${id} marked as shipped with tracking: ${trackingNumber}`);
 
-    // ✅ SEND SHIPPING EMAIL TO CUSTOMER
-    let emailSent = false;
-    let emailError = null;
-
-    if (sendOrderShippedEmail && order.customerEmail) {
-      try {
-        console.log(`📧 Attempting to send shipping email to: ${order.customerEmail}`);
-        
-        const emailResult = await sendOrderShippedEmail(order, trackingNumber);
-        
-        if (emailResult && emailResult.success) {
-          emailSent = true;
-          console.log(`✅ Shipping email sent successfully to ${order.customerEmail}`);
-        } else {
-          emailError = emailResult?.error || 'Email service returned failure';
-          console.log('⚠️ Shipping email failed:', emailError);
-        }
-      } catch (emailError) {
-        emailError = emailError.message;
-        console.error('❌ Error sending shipping email:', emailError);
-        // Don't fail the whole request if email fails
-      }
-    } else {
-      console.log('⚠️ Email service not available or no customer email');
-    }
+    // ✅ REMOVED: Email sending code
 
     res.json({
       success: true,
-      message: 'Order marked as shipped successfully' + (emailSent ? ' and email sent' : ' (email not sent)'),
+      message: 'Order marked as shipped successfully',
       order: order,
-      trackingNumber: trackingNumber,
-      emailSent: emailSent,
-      emailError: emailError
+      trackingNumber: trackingNumber
     });
 
   } catch (error) {
@@ -238,7 +105,7 @@ router.patch('/orders/:id/ship', async (req, res) => {
   }
 });
 
-// ✅ REPLACE THIS ENDPOINT with the updated version:
+// ✅ UPDATED: Status update endpoint without email
 router.put('/orders/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
@@ -254,7 +121,7 @@ router.put('/orders/:id/status', async (req, res) => {
       });
     }
 
-    // Store previous status for email triggers
+    // Store previous status for history
     const previousStatus = order.status;
 
     // Track changes for history
@@ -315,44 +182,12 @@ router.put('/orders/:id/status', async (req, res) => {
 
     console.log(`✅ Admin updated order ${id}: ${changes.join(', ')}`);
 
-    // ✅ AUTO-EMAIL TRIGGERS - ADD THIS SECTION
-    let emailSent = false;
-    let emailType = '';
-
-    try {
-      // Trigger shipped email
-      if (status === 'shipped' && previousStatus !== 'shipped') {
-        console.log(`📧 Auto-triggering shipped email for order ${id}`);
-        const emailResult = await sendOrderShippedEmail(order, order.trackingNumber);
-        if (emailResult && emailResult.success) {
-          emailSent = true;
-          emailType = 'shipped';
-          console.log(`✅ Shipped email sent to ${order.customerEmail}`);
-        }
-      }
-      
-      // Trigger delivered email
-      else if (status === 'delivered' && previousStatus !== 'delivered') {
-        console.log(`📧 Auto-triggering delivered email for order ${id}`);
-        const emailResult = await sendOrderDeliveredEmail(order);
-        if (emailResult) {
-          emailSent = true;
-          emailType = 'delivered';
-          console.log(`✅ Delivered email sent to ${order.customerEmail}`);
-        }
-      }
-    } catch (emailError) {
-      console.error('❌ Error sending auto-email:', emailError);
-      // Don't fail the request if email fails
-    }
+    // ✅ REMOVED: Auto-email triggers
 
     res.json({
       success: true,
-      message: `Order updated successfully: ${changes.join(', ')}` + 
-               (emailSent ? ` (${emailType} email sent)` : ''),
-      order: order,
-      emailSent: emailSent,
-      emailType: emailType
+      message: `Order updated successfully: ${changes.join(', ')}`,
+      order: order
     });
 
   } catch (error) {
