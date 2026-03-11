@@ -344,8 +344,6 @@
   </div>
 </div>
 
-<div id="footer-container"></div>
-
 <script src="common.js"></script>
 
 <script>
@@ -373,14 +371,6 @@ function loadShared() {
       }
     })
     .catch(err => console.error("Header load failed", err));
-
-  // FOOTER
-  fetch("footer.html")
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById("footer-container").innerHTML = html;
-    })
-    .catch(err => console.error("Footer load failed", err));
 }
 
 
