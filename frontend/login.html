@@ -151,7 +151,7 @@
     </div>
     
     <div class="guest-option">
-      Or <a href="all_book_grid.html">continue as guest</a>
+      Or <a href="chokkar-hall.html">continue as guest</a>
     </div>
   </div>
 
@@ -191,9 +191,9 @@
         try {
           const parsed = JSON.parse(currentUser);
           if (parsed.role === 'admin' || parsed.role === 'super_admin' || parsed.role === 'music-admin') {
-            window.location.href = 'admin.html';
+            window.location.href = 'chokkar-hall.html';
           } else {
-            window.location.href = 'all_book_grid.html';
+            window.location.href = 'chokar-hall.html';
           }
         } catch (e) {
           localStorage.removeItem('currentUser');
@@ -254,9 +254,9 @@
 
           setTimeout(() => {
             if (data.user.role === 'admin' || data.user.role === 'super_admin' || data.user.role === 'music-admin') {
-              window.location.href = 'admin.html';
+              window.location.href = 'chokkar-hall.html';
             } else {
-              window.location.href = 'all_book_grid.html';
+              window.location.href = 'chokkar-hall.html';
             }
           }, 1000);
         } else {
