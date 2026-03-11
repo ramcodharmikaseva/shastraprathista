@@ -131,12 +131,6 @@
     <!-- Load Header -->
     <div id="header-container"></div>
 
-    <!-- Welcome Section -->
-    <div class="welcome-section">
-      <h1>Welcome to PACR Sethuramammal Charities</h1>
-      
-    </div>
-
     <!-- Marriage Halls Section -->
     <div class="halls-section">
       
@@ -177,16 +171,13 @@
       </div>
     </div>
 
-    <!-- Load Footer -->
-    <div id="footer-container"></div>
-
   </div>
 
   <!-- Common JS -->
   <script src="common.js"></script>
   
   <script>
-    // Load shared header & footer
+    // Load shared header
     function loadSharedComponents() {
       // Load header
       fetch('header.html')
@@ -206,14 +197,6 @@
             </header>
           `;
         });
-
-      // Load footer
-      fetch('footer.html')
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById('footer-container').innerHTML = html;
-        })
-        .catch(err => console.error('Footer load failed:', err));
     }
 
     // Initialize page
