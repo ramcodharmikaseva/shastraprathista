@@ -33,6 +33,35 @@
     </button>
   </div>
 
+  <!-- 👇 ADD THE BLOCK CONTROLS HERE (AFTER hall-tabs, BEFORE calendar) -->
+  <div class="block-controls">
+    <button id="selectModeBtn" class="block-btn" onclick="toggleSelectMode()">
+      <i class="fas fa-lock"></i> Block Dates
+    </button>
+    <button id="applyBlockBtn" class="block-btn apply" onclick="blockSelectedDates()" style="display: none;">
+      <i class="fas fa-check-circle"></i> Apply Block
+    </button>
+    <button id="quickBlockBtn" class="block-btn" onclick="document.getElementById('quickBlockPanel').style.display='block'">
+      <i class="fas fa-bolt"></i> Quick Block
+    </button>
+  </div>
+
+  <!-- Quick Block Panel (hidden by default) -->
+  <div id="quickBlockPanel" class="quick-block-panel" style="display: none;">
+    <h4><i class="fas fa-clock"></i> Quick Block Options</h4>
+    <div class="quick-block-controls">
+      <button onclick="blockWeekends()"><i class="fas fa-calendar-week"></i> Block Weekends</button>
+      <button onclick="blockMonth()"><i class="fas fa-calendar-alt"></i> Block Full Month</button>
+      <button onclick="closeQuickBlock()"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </div>
+
+  <script>
+  function closeQuickBlock() {
+    document.getElementById('quickBlockPanel').style.display = 'none';
+  }
+  </script>
+
   <!-- ADMIN CALENDAR -->
   <div class="admin-calendar-wrapper">
     <h2>Hall Booking Calendar</h2>

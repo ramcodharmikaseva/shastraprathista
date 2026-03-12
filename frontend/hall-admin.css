@@ -355,3 +355,144 @@ input:focus, select:focus {
   outline: 2px solid #6b240c;
   outline-offset: -2px;
 }
+
+/* Blocked dates - GREEN */
+.day.blocked-date {
+  background-color: #2ecc71 !important;
+  color: white;
+  position: relative;
+}
+
+.day.blocked-date::after {
+  content: '🔒';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* Tooltip for blocked reason */
+.day.blocked-date[title] {
+  cursor: help;
+}
+
+/* Selection mode for blocking */
+.day.selected {
+  outline: 3px solid #3498db;
+  outline-offset: 2px;
+  transform: scale(0.95);
+  cursor: crosshair !important;
+  z-index: 10;
+}
+
+/* Block controls styling */
+.block-controls {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.block-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.block-btn i {
+  font-size: 16px;
+}
+
+.block-btn:not(.apply) {
+  background: #e74c3c;
+  color: white;
+}
+
+.block-btn.apply {
+  background: #27ae60;
+  color: white;
+}
+
+.block-btn.active {
+  background: #3498db;
+  transform: scale(1.05);
+}
+
+.block-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Quick block panel */
+.quick-block-panel {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.quick-block-panel h4 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-block-panel h4 i {
+  color: #27ae60;
+}
+
+.quick-block-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quick-block-controls button {
+  padding: 8px 15px;
+  background: #ecf0f1;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.quick-block-controls button:hover {
+  background: #bdc3c7;
+  transform: translateY(-1px);
+}
+
+.quick-block-controls button i {
+  font-size: 12px;
+}
+
+/* Selected dates counter */
+.selected-count {
+  background: #3498db;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-left: 8px;
+}

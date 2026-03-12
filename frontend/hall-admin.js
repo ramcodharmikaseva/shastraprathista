@@ -243,16 +243,44 @@ function renderAdminMonth(y, m) {
       continue;
     }
 
-    /* 🎨 Booking colors */
+    /* 🎨 Booking colors - WITH BLOCKED DATES SUPPORT */
     if (b) {
-      if (b.morning && b.evening) day.classList.add("full");
-      else if (b.morning) day.classList.add("morning");
-      else if (b.evening) day.classList.add("evening");
+      if (b.isBlocked) {
+        day.classList.add("blocked-date"); // Green color
+        day.setAttribute('title', b.blockedReason || 'Blocked by admin');
+      } else if (b.morning && b.evening) {
+        day.classList.add("full");
+      } else if (b.morning) {
+        day.classList.add("morning");
+      } else if (b.evening) {
+        day.classList.add("evening");
+      }
     }
 
-    /* CLICK → OPEN MODAL */
-    day.onclick = () => {
-      openModal(dateKey, b);
+    /* CLICK HANDLER - Modified for select mode */
+    day.onclick = (e) => {
+      e.stopPropagation();
+      
+      if (isSelectMode) {
+        // Toggle selection
+        if (selectedDates.includes(dateKey)) {
+          selectedDates = selectedDates.filter(d => d !== dateKey);
+          day.classList.remove('selected');
+        } else {
+          selectedDates.push(dateKey);
+          day.classList.add('selected');
+        }
+        
+        // Update apply button text
+        const applyBtn = document.getElementById('applyBlockBtn');
+        if (applyBtn) {
+          applyBtn.style.display = selectedDates.length > 0 ? 'inline-flex' : 'none';
+          applyBtn.innerHTML = `<i class="fas fa-check-circle"></i> Apply Block (${selectedDates.length})`;
+        }
+      } else {
+        // Normal click - open modal
+        openModal(dateKey, b || {});
+      }
     };
 
     grid.appendChild(day);
@@ -263,7 +291,7 @@ function renderAdminMonth(y, m) {
   return box;
 }
 
-// ✅ Update the saveModalBooking function to check for 403
+// ✅ Update the saveModalBooking function to check for 403 AND blocked dates
 async function saveModalBooking() {
   const hall = currentHall;
   const date = modalDate.value;
@@ -274,6 +302,13 @@ async function saveModalBooking() {
   const bookedBy = modalBookedBy.value.trim();
   const contact = modalContact.value.trim();
   const functionType = modalFunctionType.value.trim();
+
+  /* ---------- CHECK IF DATE IS BLOCKED ---------- */
+  const existing = adminBookings[date];
+  if (existing && (existing.isBlocked === true || existing.bookedBy === 'SYSTEM_BLOCKED')) {
+    showModalMessage("❌ Cannot modify a blocked date. Use unblock feature first.", true);
+    return;
+  }
 
   /* ---------- VALIDATION ---------- */
   if (!morning && !evening) {
@@ -292,8 +327,6 @@ async function saveModalBooking() {
   }
 
   /* ---------- CONFIRM UPDATE ---------- */
-  const existing = adminBookings[date];
-
   if (
     existing &&
     existing.bookedBy === bookedBy &&
@@ -321,7 +354,9 @@ async function saveModalBooking() {
         evening,
         bookedBy,
         contact,
-        functionType
+        functionType,
+        isBlocked: false, // Explicitly set as NOT blocked
+        blockedReason: ''
       })
     });
 
@@ -331,13 +366,23 @@ async function saveModalBooking() {
       return;
     }
 
+    // Handle 400 (Bad Request)
+    if (res.status === 400) {
+      const error = await res.json();
+      showModalMessage(error.message || "Invalid request", true);
+      return;
+    }
+
     const data = await res.json();
 
-    showModalMessage(data.message || "Saved", !data.success);
-
     if (data.success) {
-      closeModal();
-      loadAdminBookings();
+      showModalMessage("✅ Booking saved successfully!", false);
+      setTimeout(() => {
+        closeModal();
+        loadAdminBookings();
+      }, 500);
+    } else {
+      showModalMessage(data.message || "Failed to save booking", true);
     }
   } catch (error) {
     console.error("Save booking error:", error);
@@ -345,12 +390,21 @@ async function saveModalBooking() {
   }
 }
 
-// ✅ Update the deleteModalBooking function
+// ✅ Update the deleteModalBooking function with blocked date protection
 async function deleteModalBooking() {
   const hall = currentHall;
   const date = modalDate.value;
 
-  if (!confirm("Delete this booking?")) return;
+  /* ---------- CHECK IF DATE IS BLOCKED ---------- */
+  const existing = adminBookings[date];
+  if (existing && (existing.isBlocked === true || existing.bookedBy === 'SYSTEM_BLOCKED')) {
+    alert("❌ Cannot delete a blocked date. Use the 'Unblock' feature instead.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this booking? This action cannot be undone.")) {
+    return;
+  }
 
   try {
     const res = await fetch("/api/halls/book", {
@@ -368,13 +422,62 @@ async function deleteModalBooking() {
       return;
     }
 
-    if (res.ok) {
+    // Handle 404 (Not Found)
+    if (res.status === 404) {
+      alert("Booking not found. It may have been already deleted.");
       closeModal();
       loadAdminBookings();
+      return;
+    }
+
+    if (res.ok) {
+      const data = await res.json();
+      alert("✅ " + (data.message || "Booking deleted successfully"));
+      closeModal();
+      loadAdminBookings();
+    } else {
+      const error = await res.json();
+      alert("❌ Failed to delete: " + (error.message || "Unknown error"));
     }
   } catch (error) {
     console.error("Delete booking error:", error);
-    alert("Failed to delete booking: " + error.message);
+    alert("❌ Failed to delete booking: " + error.message);
+  }
+}
+
+// =============================================
+// NEW: BLOCKED DATES FUNCTIONS TO ADD
+// =============================================
+
+// Function to unblock a date (add this new function)
+async function unblockDate(date) {
+  if (!confirm(`Are you sure you want to unblock this date?`)) return;
+  
+  try {
+    const res = await fetch("/api/halls/unblock-date", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem('token')
+      },
+      body: JSON.stringify({
+        hall: currentHall,
+        date: date
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      alert("✅ Date unblocked successfully");
+      closeModal();
+      loadAdminBookings();
+    } else {
+      alert("❌ Failed to unblock date: " + data.message);
+    }
+  } catch (error) {
+    console.error("Unblock date error:", error);
+    alert("❌ Error unblocking date");
   }
 }
 
@@ -403,14 +506,43 @@ function openModal(dateKey, booking = {}) {
   modalMessage.textContent = "";
   modalMessage.style.color = "";
 
+  // 🔴 CHECK IF THIS IS A BLOCKED DATE
+  const isBlocked = booking.isBlocked === true || booking.bookedBy === 'SYSTEM_BLOCKED';
+  
   const hasBooking = !!booking.bookedBy;
 
-  // ✅ If new booking → directly editable
-  setEditMode(!hasBooking);
-
-  // ✅ Hide edit button if new booking
-  document.getElementById("editBtn").style.display = hasBooking ? "inline-block" : "none";
-  document.getElementById("saveBtn").style.display = hasBooking ? "none" : "inline-block";
+  if (isBlocked) {
+    // Blocked date - show special message and unblock button
+    setEditMode(false);
+    document.getElementById("editBtn").style.display = "none";
+    document.getElementById("saveBtn").style.display = "none";
+    
+    // Create or show unblock button
+    let unblockBtn = document.getElementById("unblockBtn");
+    if (!unblockBtn) {
+      const actionsDiv = document.querySelector(".form-actions");
+      unblockBtn = document.createElement("button");
+      unblockBtn.id = "unblockBtn";
+      unblockBtn.className = "warning";
+      unblockBtn.innerHTML = '<i class="fas fa-unlock"></i> Unblock Date';
+      unblockBtn.onclick = () => unblockDate(dateKey);
+      actionsDiv.appendChild(unblockBtn);
+    } else {
+      unblockBtn.style.display = "inline-block";
+    }
+    
+    modalMessage.innerHTML = `🔒 <strong>Blocked Date</strong><br>Reason: ${booking.blockedReason || 'Not specified'}`;
+    modalMessage.style.color = "#27ae60";
+  } else {
+    // Regular booking or new booking
+    // Hide unblock button if it exists
+    const unblockBtn = document.getElementById("unblockBtn");
+    if (unblockBtn) unblockBtn.style.display = "none";
+    
+    setEditMode(!hasBooking);
+    document.getElementById("editBtn").style.display = hasBooking ? "inline-block" : "none";
+    document.getElementById("saveBtn").style.display = hasBooking ? "none" : "inline-block";
+  }
 
   bookingModal.style.display = "flex";
   document.body.style.overflow = "hidden";
@@ -515,3 +647,111 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
+// =============================================
+// NEW: BLOCKED DATES FUNCTIONS
+// =============================================
+
+let selectedDates = [];
+let isSelectMode = false;
+
+// Toggle selection mode
+function toggleSelectMode() {
+  isSelectMode = !isSelectMode;
+  const btn = document.getElementById('selectModeBtn');
+  
+  if (isSelectMode) {
+    btn.classList.add('active');
+    btn.innerHTML = '<i class="fas fa-check"></i> Select Mode ON';
+    selectedDates = [];
+  } else {
+    btn.classList.remove('active');
+    btn.innerHTML = '<i class="fas fa-lock"></i> Block Dates';
+    selectedDates = [];
+  }
+  
+  // Refresh calendar to show selection mode
+  const year = document.getElementById('adminYear').value;
+  renderAdminCalendar(year);
+}
+
+// Block selected dates
+async function blockSelectedDates() {
+  if (selectedDates.length === 0) {
+    alert('Please select dates to block');
+    return;
+  }
+  
+  const reason = prompt('Enter reason for blocking (e.g., "Maintenance", "Private Event"):');
+  if (reason === null) return;
+  
+  try {
+    const res = await fetch('/api/halls/block-dates', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        hall: currentHall,
+        dates: selectedDates,
+        reason: reason,
+        morning: true,
+        evening: true
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      alert(`✅ Successfully blocked ${selectedDates.length} dates`);
+      selectedDates = [];
+      isSelectMode = false;
+      document.getElementById('selectModeBtn').classList.remove('active');
+      document.getElementById('selectModeBtn').innerHTML = '<i class="fas fa-lock"></i> Block Dates';
+      loadAdminBookings(); // Reload calendar
+    } else {
+      alert('❌ Failed to block dates: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Block dates error:', error);
+    alert('❌ Error blocking dates');
+  }
+}
+
+// Quick block functions
+async function blockWeekends() {
+  const year = document.getElementById('adminYear').value;
+  const weekends = [];
+  
+  for (let m = 0; m < 12; m++) {
+    for (let d = 1; d <= new Date(year, m + 1, 0).getDate(); d++) {
+      const date = new Date(year, m, d);
+      if (date.getDay() === 0 || date.getDay() === 6) {
+        weekends.push(`${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+      }
+    }
+  }
+  
+  if (confirm(`Block ${weekends.length} weekends in ${year}?`)) {
+    selectedDates = weekends;
+    blockSelectedDates();
+  }
+}
+
+async function blockMonth() {
+  const year = document.getElementById('adminYear').value;
+  const month = prompt('Enter month number (1-12):');
+  if (!month) return;
+  
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const dates = [];
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    dates.push(`${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+  }
+  
+  if (confirm(`Block all ${dates.length} days in month ${month}?`)) {
+    selectedDates = dates;
+    blockSelectedDates();
+  }
+}
