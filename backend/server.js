@@ -251,6 +251,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Add this near your other routes
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    time: new Date().toISOString(),
+    message: 'Shastraprathista is running'
+  });
+});
+
 // ✅ Route to list all available endpoints
 app.get('/api', (req, res) => {
   res.json({
