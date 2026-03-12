@@ -108,6 +108,8 @@
 .legend-box.evening{
   background:linear-gradient(315deg,#ff2b2b 50%,#e5e5e5 50%);
 }
+/* 🟢 NEW: Blocked date legend */
+.legend-box.blocked-date{ background:#2ecc71; }
 
 /* ================= CALENDAR ================= */
 #calendar{
@@ -158,8 +160,9 @@
   font-weight:600;
   cursor: pointer;
   transition: transform 0.2s ease;
+  position: relative;
 }
-.day:hover:not(.empty):not(.blocked) {
+.day:hover:not(.empty):not(.blocked):not(.blocked-date) {
   transform: scale(1.05);
 }
 .day.empty{ background:#f7f7f7; }
@@ -172,8 +175,22 @@
   background:linear-gradient(315deg,#ff3b3b 50%,#e5e5e5 50%);
   color:#fff;
 }
+/* 🟢 NEW: Blocked date style */
+.day.blocked-date{
+  background:#2ecc71;
+  color:#fff;
+  position: relative;
+}
+.day.blocked-date::after{
+  content: '🔒';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 10px;
+  opacity: 0.8;
+}
 
-.day:not(.full):not(.morning):not(.evening) {
+.day:not(.full):not(.morning):not(.evening):not(.blocked-date) {
   cursor: default;
 }
 
@@ -474,6 +491,21 @@
   gap: 8px;
 }
 
+/* Blocked date message in modal */
+.blocked-message {
+  background: #2ecc71;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  margin: 10px 0;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 </style>
 </head>
 
@@ -504,6 +536,8 @@
     <div class="legend-item"><span class="legend-box full"></span> Booked Full Day</div>
     <div class="legend-item"><span class="legend-box morning"></span> Booked Morning</div>
     <div class="legend-item"><span class="legend-box evening"></span> Booked Evening</div>
+    <!-- 🟢 NEW: Blocked date legend -->
+    <div class="legend-item"><span class="legend-box blocked-date"></span> Blocked (Maintenance/Event)</div>
   </div>
 </div>
 
@@ -612,7 +646,12 @@
 <!-- USER BOOKING DETAILS MODAL -->
 <div id="userBookingModal" class="modal">
   <div class="modal-box user-view">
-    <h3>Booking Details</h3>
+    <h3 id="modalTitle">Booking Details</h3>
+
+    <!-- 🟢 NEW: Blocked message container (hidden by default) -->
+    <div id="blockedMessage" class="blocked-message" style="display: none;">
+      <i class="fas fa-lock"></i> This date is blocked for maintenance/event
+    </div>
 
     <div class="detail-row">
       <span>📅 Booking Date</span>
@@ -642,6 +681,12 @@
     <div class="detail-row">
       <span>🛡️ Approved By</span>
       <strong id="uAdmin"></strong>
+    </div>
+
+    <!-- 🟢 NEW: Blocked reason row (hidden by default) -->
+    <div id="blockedReasonRow" class="detail-row" style="display: none;">
+      <span>🔒 Block Reason</span>
+      <strong id="uBlockedReason"></strong>
     </div>
 
     <button class="close-btn" onclick="closeUserModal()">Close</button>
@@ -726,11 +771,14 @@ async function loadBookings(year) {
         bookedBy: b.bookedBy,
         functionType: b.functionType,
         createdAt: b.createdAt,
-        createdByName: b.createdByName || b.createdBy
+        createdByName: b.createdByName || b.createdBy,
+        // 🟢 NEW: Add blocked fields
+        isBlocked: b.isBlocked || false,
+        blockedReason: b.blockedReason || ''
       };
     });
 
-    renderCalendar(year); // ✅ correct call
+    renderCalendar(year);
   } catch (err) {
     console.error("Failed to load bookings", err);
     renderCalendar(year); // still render calendar even if API fails
@@ -763,7 +811,6 @@ function renderCalendar(year) {
     cal.appendChild(renderMonth(year, m));
   }
 }
-
 
 function renderMonth(y, m) {
   const box = document.createElement("div");
@@ -821,38 +868,28 @@ function renderMonth(y, m) {
       continue;
     }
 
-    /* 🎨 Booking colors */
-    if (booking.morning && booking.evening) day.classList.add("full");
-    else if (booking.morning) day.classList.add("morning");
-    else if (booking.evening) day.classList.add("evening");
+    /* 🟢 NEW: Check if blocked */
+    if (booking.isBlocked) {
+      day.classList.add("blocked-date");
+      day.setAttribute('title', booking.blockedReason || 'Blocked for maintenance/event');
+      
+      // Blocked dates are clickable to show reason
+      day.onclick = () => {
+        showBlockedDateModal(key, booking);
+      };
+    } else {
+      /* 🎨 Booking colors for regular bookings */
+      if (booking.morning && booking.evening) day.classList.add("full");
+      else if (booking.morning) day.classList.add("morning");
+      else if (booking.evening) day.classList.add("evening");
 
-    /* 🪟 CLICK → SHOW DETAILS */
-    day.onclick = () => {
-      document.getElementById("uDate").textContent = key;
-
-      document.getElementById("uBookedOn").textContent =
-        booking.createdAt
-          ? new Date(booking.createdAt).toLocaleString()
-          : "—";
-
-      document.getElementById("uBookedBy").textContent =
-        booking.bookedBy || "—";
-
-      document.getElementById("uFunction").textContent =
-        booking.functionType || "—";
-
-      document.getElementById("uSlot").textContent =
-        booking.morning && booking.evening
-          ? "Full Day"
-          : booking.morning
-          ? "Morning"
-          : "Evening";
-
-      document.getElementById("uAdmin").textContent =
-        booking.createdByName || "Temple Administration";
-
-      document.getElementById("userBookingModal").style.display = "flex";
-    };
+      /* 🪟 CLICK → SHOW DETAILS (for regular bookings) */
+      if (booking.morning || booking.evening) {
+        day.onclick = () => {
+          showBookingModal(key, booking);
+        };
+      }
+    }
 
     grid.appendChild(day);
   }
@@ -860,6 +897,58 @@ function renderMonth(y, m) {
   box.appendChild(week);
   box.appendChild(grid);
   return box;
+}
+
+/* 🟢 NEW: Show regular booking modal */
+function showBookingModal(key, booking) {
+  document.getElementById("uDate").textContent = key;
+
+  document.getElementById("uBookedOn").textContent =
+    booking.createdAt
+      ? new Date(booking.createdAt).toLocaleString()
+      : "—";
+
+  document.getElementById("uBookedBy").textContent =
+    booking.bookedBy || "—";
+
+  document.getElementById("uFunction").textContent =
+    booking.functionType || "—";
+
+  document.getElementById("uSlot").textContent =
+    booking.morning && booking.evening
+      ? "Full Day"
+      : booking.morning
+      ? "Morning"
+      : "Evening";
+
+  document.getElementById("uAdmin").textContent =
+    booking.createdByName || "Temple Administration";
+
+  // Hide blocked-specific elements
+  document.getElementById("blockedMessage").style.display = "none";
+  document.getElementById("blockedReasonRow").style.display = "none";
+  document.getElementById("modalTitle").textContent = "Booking Details";
+
+  document.getElementById("userBookingModal").style.display = "flex";
+}
+
+/* 🟢 NEW: Show blocked date modal */
+function showBlockedDateModal(key, booking) {
+  document.getElementById("uDate").textContent = key;
+  document.getElementById("uBookedOn").textContent = "—";
+  document.getElementById("uBookedBy").textContent = "—";
+  document.getElementById("uFunction").textContent = "—";
+  document.getElementById("uSlot").textContent = "—";
+  document.getElementById("uAdmin").textContent = "—";
+  
+  // Show blocked-specific elements
+  document.getElementById("modalTitle").textContent = "Date Unavailable";
+  document.getElementById("blockedMessage").style.display = "flex";
+  document.getElementById("blockedReasonRow").style.display = "flex";
+  document.getElementById("uBlockedReason").textContent = 
+    booking.blockedReason || 'Maintenance / Private Event';
+
+  document.getElementById("userBookingModal").style.display = "flex";
 }
 
 /* ---------- tabs ---------- */

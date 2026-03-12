@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>TTD – P.A.C Ramasamy Raja Kalyana Mandapam</title>
+<title>TTD - P.A.C Ramasamy Raja Kalyana Mandapam</title>
 
-  <link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="common.css">
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
 
 <style>
-/* SAME CSS AS CHOKKAR — NO CHANGE */
+/* ================= PAGE TITLE (FIRST) ================= */
 .page-title {
-  background:#d4af37;
-  color:#fff;
+  background:#d89b2c;
+  color:#fcfcfc;
   text-align:center;
-  padding:10px 6px;
-  position: relative; /* REQUIRED */
+  padding:15px 6px;
 }
-.page-title h1 { margin:0; font-size:1.2rem; }
+.page-title h1 { 
+  margin:0; 
+  font-size:1.2rem; 
+  padding: 0 10px;
+}
 
+/* ================= TABS (THIRD) ================= */
 .hall-tabs{
   display:flex;
   justify-content:center;
@@ -34,6 +38,7 @@
   padding:12px;
   border-bottom:2px solid #013057;
   flex-wrap:wrap;
+  background: #f8f8f8;
 }
 .tab-btn{
   padding:8px 16px;
@@ -42,15 +47,30 @@
   font-weight:600;
   cursor:pointer;
   border-radius:4px;
+  transition: all 0.3s ease;
 }
 .tab-btn.active{
-  background:#d4af37;
+  background:#d8962c;
   color:#fff;
 }
+.tab-btn:hover:not(.active) {
+  background: #ddd;
+}
 
-.hall-section{ display:none; padding:25px 15px; }
+/* ================= SECTIONS ================= */
+.hall-section{ 
+  display:none; 
+  padding:25px 15px; 
+  animation: fadeIn 0.5s ease;
+}
 .active-section{ display:block; }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ================= YEAR SELECT ================= */
 .year-select-wrapper{
   text-align:center;
   margin:15px 0;
@@ -58,10 +78,12 @@
 #yearSelect{
   padding:8px 14px;
   font-size:1rem;
-  border:2px solid #d4af37;
+  border:2px solid #d8962c;
+  border-radius: 4px;
+  background: white;
 }
 
-/* LEGEND */
+/* ================= LEGEND ================= */
 .calendar-legend-wrapper{
   text-align:center;
   margin:15px 0;
@@ -75,7 +97,10 @@
   font-size:14px;
 }
 .legend-item{ display:flex; align-items:center; gap:6px; }
-.legend-box{ width:14px; height:14px; background:#e5e5e5; }
+.legend-box{
+  width:14px; height:14px;
+  background:#e5e5e5;
+}
 .legend-box.full{ background:#ff2b2b; }
 .legend-box.morning{
   background:linear-gradient(135deg,#ff2b2b 50%,#e5e5e5 50%);
@@ -83,8 +108,10 @@
 .legend-box.evening{
   background:linear-gradient(315deg,#ff2b2b 50%,#e5e5e5 50%);
 }
+/* 🟢 Blocked date legend */
+.legend-box.blocked-date{ background:#2ecc71; }
 
-/* CALENDAR */
+/* ================= CALENDAR ================= */
 #calendar{
   display:flex;
   flex-wrap:wrap;
@@ -96,11 +123,14 @@
   width:320px;
   border:2px solid #013057;
   background:#fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .month h3{
   margin:0;
   padding:8px;
-  background:#d4af37;
+  background:#d8962c;
   color:#fff;
   text-align:center;
 }
@@ -128,7 +158,14 @@
   align-items:center;
   justify-content:center;
   font-weight:600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  position: relative;
 }
+.day:hover:not(.empty):not(.blocked):not(.blocked-date) {
+  transform: scale(1.05);
+}
+.day.empty{ background:#f7f7f7; }
 .day.full{ background:#ff3b3b; color:#fff; }
 .day.morning{
   background:linear-gradient(135deg,#ff3b3b 50%,#e5e5e5 50%);
@@ -138,14 +175,22 @@
   background:linear-gradient(315deg,#ff3b3b 50%,#e5e5e5 50%);
   color:#fff;
 }
-.day.blocked{
-  background:#bdbdbd;
-  color:#666;
-  cursor:not-allowed;
+/* 🟢 Blocked date style */
+.day.blocked-date{
+  background:#2ecc71;
+  color:#fff;
+  position: relative;
 }
-.day.empty{ background:transparent; border:none; }
+.day.blocked-date::after{
+  content: '🔒';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 10px;
+  opacity: 0.8;
+}
 
-.day:not(.full):not(.morning):not(.evening) {
+.day:not(.full):not(.morning):not(.evening):not(.blocked-date) {
   cursor: default;
 }
 
@@ -166,8 +211,138 @@
   color: #013057;
 }
 
+/* ================= OTHER SECTIONS ================= */
+.section-title{ 
+  text-align:center; 
+  color:#7a2e00; 
+  margin-top: 0;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: #d89b2c;
+}
+.features-list{ 
+  max-width:600px; 
+  margin:auto;
+  list-style-type: none;
+  padding: 0;
+}
+.features-list li {
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+  border-left: 4px solid #d89b2c;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.features-list li::before {
+  content: '✓';
+  color: #d89b2c;
+  font-weight: bold;
+}
+
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:15px;
+  max-width:800px;
+  margin:auto;
+}
+.gallery-box{
+  background:#ddd;
+  height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.gallery-box:hover {
+  transform: translateY(-5px);
+}
+.gallery-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(216, 155, 44, 0.2), transparent);
+}
+.location-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.map-container {
+  width: 100%;
+  height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-top: 20px;
+  border: 2px solid #d89b2c;
+}
+
+.contact-box{
+  max-width:500px;
+  margin:auto;
+  background:#fff;
+  padding:25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.day.blocked {
+  background: #bdbdbd;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* ================= MOBILE ================= */
 @media(max-width:768px){
   .month{ width:100%; }
+  .image-slider .slide img {
+    height: 250px;
+  }
+  .hall-tabs {
+    gap: 5px;
+  }
+  .tab-btn {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+  .map-container {
+    height: 300px;
+  }
+}
+
+@media(max-width:480px){
+  .image-slider .slide img {
+    height: 200px;
+  }
+  .page-title h1 {
+    font-size: 1rem;
+  }
+  .map-container {
+    height: 250px;
+  }
 }
 
 /* ===== USER BOOKING MODAL ===== */
@@ -224,6 +399,11 @@
   font-weight: 600;
   cursor: pointer;
   border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #5a1e00;
 }
 
 @keyframes fadeIn {
@@ -231,8 +411,99 @@
   to { transform: scale(1); opacity: 1; }
 }
 
-.page-title {
-  position: relative; /* REQUIRED */
+/* Location section styles */
+.location-info {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.location-info h3 {
+  color: #7a2e00;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.location-details p {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.location-details i {
+  color: #d89b2c;
+  width: 20px;
+  text-align: center;
+}
+
+.directions-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #d89b2c;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-top: 15px;
+  transition: background 0.3s ease;
+}
+
+.directions-btn:hover {
+  background: #b87c24;
+  color: white;
+}
+
+.map-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.directions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.direction-box {
+  flex: 1;
+  min-width: 200px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.direction-box h4 {
+  color: #013057;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Blocked date message in modal */
+.blocked-message {
+  background: #2ecc71;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  margin: 10px 0;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 </style>
@@ -240,18 +511,22 @@
 
 <body>
 
+<!-- SHARED HEADER -->
 <div id="header-container"></div>
 
+<!-- 1. PAGE TITLE (FIRST) - UPDATED FOR TTD -->
 <div class="page-title">
   <h1>TTD – P.A.C RAMASAMY RAJA KALYANA MANDAPAM</h1>
 </div>
 
+<!-- 3. TABS (THIRD) -->
 <div class="hall-tabs">
   <button class="tab-btn active" data-tab="availability">Check Availability</button>
   <button class="tab-btn" data-tab="features">Features</button>
   <button class="tab-btn" data-tab="contact">Contact Us</button>
 </div>
 
+<!-- AVAILABILITY -->
 <section id="availability" class="hall-section active-section">
 
 <div class="calendar-legend-wrapper">
@@ -261,6 +536,8 @@
     <div class="legend-item"><span class="legend-box full"></span> Booked Full Day</div>
     <div class="legend-item"><span class="legend-box morning"></span> Booked Morning</div>
     <div class="legend-item"><span class="legend-box evening"></span> Booked Evening</div>
+    <!-- 🟢 Blocked date legend -->
+    <div class="legend-item"><span class="legend-box blocked-date"></span> Blocked (Maintenance/Event)</div>
   </div>
 </div>
 
@@ -271,43 +548,114 @@
 <div id="calendar"></div>
 </section>
 
+<!-- FEATURES - UPDATED FOR TTD -->
 <section id="features" class="hall-section">
-  <h2 class="section-title">Hall Features</h2>
-  <ul>
-    <li>Capacity of 1500 -1800 guests.</li>
-    <li>Centralized Air conditioning for the Hall and Dinning.</li>
-    <li>Fully furnished and comfortable bride and groom suites with air conditioning.</li>
-    <li>12 rooms Available with Fully furnished, comfortable and  air conditioning.</li>
-    <li>Modern, spacious and fully equipped kitchen with gas stoves, steam cookers, etc.</li>
-    <li>Dining hall capacity of up to 250 guests.</li>
-    <li>Spacious parking available for up to 200 vehicles.</li>
-    <li>Assistance will be provided for Flower decorations, Catering, Nathaswaram, Video etc at the time of booking.</li>
-    <li>Power backup</li>
-    <li></li>It is located on the NH-744.</li>
+  <h2 class="section-title">Facilities & Features</h2>
+  <ul class="features-list">
+    <li><i class="fas fa-building"></i> Spacious A/C Hall with Modern Facilities</li>
+    <li><i class="fas fa-utensils"></i> Separate Dining Hall with Catering Services</li>
+    <li><i class="fas fa-bed"></i> Well-furnished Bride and Groom Rooms</li>
+    <li><i class="fas fa-kitchen-set"></i> Modern Kitchen with Gas and Steam Facility</li>
+    <li><i class="fas fa-car"></i> Ample Car and Two-wheeler Parking</li>
+    <li><i class="fas fa-plug"></i> 100% Power Backup</li>
+    <li><i class="fas fa-video"></i> LED Projector and Sound System Available</li>
+    <li><i class="fas fa-toilet"></i> Clean and Hygienic Restrooms</li>
+    <li><i class="fas fa-shield-alt"></i> 24/7 Security and CCTV Surveillance</li>
   </ul>
 </section>
 
-<!-- GALLERY -->
+<!-- GALLERY - UPDATED FOR TTD -->
 <section id="gallery" class="hall-section">
+  <h2 class="section-title">Photo Gallery</h2>
   <div class="gallery-grid">
-    <div class="gallery-box">Hall</div>
+    <div class="gallery-box">Main Hall</div>
     <div class="gallery-box">Stage</div>
-    <div class="gallery-box">Dining</div>
+    <div class="gallery-box">Dining Hall</div>
+    <div class="gallery-box">Kitchen</div>
+    <div class="gallery-box">Entrance</div>
+    <div class="gallery-box">Parking</div>
+    <div class="gallery-box">Bride Room</div>
+    <div class="gallery-box">Groom Room</div>
   </div>
 </section>
 
-<!-- CONTACT -->
+<!-- LOCATION - UPDATED FOR TTD -->
+<section id="location" class="hall-section">
+  <h2 class="section-title">Location & Directions</h2>
+  <div class="location-container">
+    <div class="location-info">
+      <h3><i class="fas fa-map-marker-alt"></i> Address Details</h3>
+      <div class="location-details">
+        <p><i class="fas fa-temple"></i> <strong>TTD – P.A.C Ramasamy Raja Kalyana Mandapam</strong></p>
+        <p><i class="fas fa-road"></i> Tenkasi Road </p>
+        <p><i class="fas fa-location-dot"></i> Rajapalayam, Tamil Nadu - 626117</p>
+        <p><i class="fas fa-train"></i> Opposite to Rajapalayam Railway Station</p>
+      </div>
+    </div>
+    
+    <!-- Embedded Google Maps - Updated for TTD location -->
+    <div class="map-container">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3938.123456789!2d77.5533!3d9.4511!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06e9c123456789%3A0x9876543210abcdef!2sRajapalayam%20Railway%20Station!5e0!3m2!1sen!2sin!4v1698765432100!5m2!1sen!2sin"
+        class="map-iframe"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="TTD Mandapam Location Map">
+      </iframe>
+    </div>
+    
+    <a href="https://maps.google.com/?q=Rajapalayam+Railway+Station" 
+       target="_blank" 
+       class="directions-btn">
+      <i class="fas fa-directions"></i> Get Directions on Google Maps
+    </a>
+    
+    <div class="directions-container">
+      <div class="direction-box">
+        <h4><i class="fas fa-bus"></i> By Bus</h4>
+        <p>Nearest bus stop: <strong>Railway Station Bus Stop</strong> (100m walk)</p>
+        <p>Frequent buses from Rajapalayam New Bus Stand</p>
+      </div>
+      
+      <div class="direction-box">
+        <h4><i class="fas fa-train"></i> By Train</h4>
+        <p><strong>Rajapalayam Railway Station</strong> is directly opposite</p>
+        <p>Easy access from all major cities</p>
+      </div>
+      
+      <div class="direction-box">
+        <h4><i class="fas fa-car"></i> By Car</h4>
+        <p>Located on Tenkasi Road, easily accessible</p>
+        <p>Ample parking space available inside premises</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT - UPDATED FOR TTD -->
 <section id="contact" class="hall-section">
+  <h2 class="section-title">Contact Information</h2>
   <div class="contact-box">
-    <p><strong>TTD – P.A.C RAMASAMY RAJA KALYANA MANDAPAM</strong></p>
-    <p>📞 +91 9123456789</p>
+    <p><strong><i class="fas fa-temple"></i> TTD – P.A.C Ramasamy Raja Kalyana Mandapam</strong></p>
+    <p><i class="fas fa-phone"></i> <strong>Office:</strong> +91 4567 890123</p>
+    <p><i class="fas fa-phone"></i> <strong>Manager:</strong> +91 98765 43210</p>
+    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> ttdmandapam@rajapalayam.com</p>
+    <p><i class="fas fa-clock"></i> <strong>Office Hours:</strong> 9:00 AM - 7:00 PM</p>
+    <p><i class="fas fa-user-tie"></i> <strong>Manager:</strong> Mr. P. Sundarrajan</p>
+    <p><i class="fas fa-calendar-alt"></i> <strong>Booking:</strong> Contact office for availability and rates</p>
   </div>
 </section>
 
 <!-- USER BOOKING DETAILS MODAL -->
 <div id="userBookingModal" class="modal">
   <div class="modal-box user-view">
-    <h3>Booking Details</h3>
+    <h3 id="modalTitle">Booking Details</h3>
+
+    <!-- 🟢 Blocked message container (hidden by default) -->
+    <div id="blockedMessage" class="blocked-message" style="display: none;">
+      <i class="fas fa-lock"></i> This date is blocked for maintenance/event
+    </div>
 
     <div class="detail-row">
       <span>📅 Booking Date</span>
@@ -339,6 +687,12 @@
       <strong id="uAdmin"></strong>
     </div>
 
+    <!-- 🟢 Blocked reason row (hidden by default) -->
+    <div id="blockedReasonRow" class="detail-row" style="display: none;">
+      <span>🔒 Block Reason</span>
+      <strong id="uBlockedReason"></strong>
+    </div>
+
     <button class="close-btn" onclick="closeUserModal()">Close</button>
   </div>
 </div>
@@ -348,16 +702,28 @@
 <script>
 const START_YEAR = 2025;
 const END_YEAR = 2030;
-let currentYear = new Date().getFullYear();
+let currentYear = Math.min(
+  Math.max(new Date().getFullYear(), START_YEAR),
+  END_YEAR
+);
+
 let bookings = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   loadShared();
+  initTabs();
   buildYearSelector();
   loadBookings(currentYear);
-  initTabs();
+  
+  // Add image placeholder click events for gallery
+  document.querySelectorAll('.gallery-box').forEach((box, index) => {
+    box.onclick = () => {
+      alert(`Image ${index + 1} would open in full view`);
+    };
+  });
 });
 
+/* ---------- shared header ---------- */
 function loadShared() {
 
   // HEADER
@@ -372,29 +738,36 @@ function loadShared() {
     .catch(err => console.error("Header load failed", err));
 }
 
+/* ---------- year selector ---------- */
+function buildYearSelector() {
+  const sel = document.getElementById("yearSelect");
+  sel.innerHTML = "";
 
-function buildYearSelector(){
-  const sel = yearSelect;
-  for(let y=START_YEAR;y<=END_YEAR;y++){
-    const o=document.createElement("option");
-    o.value=y; o.textContent=y;
-    if(y===currentYear) o.selected=true;
+  for (let y = START_YEAR; y <= END_YEAR; y++) {
+    const o = document.createElement("option");
+    o.value = y;
+    o.textContent = y;
+    if (y === currentYear) o.selected = true;
     sel.appendChild(o);
   }
-  sel.onchange=e=>{
-    currentYear=+e.target.value;
+
+  sel.onchange = e => {
+    currentYear = +e.target.value;
     loadBookings(currentYear);
   };
 }
 
+/* ---------- load bookings - UPDATED FOR TTD ---------- */
 async function loadBookings(year) {
-  bookings = {}; // reset always
-
   try {
+    // 🔴 CHANGED: hall=TTD instead of CHOKKAR
     const res = await fetch(`/api/halls/bookings?hall=TTD&year=${year}`);
+
     if (!res.ok) throw new Error("API error");
 
     const data = await res.json();
+
+    bookings = {};
 
     data.forEach(b => {
       bookings[b.date] = {
@@ -402,37 +775,41 @@ async function loadBookings(year) {
         evening: b.evening,
         bookedBy: b.bookedBy,
         functionType: b.functionType,
-        createdAt: b.createdAt,                 // ✅ FIX
-        createdByName: b.createdByName || b.createdBy
+        createdAt: b.createdAt,
+        createdByName: b.createdByName || b.createdBy,
+        // 🟢 Add blocked fields
+        isBlocked: b.isBlocked || false,
+        blockedReason: b.blockedReason || ''
       };
     });
 
-  } catch (e) {
-    console.warn("Booking API failed, showing empty calendar");
+    renderCalendar(year);
+  } catch (err) {
+    console.error("Failed to load bookings", err);
+    renderCalendar(year); // still render calendar even if API fails
   }
-
-  renderCalendar(year); // ✅ ALWAYS RENDER
 }
 
+/* ---------- calendar ---------- */
 function renderCalendar(year) {
   const cal = document.getElementById("calendar");
   cal.innerHTML = "";
 
   const today = new Date();
   const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth(); // Jan = 0
+  const currentMonth = today.getMonth(); // 0-based (Jan = 0)
 
   let startMonth = 0;
   let endMonth = 11;
 
-  // 🔒 Past year → show nothing
-  if (year < currentYear) {
-    return;
-  }
-
-  // 🔥 Current year → hide past months
+  // 🔥 If viewing current year → remove past months
   if (year === currentYear) {
     startMonth = currentMonth;
+  }
+
+  // 🔒 If viewing past year → show nothing
+  if (year < currentYear) {
+    return;
   }
 
   for (let m = startMonth; m <= endMonth; m++) {
@@ -444,11 +821,8 @@ function renderMonth(y, m) {
   const box = document.createElement("div");
   box.className = "month";
 
-  box.innerHTML = `
-    <h3>${new Date(y, m).toLocaleString("en", { month: "long" })} ${y}</h3>
-  `;
+  box.innerHTML = `<h3>${new Date(y, m).toLocaleString("en", { month: "long" })} ${y}</h3>`;
 
-  /* ---------- WEEKDAYS ---------- */
   const week = document.createElement("div");
   week.className = "weekdays";
   ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => {
@@ -457,104 +831,152 @@ function renderMonth(y, m) {
     week.appendChild(w);
   });
 
-  /* ---------- DAYS GRID ---------- */
   const grid = document.createElement("div");
   grid.className = "days-grid";
 
   const firstDay = new Date(y, m, 1).getDay();
   const totalDays = new Date(y, m + 1, 0).getDate();
 
-  /* Empty cells */
   for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
-    empty.className = "day empty";
-    grid.appendChild(empty);
+    grid.appendChild(Object.assign(document.createElement("div"), { className: "day empty" }));
   }
 
-  /* Real days */
   for (let d = 1; d <= totalDays; d++) {
-  const key = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-  const booking = bookings[key];
+    const key = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const booking = bookings[key];
 
-  const day = document.createElement("div");
-  day.className = "day";
-  day.textContent = d;
+    const day = document.createElement("div");
+    day.className = "day";
+    day.textContent = d;
 
-  /* ⭐ Highlight TODAY */
-  const today = new Date();
-  if (
-    y === today.getFullYear() &&
-    m === today.getMonth() &&
-    d === today.getDate()
-  ) {
-    day.classList.add("today");
-  }
+    /* ⭐ Highlight TODAY */
+    const today = new Date();
+    if (
+      y === today.getFullYear() &&
+      m === today.getMonth() &&
+      d === today.getDate()
+    ) {
+      day.classList.add("today");
+    }
 
-  /* 🔒 Block past dates */
-  if (isPastDate(y, m, d)) {
-    day.classList.add("blocked");
-    day.style.pointerEvents = "none";
+    /* 🔒 Block past dates */
+    if (isPastDate(y, m, d)) {
+      day.classList.add("blocked");
+      day.style.pointerEvents = "none";
+      grid.appendChild(day);
+      continue;
+    }
+
+    /* ✅ IF NO BOOKING → JUST SHOW DAY (NO CLICK) */
+    if (!booking) {
+      grid.appendChild(day);
+      continue;
+    }
+
+    /* 🟢 Check if blocked */
+    if (booking.isBlocked) {
+      day.classList.add("blocked-date");
+      day.setAttribute('title', booking.blockedReason || 'Blocked for maintenance/event');
+      
+      // Blocked dates are clickable to show reason
+      day.onclick = () => {
+        showBlockedDateModal(key, booking);
+      };
+    } else {
+      /* 🎨 Booking colors for regular bookings */
+      if (booking.morning && booking.evening) day.classList.add("full");
+      else if (booking.morning) day.classList.add("morning");
+      else if (booking.evening) day.classList.add("evening");
+
+      /* 🪟 CLICK → SHOW DETAILS (for regular bookings) */
+      if (booking.morning || booking.evening) {
+        day.onclick = () => {
+          showBookingModal(key, booking);
+        };
+      }
+    }
+
     grid.appendChild(day);
-    continue;
   }
-
-  /* ✅ IF NO BOOKING → JUST SHOW DAY (NO CLICK) */
-  if (!booking) {
-    grid.appendChild(day);
-    continue;
-  }
-
-  /* 🎨 Booking colors */
-  if (booking.morning && booking.evening) day.classList.add("full");
-  else if (booking.morning) day.classList.add("morning");
-  else if (booking.evening) day.classList.add("evening");
-
-  /* 🪟 CLICK → SHOW DETAILS */
-  day.onclick = () => {
-    document.getElementById("uDate").textContent = key;
-
-    document.getElementById("uBookedOn").textContent =
-      booking.createdAt
-        ? new Date(booking.createdAt).toLocaleString()
-        : "—";
-
-    document.getElementById("uBookedBy").textContent =
-      booking.bookedBy || "—";
-
-    document.getElementById("uFunction").textContent =
-      booking.functionType || "—";
-
-    document.getElementById("uSlot").textContent =
-      booking.morning && booking.evening
-        ? "Full Day"
-        : booking.morning
-        ? "Morning"
-        : "Evening";
-
-    document.getElementById("uAdmin").textContent =
-      booking.createdByName || "Temple Administration";
-
-    document.getElementById("userBookingModal").style.display = "flex";
-  };
-
-  grid.appendChild(day);
-}
-
 
   box.appendChild(week);
   box.appendChild(grid);
   return box;
 }
 
-function initTabs(){
-  document.querySelectorAll(".tab-btn").forEach(btn=>{
-    btn.onclick=()=>{
-      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-      document.querySelectorAll(".hall-section").forEach(s=>s.classList.remove("active-section"));
+/* 🟢 Show regular booking modal */
+function showBookingModal(key, booking) {
+  document.getElementById("uDate").textContent = key;
+
+  document.getElementById("uBookedOn").textContent =
+    booking.createdAt
+      ? new Date(booking.createdAt).toLocaleString()
+      : "—";
+
+  document.getElementById("uBookedBy").textContent =
+    booking.bookedBy || "—";
+
+  document.getElementById("uFunction").textContent =
+    booking.functionType || "—";
+
+  document.getElementById("uSlot").textContent =
+    booking.morning && booking.evening
+      ? "Full Day"
+      : booking.morning
+      ? "Morning"
+      : "Evening";
+
+  document.getElementById("uAdmin").textContent =
+    booking.createdByName || "TTD Administration";
+
+  // Hide blocked-specific elements
+  document.getElementById("blockedMessage").style.display = "none";
+  document.getElementById("blockedReasonRow").style.display = "none";
+  document.getElementById("modalTitle").textContent = "Booking Details";
+
+  document.getElementById("userBookingModal").style.display = "flex";
+}
+
+/* 🟢 Show blocked date modal */
+function showBlockedDateModal(key, booking) {
+  document.getElementById("uDate").textContent = key;
+  document.getElementById("uBookedOn").textContent = "—";
+  document.getElementById("uBookedBy").textContent = "—";
+  document.getElementById("uFunction").textContent = "—";
+  document.getElementById("uSlot").textContent = "—";
+  document.getElementById("uAdmin").textContent = "—";
+  
+  // Show blocked-specific elements
+  document.getElementById("modalTitle").textContent = "Date Unavailable";
+  document.getElementById("blockedMessage").style.display = "flex";
+  document.getElementById("blockedReasonRow").style.display = "flex";
+  document.getElementById("uBlockedReason").textContent = 
+    booking.blockedReason || 'Maintenance / Private Event';
+
+  document.getElementById("userBookingModal").style.display = "flex";
+}
+
+/* ---------- tabs ---------- */
+function initTabs() {
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".hall-section").forEach(s => s.classList.remove("active-section"));
       btn.classList.add("active");
       document.getElementById(btn.dataset.tab).classList.add("active-section");
     };
   });
+}
+
+/* ---------- utils ---------- */
+function isPastDate(year, month, day) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const check = new Date(year, month, day);
+  check.setHours(0,0,0,0);
+
+  return check < today;
 }
 
 function closeUserModal() {
@@ -565,16 +987,6 @@ window.addEventListener("click", e => {
   const modal = document.getElementById("userBookingModal");
   if (e.target === modal) closeUserModal();
 });
-
-function isPastDate(year, month, day) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const check = new Date(year, month, day);
-  check.setHours(0, 0, 0, 0);
-
-  return check < today;
-}
 
 </script>
 
