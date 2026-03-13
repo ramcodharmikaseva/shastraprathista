@@ -1658,7 +1658,7 @@
       if (document.visibilityState === 'visible' && !isSyncing) {
         loadInventory();
       }
-    }, 30000); // 30 seconds
+    }, 300000); // 5 minutes
   });
 
   function updateBulkAdjustmentUI() {
