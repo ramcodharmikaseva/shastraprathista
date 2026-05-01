@@ -1082,13 +1082,15 @@ router.get('/customer/:customerId/details', async (req, res) => {
   }
 });
 
-// 🏪 Counter Sale (POS) Endpoint
+// 🏪 Counter Sale (POS) Endpoint - FIXED VERSION
 router.post('/counter-sale', authMiddleware, async (req, res) => {
     try {
+        console.log('🛒 Counter sale request received');
         const saleData = req.body;
         
-        // Check if user is admin or super_admin
+        // Check if user is admin (simple check since authMiddleware already verified token)
         if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+            console.log('❌ Access denied - not admin');
             return res.status(403).json({ 
                 success: false, 
                 error: 'Access denied. Admin privileges required.' 
@@ -1097,24 +1099,45 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
         
         // Generate order ID
         const orderId = `CASH${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        console.log(`📝 Creating counter sale order: ${orderId}`);
         
-        // Create order
+        // Validate items
+        if (!saleData.items || saleData.items.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'No items in sale'
+            });
+        }
+        
+        // Create order - handle missing fields gracefully
         const order = new Order({
             orderId: orderId,
             source: saleData.source || 'counter',
-            customerName: saleData.customerName,
-            customerEmail: 'counter@shastraprathista.local',
-            customerPhone: '',
-            items: saleData.items,
-            totals: saleData.totals,
-            paymentMethod: saleData.paymentMethod,
+            customerName: saleData.customerName || 'Walk-in Customer',
+            customerEmail: saleData.customerEmail || 'counter@shastraprathista.local',
+            customerPhone: saleData.customerPhone || '',
+            items: saleData.items.map(item => ({
+                id: item.id,
+                title: item.title,
+                quantity: item.quantity,
+                price: item.price,
+                itemTotal: item.itemTotal || (item.price * item.quantity)
+            })),
+            totals: {
+                subtotal: saleData.totals.subtotal || 0,
+                shipping: saleData.totals.shipping || 0,
+                discount: saleData.totals.discount || 0,
+                tax: 0,
+                total: saleData.totals.total || 0
+            },
+            paymentMethod: saleData.paymentMethod || 'cash',
             paymentStatus: 'paid',
             status: 'completed',
             notes: saleData.notes || '',
             statusHistory: [{
                 status: 'completed',
                 updatedAt: new Date(),
-                notes: `Counter sale - ${saleData.paymentMethod.toUpperCase()} payment`
+                notes: `Counter sale - ${(saleData.paymentMethod || 'cash').toUpperCase()} payment`
             }],
             createdAt: new Date()
         });
@@ -1124,12 +1147,28 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
         
         // Reduce inventory
         for (const item of saleData.items) {
-            const book = await Book.findById(item.id);
-            if (book) {
-                book.stock = Math.max(0, book.stock - item.quantity);
-                book.sold = (book.sold || 0) + item.quantity;
-                await book.save();
-                console.log(`📚 Inventory updated: ${book.title} → ${book.stock} left`);
+            try {
+                // Try to find by ID first, then by title
+                let book = null;
+                if (item.id) {
+                    book = await Book.findById(item.id);
+                }
+                if (!book && item.title) {
+                    book = await Book.findOne({ title: item.title });
+                }
+                
+                if (book) {
+                    const oldStock = book.stock || 0;
+                    book.stock = Math.max(0, oldStock - item.quantity);
+                    book.sold = (book.sold || 0) + item.quantity;
+                    await book.save();
+                    console.log(`📚 Inventory updated: ${book.title} → ${book.stock} left (was ${oldStock})`);
+                } else {
+                    console.log(`⚠️ Book not found: ${item.title} (ID: ${item.id})`);
+                }
+            } catch (invError) {
+                console.error(`❌ Inventory update failed for ${item.title}:`, invError.message);
+                // Continue with other items
             }
         }
         
@@ -1143,7 +1182,8 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
         console.error('❌ Counter sale error:', error);
         res.status(500).json({ 
             success: false, 
-            error: error.message 
+            error: error.message,
+            details: error.stack
         });
     }
 });
