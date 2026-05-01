@@ -5,12 +5,18 @@ const orderSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false  // ✅ CHANGE TO false for counter sales (guest users)
   },
   orderId: {
     type: String,
     required: true,
     unique: true
+  },
+  // ✅ ADD THIS - Source of order (online or counter)
+  source: {
+    type: String,
+    enum: ['online', 'counter'],
+    default: 'online'
   },
   customerName: {
     type: String,
@@ -22,7 +28,7 @@ const orderSchema = new mongoose.Schema({
   },
   customerPhone: {
     type: String,
-    required: true
+    required: false  // ✅ CHANGE TO false for counter sales (optional)
   },
   // Addresses from profile
   billingAddress: {

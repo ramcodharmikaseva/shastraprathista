@@ -103,6 +103,10 @@
           <i class="fas fa-tachometer-alt"></i> Dashboard Overview
         </h1>
         <div class="header-actions">
+          <!-- 🏪 NEW COUNTER SALE BUTTON - Add it here -->
+          <button id="newCounterSaleBtn" class="btn btn-success" style="background: #28a745;">
+            <i class="fas fa-cash-register"></i> 🏪 New Counter Sale
+          </button>
           <button class="btn btn-success" onclick="refreshAllData()">
             <i class="fas fa-sync"></i> Refresh
           </button>
@@ -1033,6 +1037,144 @@
     <div class="loading-spinner">
       <div class="spinner"></div>
       <p>Loading...</p>
+    </div>
+  </div>
+
+  <!-- 🏪 Counter Sale POS Modal - ADD THIS ENTIRE BLOCK HERE -->
+  <div id="counterSaleModal" class="modal" style="display: none; width: 90%; max-width: 900px;">
+    <div class="modal-content" style="width: 100%; max-width: 900px;">
+      <div class="modal-header">
+        <h2><i class="fas fa-cash-register"></i> Cash Counter POS</h2>
+        <span class="close-modal" style="cursor: pointer; font-size: 28px;">&times;</span>
+      </div>
+      
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        
+        <!-- LEFT SIDE: Product Selection -->
+        <div style="flex: 2; min-width: 300px;">
+          <h3>Add Products</h3>
+          
+          <div class="form-group">
+            <label>Search / Select Book</label>
+            <input type="text" id="cashBookSearch" placeholder="Type to search books..." 
+                  style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            <select id="cashBookSelect" size="8" style="width: 100%; height: 200px;">
+              <option value="">-- Search and Select Book --</option>
+            </select>
+          </div>
+          
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div style="flex: 1;">
+              <label>Quantity</label>
+              <input type="number" id="cashQuantity" value="1" min="1" style="width: 100%; padding: 8px;">
+            </div>
+            <div style="flex: 1;">
+              <label>Unit Price (₹)</label>
+              <input type="number" id="cashUnitPrice" step="1" style="width: 100%; padding: 8px;" readonly>
+            </div>
+            <div style="flex: 0 0 auto;">
+              <label>&nbsp;</label>
+              <button onclick="addCashItem()" class="btn btn-success" style="padding: 8px 20px;">
+                <i class="fas fa-plus"></i> Add
+              </button>
+            </div>
+          </div>
+          
+          <!-- Stock info -->
+          <div id="cashStockInfo" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
+        </div>
+        
+        <!-- RIGHT SIDE: Cart & Totals -->
+        <div style="flex: 3; min-width: 400px;">
+          <h3>Sale Items</h3>
+          
+          <!-- Cart Table -->
+          <div style="max-height: 300px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead style="background: #f0f0f0;">
+                <tr>
+                  <th style="padding: 8px; text-align: left;">Product</th>
+                  <th style="padding: 8px; text-align: center;">Qty</th>
+                  <th style="padding: 8px; text-align: right;">Price</th>
+                  <th style="padding: 8px; text-align: right;">Total</th>
+                  <th style="padding: 8px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="cashCartBody"></tbody>
+            </table>
+          </div>
+          
+          <!-- Manual Adjustments Section -->
+          <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+            <h4>Adjustments</h4>
+            
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+              <div style="flex: 1;">
+                <label>Subtotal (₹)</label>
+                <input type="number" id="cashSubtotal" readonly style="background: #e9ecef; font-weight: bold;">
+              </div>
+              
+              <div style="flex: 1;">
+                <label>Discount (₹ or %)</label>
+                <div style="display: flex; gap: 5px;">
+                  <input type="number" id="cashDiscount" value="0" step="1" style="flex: 2;" placeholder="Amount">
+                  <select id="cashDiscountType" style="flex: 1;">
+                    <option value="fixed">₹ Fixed</option>
+                    <option value="percent">% Percent</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div style="flex: 1;">
+                <label>Shipping (₹)</label>
+                <input type="number" id="cashShipping" value="0" step="10">
+              </div>
+            </div>
+            
+            <!-- Grand Total -->
+            <div style="margin-top: 15px; padding: 10px; background: #007bff; color: white; border-radius: 5px;">
+              <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold;">
+                <span>TOTAL TO PAY:</span>
+                <span>₹ <span id="cashGrandTotal">0</span></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Customer Info & Payment -->
+          <div style="margin-top: 15px;">
+            <div style="display: flex; gap: 10px;">
+              <div style="flex: 2;">
+                <label>Customer Name</label>
+                <input type="text" id="cashCustomerName" placeholder="Walk-in Customer" style="width: 100%;">
+              </div>
+              <div style="flex: 1;">
+                <label>Payment Method</label>
+                <select id="cashPaymentMethod" style="width: 100%; padding: 8px;">
+                  <option value="cash">💵 Cash</option>
+                  <option value="card">💳 Card</option>
+                  <option value="upi">📱 UPI</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Notes -->
+            <div class="form-group" style="margin-top: 10px;">
+              <label>Notes (Optional)</label>
+              <textarea id="cashNotes" rows="2" placeholder="Any special notes..." style="width: 100%;"></textarea>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+              <button onclick="clearCashCart()" class="btn btn-secondary" style="background: #6c757d;">
+                <i class="fas fa-trash"></i> Clear All
+              </button>
+              <button onclick="processCashSale()" class="btn btn-primary" style="background: #28a745; flex: 1;">
+                <i class="fas fa-cash-register"></i> Complete Sale
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -1082,4 +1082,70 @@ router.get('/customer/:customerId/details', async (req, res) => {
   }
 });
 
+// 🏪 Counter Sale (POS) Endpoint
+router.post('/counter-sale', authMiddleware, async (req, res) => {
+    try {
+        const saleData = req.body;
+        
+        // Check if user is admin or super_admin
+        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Access denied. Admin privileges required.' 
+            });
+        }
+        
+        // Generate order ID
+        const orderId = `CASH${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        
+        // Create order
+        const order = new Order({
+            orderId: orderId,
+            source: saleData.source || 'counter',
+            customerName: saleData.customerName,
+            customerEmail: 'counter@shastraprathista.local',
+            customerPhone: '',
+            items: saleData.items,
+            totals: saleData.totals,
+            paymentMethod: saleData.paymentMethod,
+            paymentStatus: 'paid',
+            status: 'completed',
+            notes: saleData.notes || '',
+            statusHistory: [{
+                status: 'completed',
+                updatedAt: new Date(),
+                notes: `Counter sale - ${saleData.paymentMethod.toUpperCase()} payment`
+            }],
+            createdAt: new Date()
+        });
+        
+        await order.save();
+        console.log(`✅ Counter sale created: ${orderId} - ₹${saleData.totals.total}`);
+        
+        // Reduce inventory
+        for (const item of saleData.items) {
+            const book = await Book.findById(item.id);
+            if (book) {
+                book.stock = Math.max(0, book.stock - item.quantity);
+                book.sold = (book.sold || 0) + item.quantity;
+                await book.save();
+                console.log(`📚 Inventory updated: ${book.title} → ${book.stock} left`);
+            }
+        }
+        
+        res.json({
+            success: true,
+            orderId: orderId,
+            message: 'Counter sale completed successfully'
+        });
+        
+    } catch (error) {
+        console.error('❌ Counter sale error:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
 module.exports = router;
