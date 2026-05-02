@@ -1025,19 +1025,12 @@ async function completeCheckout() {
       throw new Error(result.message || 'Order failed');
     }
 
-    // 4. Update inventory after successful order
-    console.log('🔄 Updating inventory after successful order...');
-    const inventoryUpdated = await window.updateInventoryAfterCheckout(orderData);
-    
-    if (!inventoryUpdated.success) {
-      console.warn('⚠️ Inventory update failed, but order was placed');
-      // You might want to log this for admin review
-      // Optionally send a notification to admin
-    } else {
-      console.log('✅ Inventory updated successfully');
-    }
+    // 4. Inventory is updated by BACKEND only - no frontend update needed
+    console.log('📦 Backend will handle inventory update automatically');
+    // const inventoryUpdated = await window.updateInventoryAfterCheckout(orderData);
+    // Inventory update removed to prevent double deduction
 
-        // 5. Clear cart and update UI
+    // 5. Clear cart and update UI
     window.saveUserCart([]);
     window.updateCartCount();
 
