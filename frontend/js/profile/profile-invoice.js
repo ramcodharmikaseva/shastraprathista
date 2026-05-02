@@ -493,6 +493,7 @@ class ProfileInvoice {
         // Invoice details
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0); // Black
         doc.text(`Invoice No: ${order.orderId || order.id || 'ORD1767160435005HP10T'}`, margin, currentY);
         doc.text(`Page ${pageNumber}`, pageWidth - margin, currentY, { align: 'right' });
         
