@@ -488,7 +488,7 @@ class ProfileInvoice {
         doc.setTextColor(0, 0, 255);
         doc.text('"RAMCO DHARMIKA SEVA"', pageWidth / 2, currentY, { align: 'center' });
         
-        currentY += 16;
+        currentY += 20;
         
         // Invoice details
         doc.setFont('helvetica', 'normal');
