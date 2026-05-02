@@ -5,7 +5,7 @@ console.log('🎨 Admin UI loading...');
 let posCart = [];
 let posProducts = [];
 
-// Open POS Modal - This connects to your existing button
+// Open POS Modal
 function openPOSModal() {
     console.log('🔄 Opening POS Modal...');
     const modal = document.getElementById('posModal');
@@ -15,6 +15,17 @@ function openPOSModal() {
         loadPOSProducts();
         // Reset cart
         clearPOSCart();
+        
+        // Reset customer fields
+        const nameInput = document.getElementById('posCustomerName');
+        const phoneInput = document.getElementById('posCustomerPhone');
+        const emailInput = document.getElementById('posCustomerEmail');
+        const addressInput = document.getElementById('posCustomerAddress');
+        if (nameInput) nameInput.value = '';
+        if (phoneInput) phoneInput.value = '';
+        if (emailInput) emailInput.value = '';
+        if (addressInput) addressInput.value = '';
+        
         // Reset discount/shipping fields
         const discountValue = document.getElementById('posDiscountValue');
         const shippingValue = document.getElementById('posShipping');
@@ -28,7 +39,7 @@ function openPOSModal() {
         // Update totals
         updatePOSTotals();
     } else {
-        console.error('❌ POS Modal not found! Check if modal exists in HTML');
+        console.error('❌ POS Modal not found!');
         showToast('POS system error: Modal not found', 'error');
     }
 }
@@ -216,207 +227,38 @@ function updatePOSTotals() {
     if (totalEl) totalEl.innerText = `₹${total.toFixed(2)}`;
 }
 
-// ============ 🆕 ADD CUSTOMER DETAILS FUNCTIONS HERE ============
-
-// Function to get customer details with validation (Phone mandatory, Address optional)
-function getCustomerDetails() {
-    return new Promise((resolve) => {
-        // Create modal for customer details
-        const modalHtml = `
-            <div id="customerDetailsModal" class="modal" style="display: flex; align-items: center; justify-content: center; z-index: 10001;">
-                <div class="modal-content" style="max-width: 500px; width: 90%;">
-                    <div class="modal-header">
-                        <h3><i class="fas fa-user"></i> Customer Details</h3>
-                        <button class="close-btn" onclick="closeCustomerModal()">&times;</button>
-                    </div>
-                    <div class="modal-body" style="padding: 20px;">
-                        <form id="customerDetailsForm">
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label for="customerName">Customer Name *</label>
-                                <input type="text" id="customerName" class="form-input" placeholder="Enter customer name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <small style="color: red;">* Mandatory</small>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label for="customerPhone">Phone Number *</label>
-                                <input type="tel" id="customerPhone" class="form-input" placeholder="Enter 10-digit mobile number" required pattern="[0-9]{10}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <small style="color: red;">* Mandatory (10 digits)</small>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label for="customerEmail">Email (Optional)</label>
-                                <input type="email" id="customerEmail" class="form-input" placeholder="Enter email address" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <small>Optional</small>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label for="customerAddress">Address (Optional)</label>
-                                <textarea id="customerAddress" class="form-textarea" placeholder="Enter complete address (Optional)" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
-                                <small>Optional - For delivery reference</small>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-actions" style="padding: 15px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee;">
-                        <button class="btn btn-secondary" onclick="closeCustomerModal()">Cancel</button>
-                        <button class="btn btn-primary" onclick="submitCustomerDetails()">Proceed to Payment</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Remove existing modal if any
-        const existingModal = document.getElementById('customerDetailsModal');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        
-        // Add modal to body
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        
-        // Store resolve function for later use
-        window.customerDetailsResolver = resolve;
-        
-        // Add validation on phone input
-        const phoneInput = document.getElementById('customerPhone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
-            });
-        }
-        
-        // Allow Enter key to submit
-        const inputs = ['customerName', 'customerPhone', 'customerEmail', 'customerAddress'];
-        inputs.forEach(id => {
-            const input = document.getElementById(id);
-            if (input) {
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        submitCustomerDetails();
-                    }
-                });
-            }
-        });
-    });
-}
-
-// Submit customer details with validation
-function submitCustomerDetails() {
-    const name = document.getElementById('customerName')?.value.trim();
-    const phone = document.getElementById('customerPhone')?.value.trim();
-    const email = document.getElementById('customerEmail')?.value.trim();
-    const address = document.getElementById('customerAddress')?.value.trim();
-    
-    // Validate Name
-    if (!name) {
-        showToast('Please enter customer name', 'error');
-        document.getElementById('customerName')?.focus();
-        return;
-    }
-    
-    // Validate Phone (10 digits)
-    if (!phone) {
-        showToast('Please enter phone number', 'error');
-        document.getElementById('customerPhone')?.focus();
-        return;
-    }
-    
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(phone)) {
-        showToast('Please enter a valid 10-digit mobile number', 'error');
-        document.getElementById('customerPhone')?.focus();
-        return;
-    }
-    
-    // Close modal and resolve with customer details
-    closeCustomerModal();
-    
-    if (window.customerDetailsResolver) {
-        window.customerDetailsResolver({
-            name: name,
-            phone: phone,
-            email: email || '',
-            address: address || ''
-        });
-        window.customerDetailsResolver = null;
-    }
-}
-
-// Close customer modal
-function closeCustomerModal() {
-    const modal = document.getElementById('customerDetailsModal');
-    if (modal) {
-        modal.remove();
-    }
-    if (window.customerDetailsResolver) {
-        window.customerDetailsResolver(null);
-        window.customerDetailsResolver = null;
-    }
-}
-
-// Generate Receipt Number (SLR-2026-27/001 format)
-let receiptCounter = null;
-
-async function generateReceiptNumber() {
-    try {
-        // Get current financial year and counter from backend
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/orders/receipt-counter', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            receiptCounter = data.counter;
-            return data.receiptNumber;
-        }
-    } catch (error) {
-        console.log('Using local receipt generation');
-    }
-    
-    // Fallback: Generate locally
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    
-    // Financial year: April to March
-    let financialYearStart, financialYearEnd;
-    if (month >= 4) {
-        financialYearStart = year;
-        financialYearEnd = year + 1;
-    } else {
-        financialYearStart = year - 1;
-        financialYearEnd = year;
-    }
-    
-    // Get counter from localStorage or initialize
-    let counter = localStorage.getItem(`receipt_counter_${financialYearStart}`);
-    if (!counter) {
-        counter = 1;
-    } else {
-        counter = parseInt(counter) + 1;
-    }
-    
-    // Save counter
-    localStorage.setItem(`receipt_counter_${financialYearStart}`, counter);
-    
-    // Format: SLR-2026-27/001
-    const receiptNumber = `SLR-${financialYearStart}-${financialYearEnd.toString().slice(-2)}/${counter.toString().padStart(3, '0')}`;
-    
-    return receiptNumber;
-}
-
-// Process POS Sale with Customer Details & Receipt Number
+// Process POS Sale - Now reads customer info from the POS page
 async function processPOSSale() {
     if (posCart.length === 0) {
         showToast('Cart is empty', 'error');
         return;
     }
     
-    // Get customer details first
-    const customerDetails = await getCustomerDetails();
-    if (!customerDetails) {
-        return; // User cancelled
+    // Get customer details from the POS page fields
+    const customerName = document.getElementById('posCustomerName')?.value.trim();
+    const customerPhone = document.getElementById('posCustomerPhone')?.value.trim();
+    const customerEmail = document.getElementById('posCustomerEmail')?.value.trim();
+    const customerAddress = document.getElementById('posCustomerAddress')?.value.trim();
+    
+    // Validate required fields
+    if (!customerName) {
+        showToast('Please enter customer name', 'error');
+        document.getElementById('posCustomerName')?.focus();
+        return;
+    }
+    
+    if (!customerPhone) {
+        showToast('Please enter phone number', 'error');
+        document.getElementById('posCustomerPhone')?.focus();
+        return;
+    }
+    
+    // Validate phone number (10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(customerPhone)) {
+        showToast('Please enter a valid 10-digit mobile number', 'error');
+        document.getElementById('posCustomerPhone')?.focus();
+        return;
     }
     
     const subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -434,39 +276,56 @@ async function processPOSSale() {
     const total = subtotal - discountAmount + shipping;
     
     // Generate receipt number
-    const receiptNumber = await generateReceiptNumber();
+    const receiptNumber = generateReceiptNumber();
     
-    const orderData = {
-        source: 'counter',
-        receiptNumber: receiptNumber,
-        customerName: customerDetails.name,
-        customerPhone: customerDetails.phone,
-        customerEmail: customerDetails.email,
-        customerAddress: customerDetails.address,
-        items: posCart.map(item => ({
-            id: item.productId,
-            title: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            itemTotal: item.price * item.quantity
-        })),
-        totals: {
-            subtotal: subtotal,
-            discount: discountAmount,
-            shipping: shipping,
-            tax: 0,
-            total: total
-        },
-        paymentMethod: 'cash',
-        paymentStatus: 'paid',
-        status: 'completed'
-    };
+    // Show confirmation dialog
+    const confirmMsg = `📋 ORDER SUMMARY\n\n` +
+        `Receipt No: ${receiptNumber}\n` +
+        `━━━━━━━━━━━━━━━━━━━━\n` +
+        `Customer: ${customerName}\n` +
+        `Phone: ${customerPhone}\n` +
+        `${customerAddress ? `Address: ${customerAddress}\n` : ''}` +
+        `━━━━━━━━━━━━━━━━━━━━\n` +
+        `Items: ${posCart.length}\n` +
+        `Subtotal: ₹${subtotal.toFixed(2)}\n` +
+        `${discountAmount > 0 ? `Discount: -₹${discountAmount.toFixed(2)}\n` : ''}` +
+        `${shipping > 0 ? `Shipping: ₹${shipping.toFixed(2)}\n` : ''}` +
+        `━━━━━━━━━━━━━━━━━━━━\n` +
+        `TOTAL: ₹${total.toFixed(2)}\n\n` +
+        `Confirm sale?`;
     
-    if (!confirm(`Confirm Sale?\n\nReceipt: ${receiptNumber}\nCustomer: ${customerDetails.name}\nPhone: ${customerDetails.phone}\nTotal: ₹${total.toFixed(2)}`)) return;
+    if (!confirm(confirmMsg)) return;
     
     try {
         showLoading(true);
         const token = localStorage.getItem('token');
+        
+        const orderData = {
+            source: 'counter',
+            receiptNumber: receiptNumber,
+            customerName: customerName,
+            customerPhone: customerPhone,
+            customerEmail: customerEmail || '',
+            customerAddress: customerAddress || '',
+            items: posCart.map(item => ({
+                id: item.productId,
+                title: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                itemTotal: item.price * item.quantity
+            })),
+            totals: {
+                subtotal: subtotal,
+                discount: discountAmount,
+                shipping: shipping,
+                tax: 0,
+                total: total
+            },
+            paymentMethod: 'cash',
+            paymentStatus: 'paid',
+            status: 'completed'
+        };
+        
         const response = await fetch('/api/orders/counter-sale', {
             method: 'POST',
             headers: {
@@ -479,24 +338,50 @@ async function processPOSSale() {
         const result = await response.json();
         
         if (result.success) {
-            showToast('Sale completed successfully!', 'success');
+            showToast('✅ Sale completed successfully!', 'success');
+            
+            // Print receipt
             printPOSReceipt({
                 receiptNumber: receiptNumber,
                 orderId: result.orderId,
-                customerName: customerDetails.name,
-                customerPhone: customerDetails.phone,
-                customerEmail: customerDetails.email,
-                customerAddress: customerDetails.address,
+                customerName: customerName,
+                customerPhone: customerPhone,
+                customerEmail: customerEmail,
+                customerAddress: customerAddress,
                 items: posCart,
                 subtotal: subtotal,
                 discount: discountAmount,
                 shipping: shipping,
                 total: total
             });
+            
+            // Reset everything
             clearPOSCart();
+            
+            // Reset customer fields
+            const nameInput = document.getElementById('posCustomerName');
+            const phoneInput = document.getElementById('posCustomerPhone');
+            const emailInput = document.getElementById('posCustomerEmail');
+            const addressInput = document.getElementById('posCustomerAddress');
+            
+            if (nameInput) nameInput.value = '';
+            if (phoneInput) phoneInput.value = '';
+            if (emailInput) emailInput.value = '';
+            if (addressInput) addressInput.value = '';
+            
+            // Reset discount/shipping
+            const discountValueInput = document.getElementById('posDiscountValue');
+            const shippingInput = document.getElementById('posShipping');
+            if (discountValueInput) discountValueInput.value = '0';
+            if (shippingInput) shippingInput.value = '0';
+            
+            // Reset discount type to percentage
+            const percentageRadio = document.querySelector('input[name="discountType"][value="percentage"]');
+            if (percentageRadio) percentageRadio.checked = true;
+            
             closePOSModal();
-            // Refresh products to update stock display
-            loadPOSProducts();
+            loadPOSProducts(); // Refresh stock display
+            
             // Refresh orders list
             if (typeof loadOrdersFromBackend === 'function') {
                 const orders = await loadOrdersFromBackend();
@@ -513,6 +398,39 @@ async function processPOSSale() {
         showToast('Failed to process sale', 'error');
         showLoading(false);
     }
+}
+
+// Generate Receipt Number (SLR-2026-27/001 format)
+function generateReceiptNumber() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    
+    // Financial year: April to March
+    let financialYearStart, financialYearEnd;
+    if (month >= 4) {
+        financialYearStart = year;
+        financialYearEnd = year + 1;
+    } else {
+        financialYearStart = year - 1;
+        financialYearEnd = year;
+    }
+    
+    // Get counter from localStorage
+    let counter = localStorage.getItem(`receipt_counter_${financialYearStart}`);
+    if (!counter) {
+        counter = 1;
+    } else {
+        counter = parseInt(counter) + 1;
+    }
+    
+    // Save counter
+    localStorage.setItem(`receipt_counter_${financialYearStart}`, counter);
+    
+    // Format: SLR-2026-27/001
+    const receiptNumber = `SLR-${financialYearStart}-${financialYearEnd.toString().slice(-2)}/${counter.toString().padStart(3, '0')}`;
+    
+    return receiptNumber;
 }
 
 // Print Receipt with Customer Details
@@ -595,45 +513,51 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
+// Phone number validation (only digits, max 10)
+function setupPhoneValidation() {
+    const phoneInput = document.getElementById('posCustomerPhone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+    }
+}
+
 // Setup event listeners for POS modal
 document.addEventListener('DOMContentLoaded', function() {
     // Connect the counter sale button
     const counterSaleBtn = document.getElementById('newCounterSaleBtn');
     if (counterSaleBtn) {
-        // Remove any existing listeners
-        const newBtn = counterSaleBtn.cloneNode(true);
-        counterSaleBtn.parentNode.replaceChild(newBtn, counterSaleBtn);
-        newBtn.addEventListener('click', function(e) {
+        // Remove any existing listeners and set new one
+        counterSaleBtn.onclick = function(e) {
             e.preventDefault();
             openPOSModal();
-        });
+        };
         console.log('✅ Counter sale button connected to posModal');
     } else {
-        console.log('⚠️ Counter sale button not found yet, will retry...');
-        // Retry after a short delay
-        setTimeout(() => {
-            const btn = document.getElementById('newCounterSaleBtn');
-            if (btn) {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openPOSModal();
-                });
-                console.log('✅ Counter sale button connected (delayed)');
-            }
-        }, 500);
+        console.log('⚠️ Counter sale button not found');
     }
     
     // Setup POS search
     setupPOSSearch();
+    
+    // Setup phone validation
+    setupPhoneValidation();
     
     // Setup discount/shipping listeners
     const discountValue = document.getElementById('posDiscountValue');
     const shippingValue = document.getElementById('posShipping');
     const discountRadios = document.querySelectorAll('input[name="discountType"]');
     
-    if (discountValue) discountValue.addEventListener('input', updatePOSTotals);
-    if (shippingValue) shippingValue.addEventListener('input', updatePOSTotals);
-    discountRadios.forEach(radio => radio.addEventListener('change', updatePOSTotals));
+    if (discountValue) {
+        discountValue.addEventListener('input', updatePOSTotals);
+    }
+    if (shippingValue) {
+        shippingValue.addEventListener('input', updatePOSTotals);
+    }
+    discountRadios.forEach(radio => {
+        radio.addEventListener('change', updatePOSTotals);
+    });
     
     // Close modal when clicking outside
     const modal = document.getElementById('posModal');
@@ -644,6 +568,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    console.log('✅ POS event listeners initialized');
 });
 
 // ============ END POS SYSTEM FIX ============
@@ -2317,9 +2243,7 @@ window.removePOSItem = removePOSItem;
 window.clearPOSCart = clearPOSCart;
 window.processPOSSale = processPOSSale;
 window.updatePOSTotals = updatePOSTotals;
-window.getCustomerDetails = getCustomerDetails;
-window.submitCustomerDetails = submitCustomerDetails;
-window.closeCustomerModal = closeCustomerModal;
 window.generateReceiptNumber = generateReceiptNumber;
+window.setupPhoneValidation = setupPhoneValidation;
 
 console.log('✅ Admin UI fully loaded with all functions including POS System!');

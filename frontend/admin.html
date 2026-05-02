@@ -1062,8 +1062,55 @@
               <div class="pos-cart-section">
                   <div class="pos-cart-header">🛒 Current Sale</div>
                   <div id="posCartItems" class="pos-cart-items">
+                  <div id="posCartItems" class="pos-cart-items" style="max-height: 250px;"></div>
                       <!-- Cart items appear here -->
                   </div>
+
+                  <!-- 🆕 CUSTOMER INFORMATION SECTION -->
+                  <div class="pos-customer-section" style="margin-top: 15px; padding: 15px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+                      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                          <i class="fas fa-user" style="color: #22c55e;"></i>
+                          <strong style="color: #166534;">Customer Information</strong>
+                          <span style="font-size: 11px; color: #ef4444; margin-left: auto;">* Required fields</span>
+                      </div>
+                      
+                      <div class="pos-input-group" style="margin-bottom: 10px;">
+                          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
+                              Customer Name <span style="color: red;">*</span>
+                          </label>
+                          <input type="text" id="posCustomerName" class="form-input" 
+                                placeholder="Enter customer name" 
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                      </div>
+                      
+                      <div class="pos-input-group" style="margin-bottom: 10px;">
+                          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
+                              Phone Number <span style="color: red;">*</span>
+                          </label>
+                          <input type="tel" id="posCustomerPhone" class="form-input" 
+                                placeholder="10-digit mobile number" maxlength="10"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                      </div>
+                      
+                      <div class="pos-input-group" style="margin-bottom: 10px;">
+                          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
+                              Email (Optional)
+                          </label>
+                          <input type="email" id="posCustomerEmail" class="form-input" 
+                                placeholder="Email address" 
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                      </div>
+                      
+                      <div class="pos-input-group" style="margin-bottom: 0;">
+                          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
+                              Delivery Address
+                          </label>
+                          <textarea id="posCustomerAddress" class="form-textarea" 
+                                    placeholder="Enter complete address (Optional)" 
+                                    rows="2"
+                                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit;"></textarea>
+                          <small style="color: #666; font-size: 10px;">Optional - For delivery reference</small>
+                      </div>
                   
                   <!-- Discount & Shipping -->
                   <div class="pos-discount-section">
