@@ -30,6 +30,19 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: false  // ✅ CHANGE TO false for counter sales (optional)
   },
+  // ✅ ADD THESE TWO FIELDS FOR POS SYSTEM
+  customerAddress: {
+    type: String,
+    default: ''
+  },
+  receiptNumber: {
+    type: String,
+    unique: true,
+    sparse: true,
+    default: function() {
+      return this.orderId;
+    }
+  },
   // Addresses from profile
   billingAddress: {
     fullName: String,

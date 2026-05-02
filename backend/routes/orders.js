@@ -936,13 +936,13 @@ router.get('/customer/:customerId/details', async (req, res) => {
   }
 });
 
-// 🏪 Counter Sale (POS) Endpoint - FIXED VERSION
+// 🏪 Counter Sale (POS) Endpoint - UPDATED WITH RECEIPT NUMBER & ADDRESS
 router.post('/counter-sale', authMiddleware, async (req, res) => {
     try {
         console.log('🛒 Counter sale request received');
         const saleData = req.body;
         
-        // Check if user is admin (simple check since authMiddleware already verified token)
+        // Check if user is admin
         if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
             console.log('❌ Access denied - not admin');
             return res.status(403).json({ 
@@ -951,8 +951,8 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
             });
         }
         
-        // Generate order ID
-        const orderId = `CASH${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        // Generate fallback order ID if receipt number not provided
+        const orderId = saleData.receiptNumber || `CASH${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
         console.log(`📝 Creating counter sale order: ${orderId}`);
         
         // Validate items
@@ -963,13 +963,23 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
             });
         }
         
-        // Create order - handle missing fields gracefully
+        // Validate required customer fields
+        if (!saleData.customerName || !saleData.customerPhone) {
+            return res.status(400).json({
+                success: false,
+                error: 'Customer name and phone number are required'
+            });
+        }
+        
+        // Create order with all fields
         const order = new Order({
             orderId: orderId,
+            receiptNumber: saleData.receiptNumber || orderId,  // ✅ Add receipt number
             source: saleData.source || 'counter',
-            customerName: saleData.customerName || 'Walk-in Customer',
-            customerEmail: saleData.customerEmail || 'counter@shastraprathista.local',
-            customerPhone: saleData.customerPhone || '',
+            customerName: saleData.customerName,
+            customerEmail: saleData.customerEmail || '',
+            customerPhone: saleData.customerPhone,
+            customerAddress: saleData.customerAddress || '',  // ✅ Add customer address
             items: saleData.items.map(item => ({
                 id: item.id,
                 title: item.title,
@@ -1002,7 +1012,6 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
         // Reduce inventory
         for (const item of saleData.items) {
             try {
-                // Try to find by ID first, then by title
                 let book = null;
                 if (item.id) {
                     book = await Book.findById(item.id);
@@ -1022,13 +1031,13 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
                 }
             } catch (invError) {
                 console.error(`❌ Inventory update failed for ${item.title}:`, invError.message);
-                // Continue with other items
             }
         }
         
         res.json({
             success: true,
             orderId: orderId,
+            receiptNumber: saleData.receiptNumber,
             message: 'Counter sale completed successfully'
         });
         
@@ -1038,6 +1047,68 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
             success: false, 
             error: error.message,
             details: error.stack
+        });
+    }
+});
+
+// ✅ GET receipt counter for POS (optional - maintains counter on server)
+router.get('/receipt-counter', authMiddleware, async (req, res) => {
+    try {
+        // Check if user is admin
+        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Access denied' 
+            });
+        }
+        
+        // Get current financial year
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        
+        let financialYearStart, financialYearEnd;
+        if (month >= 4) {
+            financialYearStart = year;
+            financialYearEnd = year + 1;
+        } else {
+            financialYearStart = year - 1;
+            financialYearEnd = year;
+        }
+        
+        // Get counter from a settings collection (you can create this)
+        // For now, return current counter or generate one
+        const Setting = require('../models/Setting');
+        let setting = await Setting.findOne({ key: `receipt_counter_${financialYearStart}` });
+        
+        let counter = 1;
+        if (setting) {
+            counter = setting.value + 1;
+            setting.value = counter;
+            await setting.save();
+        } else {
+            setting = new Setting({
+                key: `receipt_counter_${financialYearStart}`,
+                value: 1
+            });
+            await setting.save();
+        }
+        
+        const receiptNumber = `SLR-${financialYearStart}-${financialYearEnd.toString().slice(-2)}/${counter.toString().padStart(3, '0')}`;
+        
+        res.json({
+            success: true,
+            receiptNumber: receiptNumber,
+            counter: counter,
+            financialYear: `${financialYearStart}-${financialYearEnd}`
+        });
+        
+    } catch (error) {
+        console.error('Error generating receipt number:', error);
+        // Fallback to client-side generation
+        res.json({
+            success: false,
+            message: 'Use client-side generation'
         });
     }
 });
