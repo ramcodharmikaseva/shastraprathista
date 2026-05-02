@@ -936,7 +936,7 @@ router.get('/customer/:customerId/details', async (req, res) => {
   }
 });
 
-// 🏪 Counter Sale (POS) Endpoint - UPDATED WITH RECEIPT NUMBER & ADDRESS
+// 🏪 Counter Sale (POS) Endpoint - FIXED WITH OPTIONAL EMAIL
 router.post('/counter-sale', authMiddleware, async (req, res) => {
     try {
         console.log('🛒 Counter sale request received');
@@ -951,11 +951,7 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
             });
         }
         
-        // Generate fallback order ID if receipt number not provided
-        const orderId = saleData.receiptNumber || `CASH${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-        console.log(`📝 Creating counter sale order: ${orderId}`);
-        
-        // Validate items
+        // Validate required fields
         if (!saleData.items || saleData.items.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -963,7 +959,7 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
             });
         }
         
-        // Validate required customer fields
+        // Validate customer fields
         if (!saleData.customerName || !saleData.customerPhone) {
             return res.status(400).json({
                 success: false,
@@ -971,28 +967,51 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
             });
         }
         
-        // Create order with all fields
+        // Generate order ID (use receipt number if provided)
+        const orderId = saleData.receiptNumber || `CASH${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        console.log(`📝 Creating counter sale order: ${orderId}`);
+        
+        // Prepare items
+        const items = saleData.items.map(item => ({
+            id: item.id || `item_${Date.now()}_${Math.random()}`,
+            title: item.title || 'Unknown Book',
+            author: item.author || '',
+            quantity: Number(item.quantity) || 1,
+            price: Number(item.price) || 0,
+            originalPrice: Number(item.originalPrice) || Number(item.price) || 0,
+            discount: Number(item.discount) || 0,
+            image: item.image || '',
+            weight: Number(item.weight) || 500,
+            itemTotal: (Number(item.price) || 0) * (Number(item.quantity) || 1)
+        }));
+        
+        // Calculate totals
+        const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = Number(saleData.totals?.shipping) || 0;
+        const discount = Number(saleData.totals?.discount) || 0;
+        const total = subtotal + shipping;
+        
+        // ✅ FIX: Generate dummy email if not provided
+        const customerEmail = saleData.customerEmail && saleData.customerEmail.trim() 
+            ? saleData.customerEmail.trim() 
+            : `counter_${Date.now()}@shastraprathista.local`;
+        
+        // Create order
         const order = new Order({
             orderId: orderId,
-            receiptNumber: saleData.receiptNumber || orderId,  // ✅ Add receipt number
+            receiptNumber: saleData.receiptNumber || orderId,
             source: saleData.source || 'counter',
             customerName: saleData.customerName,
-            customerEmail: saleData.customerEmail || '',
+            customerEmail: customerEmail,  // ✅ Always has a value now
             customerPhone: saleData.customerPhone,
-            customerAddress: saleData.customerAddress || '',  // ✅ Add customer address
-            items: saleData.items.map(item => ({
-                id: item.id,
-                title: item.title,
-                quantity: item.quantity,
-                price: item.price,
-                itemTotal: item.itemTotal || (item.price * item.quantity)
-            })),
+            customerAddress: saleData.customerAddress || '',
+            items: items,
             totals: {
-                subtotal: saleData.totals.subtotal || 0,
-                shipping: saleData.totals.shipping || 0,
-                discount: saleData.totals.discount || 0,
+                subtotal: subtotal,
+                shipping: shipping,
+                discount: discount,
                 tax: 0,
-                total: saleData.totals.total || 0
+                total: total
             },
             paymentMethod: saleData.paymentMethod || 'cash',
             paymentStatus: 'paid',
@@ -1007,7 +1026,7 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
         });
         
         await order.save();
-        console.log(`✅ Counter sale created: ${orderId} - ₹${saleData.totals.total}`);
+        console.log(`✅ Counter sale created: ${orderId} - ₹${total}`);
         
         // Reduce inventory
         for (const item of saleData.items) {
@@ -1022,12 +1041,12 @@ router.post('/counter-sale', authMiddleware, async (req, res) => {
                 
                 if (book) {
                     const oldStock = book.stock || 0;
-                    book.stock = Math.max(0, oldStock - item.quantity);
-                    book.sold = (book.sold || 0) + item.quantity;
+                    book.stock = Math.max(0, oldStock - (item.quantity || 1));
+                    book.sold = (book.sold || 0) + (item.quantity || 1);
                     await book.save();
-                    console.log(`📚 Inventory updated: ${book.title} → ${book.stock} left (was ${oldStock})`);
+                    console.log(`📚 Inventory updated: ${book.title} → ${book.stock} left`);
                 } else {
-                    console.log(`⚠️ Book not found: ${item.title} (ID: ${item.id})`);
+                    console.log(`⚠️ Book not found: ${item.title}`);
                 }
             } catch (invError) {
                 console.error(`❌ Inventory update failed for ${item.title}:`, invError.message);
