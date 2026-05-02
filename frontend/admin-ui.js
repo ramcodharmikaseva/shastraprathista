@@ -1,5 +1,435 @@
 console.log('🎨 Admin UI loading...');
 
+console.log('🎨 Admin UI loading...');
+
+// ============ 🏪 NEW POS SYSTEM (Using posModal from HTML) ============
+// POS Global Variables
+let posCart = [];
+let posProducts = [];
+
+// Open POS Modal - This connects to your existing button
+function openPOSModal() {
+    console.log('🔄 Opening POS Modal...');
+    const modal = document.getElementById('posModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Load products when modal opens
+        loadPOSProducts();
+        // Reset cart
+        clearPOSCart();
+        // Reset discount/shipping fields
+        const discountValue = document.getElementById('posDiscountValue');
+        const shippingValue = document.getElementById('posShipping');
+        if (discountValue) discountValue.value = '0';
+        if (shippingValue) shippingValue.value = '0';
+        
+        // Reset discount type to percentage
+        const percentageRadio = document.querySelector('input[name="discountType"][value="percentage"]');
+        if (percentageRadio) percentageRadio.checked = true;
+        
+        // Update totals
+        updatePOSTotals();
+    } else {
+        console.error('❌ POS Modal not found! Check if modal exists in HTML');
+        showToast('POS system error: Modal not found', 'error');
+    }
+}
+
+// Close POS Modal
+function closePOSModal() {
+    const modal = document.getElementById('posModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Load POS Products
+async function loadPOSProducts() {
+    try {
+        showLoading(true);
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/books', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        posProducts = await response.json();
+        renderPOSProducts(posProducts);
+        showLoading(false);
+    } catch (error) {
+        console.error('Error loading products:', error);
+        showToast('Failed to load products', 'error');
+        showLoading(false);
+    }
+}
+
+// Render Products in POS Grid
+function renderPOSProducts(products) {
+    const container = document.getElementById('posProductsList');
+    if (!container) return;
+    
+    if (!products || products.length === 0) {
+        container.innerHTML = '<div class="empty-state">No products found</div>';
+        return;
+    }
+    
+    container.innerHTML = products.map(p => `
+        <div class="pos-product-card" onclick="addToPOSCart('${p._id}')">
+            <div class="pos-product-name">${escapeHtml(p.title || p.name)}</div>
+            <div class="pos-product-price">₹${parseFloat(p.price).toFixed(2)}</div>
+            <div class="pos-product-stock">Stock: ${p.stock || 0}</div>
+        </div>
+    `).join('');
+}
+
+// Search Products in POS
+function setupPOSSearch() {
+    const searchInput = document.getElementById('posSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            if (!posProducts) return;
+            const filtered = posProducts.filter(p => 
+                (p.title || p.name).toLowerCase().includes(search) || 
+                (p.sku && p.sku.toLowerCase().includes(search))
+            );
+            renderPOSProducts(filtered);
+        });
+    }
+}
+
+// Add to Cart
+function addToPOSCart(productId) {
+    const product = posProducts.find(p => p._id === productId);
+    if (!product) {
+        showToast('Product not found', 'error');
+        return;
+    }
+    
+    if (product.stock <= 0) {
+        showToast('Out of stock!', 'error');
+        return;
+    }
+    
+    const existing = posCart.find(item => item.productId === productId);
+    if (existing) {
+        if (existing.quantity + 1 > product.stock) {
+            showToast(`Only ${product.stock} available!`, 'error');
+            return;
+        }
+        existing.quantity++;
+        existing.total = existing.quantity * existing.price;
+    } else {
+        posCart.push({
+            productId: product._id,
+            name: product.title || product.name,
+            price: product.price,
+            quantity: 1,
+            total: product.price,
+            stock: product.stock
+        });
+    }
+    renderPOSCart();
+}
+
+// Render Cart
+function renderPOSCart() {
+    const container = document.getElementById('posCartItems');
+    if (!container) return;
+    
+    if (posCart.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:2rem;">No items in cart</div>';
+        updatePOSTotals();
+        return;
+    }
+    
+    container.innerHTML = posCart.map((item, idx) => `
+        <div class="pos-cart-item">
+            <div class="pos-cart-item-info">
+                <div class="pos-cart-item-name">${escapeHtml(item.name)}</div>
+                <div class="pos-cart-item-price">₹${item.price} × ${item.quantity}</div>
+            </div>
+            <div class="pos-cart-item-actions">
+                <button onclick="updatePOSQty(${idx}, ${item.quantity - 1})" style="background:#e2e8f0;border:none;width:24px;border-radius:4px;cursor:pointer;">-</button>
+                <input type="number" class="pos-cart-item-qty" value="${item.quantity}" 
+                       onchange="updatePOSQty(${idx}, parseInt(this.value))" min="1" max="${item.stock}">
+                <button onclick="updatePOSQty(${idx}, ${item.quantity + 1})" style="background:#e2e8f0;border:none;width:24px;border-radius:4px;cursor:pointer;">+</button>
+                <button class="pos-cart-item-remove" onclick="removePOSItem(${idx})">✕</button>
+            </div>
+            <div class="pos-cart-item-total">₹${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+    `).join('');
+    
+    updatePOSTotals();
+}
+
+// Update Quantity
+function updatePOSQty(index, newQty) {
+    if (newQty < 1) {
+        removePOSItem(index);
+        return;
+    }
+    const item = posCart[index];
+    if (newQty > item.stock) {
+        showToast(`Only ${item.stock} in stock`, 'error');
+        return;
+    }
+    item.quantity = newQty;
+    item.total = item.price * newQty;
+    renderPOSCart();
+}
+
+// Remove Item
+function removePOSItem(index) {
+    posCart.splice(index, 1);
+    renderPOSCart();
+}
+
+// Clear Cart
+function clearPOSCart() {
+    if (confirm('Clear entire cart?')) {
+        posCart = [];
+        renderPOSCart();
+    }
+}
+
+// Update Totals
+function updatePOSTotals() {
+    const subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const discountType = document.querySelector('input[name="discountType"]:checked')?.value;
+    const discountValue = parseFloat(document.getElementById('posDiscountValue')?.value) || 0;
+    const shipping = parseFloat(document.getElementById('posShipping')?.value) || 0;
+    
+    let discountAmount = 0;
+    if (discountType === 'percentage') {
+        discountAmount = (subtotal * discountValue) / 100;
+    } else if (discountType === 'fixed') {
+        discountAmount = Math.min(discountValue, subtotal);
+    }
+    
+    const total = subtotal - discountAmount + shipping;
+    
+    const subtotalEl = document.getElementById('posSubtotal');
+    const discountAmountEl = document.getElementById('posDiscountAmount');
+    const shippingAmountEl = document.getElementById('posShippingAmount');
+    const totalEl = document.getElementById('posTotal');
+    
+    if (subtotalEl) subtotalEl.innerText = `₹${subtotal.toFixed(2)}`;
+    if (discountAmountEl) discountAmountEl.innerText = `-₹${discountAmount.toFixed(2)}`;
+    if (shippingAmountEl) shippingAmountEl.innerText = `₹${shipping.toFixed(2)}`;
+    if (totalEl) totalEl.innerText = `₹${total.toFixed(2)}`;
+}
+
+// Process POS Sale
+async function processPOSSale() {
+    if (posCart.length === 0) {
+        showToast('Cart is empty', 'error');
+        return;
+    }
+    
+    const subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const discountType = document.querySelector('input[name="discountType"]:checked')?.value;
+    const discountValue = parseFloat(document.getElementById('posDiscountValue')?.value) || 0;
+    const shipping = parseFloat(document.getElementById('posShipping')?.value) || 0;
+    
+    let discountAmount = 0;
+    if (discountType === 'percentage') {
+        discountAmount = (subtotal * discountValue) / 100;
+    } else if (discountType === 'fixed') {
+        discountAmount = Math.min(discountValue, subtotal);
+    }
+    
+    const total = subtotal - discountAmount + shipping;
+    
+    const orderData = {
+        source: 'counter',
+        customerName: 'Walk-in Customer',
+        items: posCart.map(item => ({
+            id: item.productId,
+            title: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            itemTotal: item.price * item.quantity
+        })),
+        totals: {
+            subtotal: subtotal,
+            discount: discountAmount,
+            shipping: shipping,
+            tax: 0,
+            total: total
+        },
+        paymentMethod: 'cash',
+        paymentStatus: 'paid',
+        status: 'completed'
+    };
+    
+    if (!confirm(`Confirm Sale?\n\nTotal: ₹${total.toFixed(2)}`)) return;
+    
+    try {
+        showLoading(true);
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/orders/counter-sale', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(orderData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Sale completed successfully!', 'success');
+            printPOSReceipt({
+                orderId: result.orderId,
+                items: posCart,
+                subtotal: subtotal,
+                discount: discountAmount,
+                shipping: shipping,
+                total: total
+            });
+            clearPOSCart();
+            closePOSModal();
+            // Refresh products to update stock display
+            loadPOSProducts();
+            // Refresh orders list
+            if (typeof loadOrdersFromBackend === 'function') {
+                const orders = await loadOrdersFromBackend();
+                if (typeof initializeOrdersSearch === 'function') {
+                    initializeOrdersSearch(orders);
+                }
+            }
+        } else {
+            showToast('Error: ' + (result.error || 'Unknown error'), 'error');
+        }
+        showLoading(false);
+    } catch (error) {
+        console.error('POS sale error:', error);
+        showToast('Failed to process sale', 'error');
+        showLoading(false);
+    }
+}
+
+// Print Receipt
+function printPOSReceipt(data) {
+    const receiptWindow = window.open('', '_blank', 'width=400,height=600');
+    if (!receiptWindow) return;
+    
+    receiptWindow.document.write(`
+        <html>
+        <head>
+            <title>Receipt - ${data.orderId}</title>
+            <style>
+                body { font-family: monospace; padding: 20px; }
+                h2, h3 { text-align: center; }
+                hr { margin: 15px 0; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { text-align: left; padding: 5px 0; }
+                .total { font-weight: bold; font-size: 1.2em; }
+                .center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <h2>SHASTRAPRATHISTA</h2>
+            <h3>Counter Sale Receipt</h3>
+            <p class="center">${new Date().toLocaleString()}</p>
+            <p><strong>Order #:</strong> ${data.orderId}</p>
+            <hr>
+            <table>
+                <thead>
+                    <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                    ${data.items.map(item => `
+                        <tr>
+                            <td>${item.name.substring(0, 30)}</td>
+                            <td class="center">${item.quantity}</td>
+                            <td class="center">₹${item.price}</td>
+                            <td class="center">₹${(item.price * item.quantity).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            <hr>
+            <p><strong>Subtotal:</strong> ₹${data.subtotal.toFixed(2)}</p>
+            ${data.discount > 0 ? `<p><strong>Discount:</strong> -₹${data.discount.toFixed(2)}</p>` : ''}
+            ${data.shipping > 0 ? `<p><strong>Shipping:</strong> ₹${data.shipping.toFixed(2)}</p>` : ''}
+            <p class="total"><strong>Total:</strong> ₹${data.total.toFixed(2)}</p>
+            <hr>
+            <p class="center">Thank you for your purchase!</p>
+            <p class="center">Books HSN - 4901 (GST Exempt)</p>
+            <script>
+                window.print();
+                setTimeout(() => window.close(), 500);
+            </script>
+        </body>
+        </html>
+    `);
+}
+
+// Escape HTML helper
+function escapeHtml(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Setup event listeners for POS modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Connect the counter sale button
+    const counterSaleBtn = document.getElementById('newCounterSaleBtn');
+    if (counterSaleBtn) {
+        // Remove any existing listeners
+        const newBtn = counterSaleBtn.cloneNode(true);
+        counterSaleBtn.parentNode.replaceChild(newBtn, counterSaleBtn);
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openPOSModal();
+        });
+        console.log('✅ Counter sale button connected to posModal');
+    } else {
+        console.log('⚠️ Counter sale button not found yet, will retry...');
+        // Retry after a short delay
+        setTimeout(() => {
+            const btn = document.getElementById('newCounterSaleBtn');
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openPOSModal();
+                });
+                console.log('✅ Counter sale button connected (delayed)');
+            }
+        }, 500);
+    }
+    
+    // Setup POS search
+    setupPOSSearch();
+    
+    // Setup discount/shipping listeners
+    const discountValue = document.getElementById('posDiscountValue');
+    const shippingValue = document.getElementById('posShipping');
+    const discountRadios = document.querySelectorAll('input[name="discountType"]');
+    
+    if (discountValue) discountValue.addEventListener('input', updatePOSTotals);
+    if (shippingValue) shippingValue.addEventListener('input', updatePOSTotals);
+    discountRadios.forEach(radio => radio.addEventListener('change', updatePOSTotals));
+    
+    // Close modal when clicking outside
+    const modal = document.getElementById('posModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closePOSModal();
+            }
+        });
+    }
+});
+
+// ============ END POS SYSTEM FIX ============
+
 // ✅ ROLE-BASED ACCESS CONTROL - Add this at the very beginning
 async function checkAdminAccess() {
   try {
@@ -2042,15 +2472,8 @@ function printReceipt(data) {
     receiptWindow.print();
 }
 
-// Open POS modal
-const newCounterSaleBtn = document.getElementById('newCounterSaleBtn');
-if (newCounterSaleBtn) {
-    newCounterSaleBtn.addEventListener('click', () => {
-        loadBooksForPOS();
-        const modal = document.getElementById('counterSaleModal');
-        if (modal) modal.style.display = 'flex';
-    });
-}
+// Note: POS button is now handled by the code at the top of the file
+// The old counterSaleModal code is no longer needed
 
 // Close modal
 const closeModalBtn = document.querySelector('#counterSaleModal .close-modal');
@@ -2081,6 +2504,17 @@ if (document.readyState === 'loading') {
     if (discountType) discountType.addEventListener('change', calculateGrandTotal);
     if (shippingInput) shippingInput.addEventListener('input', calculateGrandTotal);
 }
+
+
+// Make POS functions globally available
+window.openPOSModal = openPOSModal;
+window.closePOSModal = closePOSModal;
+window.addToPOSCart = addToPOSCart;
+window.updatePOSQty = updatePOSQty;
+window.removePOSItem = removePOSItem;
+window.clearPOSCart = clearPOSCart;
+window.processPOSSale = processPOSSale;
+window.updatePOSTotals = updatePOSTotals;
 
 // Make POS functions globally available
 window.loadBooksForPOS = loadBooksForPOS;
