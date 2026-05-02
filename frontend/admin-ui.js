@@ -216,11 +216,207 @@ function updatePOSTotals() {
     if (totalEl) totalEl.innerText = `₹${total.toFixed(2)}`;
 }
 
-// Process POS Sale
+// ============ 🆕 ADD CUSTOMER DETAILS FUNCTIONS HERE ============
+
+// Function to get customer details with validation (Phone mandatory, Address optional)
+function getCustomerDetails() {
+    return new Promise((resolve) => {
+        // Create modal for customer details
+        const modalHtml = `
+            <div id="customerDetailsModal" class="modal" style="display: flex; align-items: center; justify-content: center; z-index: 10001;">
+                <div class="modal-content" style="max-width: 500px; width: 90%;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user"></i> Customer Details</h3>
+                        <button class="close-btn" onclick="closeCustomerModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" style="padding: 20px;">
+                        <form id="customerDetailsForm">
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label for="customerName">Customer Name *</label>
+                                <input type="text" id="customerName" class="form-input" placeholder="Enter customer name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <small style="color: red;">* Mandatory</small>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label for="customerPhone">Phone Number *</label>
+                                <input type="tel" id="customerPhone" class="form-input" placeholder="Enter 10-digit mobile number" required pattern="[0-9]{10}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <small style="color: red;">* Mandatory (10 digits)</small>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label for="customerEmail">Email (Optional)</label>
+                                <input type="email" id="customerEmail" class="form-input" placeholder="Enter email address" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <small>Optional</small>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label for="customerAddress">Address (Optional)</label>
+                                <textarea id="customerAddress" class="form-textarea" placeholder="Enter complete address (Optional)" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                                <small>Optional - For delivery reference</small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-actions" style="padding: 15px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee;">
+                        <button class="btn btn-secondary" onclick="closeCustomerModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="submitCustomerDetails()">Proceed to Payment</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('customerDetailsModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Store resolve function for later use
+        window.customerDetailsResolver = resolve;
+        
+        // Add validation on phone input
+        const phoneInput = document.getElementById('customerPhone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+            });
+        }
+        
+        // Allow Enter key to submit
+        const inputs = ['customerName', 'customerPhone', 'customerEmail', 'customerAddress'];
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        submitCustomerDetails();
+                    }
+                });
+            }
+        });
+    });
+}
+
+// Submit customer details with validation
+function submitCustomerDetails() {
+    const name = document.getElementById('customerName')?.value.trim();
+    const phone = document.getElementById('customerPhone')?.value.trim();
+    const email = document.getElementById('customerEmail')?.value.trim();
+    const address = document.getElementById('customerAddress')?.value.trim();
+    
+    // Validate Name
+    if (!name) {
+        showToast('Please enter customer name', 'error');
+        document.getElementById('customerName')?.focus();
+        return;
+    }
+    
+    // Validate Phone (10 digits)
+    if (!phone) {
+        showToast('Please enter phone number', 'error');
+        document.getElementById('customerPhone')?.focus();
+        return;
+    }
+    
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+        showToast('Please enter a valid 10-digit mobile number', 'error');
+        document.getElementById('customerPhone')?.focus();
+        return;
+    }
+    
+    // Close modal and resolve with customer details
+    closeCustomerModal();
+    
+    if (window.customerDetailsResolver) {
+        window.customerDetailsResolver({
+            name: name,
+            phone: phone,
+            email: email || '',
+            address: address || ''
+        });
+        window.customerDetailsResolver = null;
+    }
+}
+
+// Close customer modal
+function closeCustomerModal() {
+    const modal = document.getElementById('customerDetailsModal');
+    if (modal) {
+        modal.remove();
+    }
+    if (window.customerDetailsResolver) {
+        window.customerDetailsResolver(null);
+        window.customerDetailsResolver = null;
+    }
+}
+
+// Generate Receipt Number (SLR-2026-27/001 format)
+let receiptCounter = null;
+
+async function generateReceiptNumber() {
+    try {
+        // Get current financial year and counter from backend
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/orders/receipt-counter', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            receiptCounter = data.counter;
+            return data.receiptNumber;
+        }
+    } catch (error) {
+        console.log('Using local receipt generation');
+    }
+    
+    // Fallback: Generate locally
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    
+    // Financial year: April to March
+    let financialYearStart, financialYearEnd;
+    if (month >= 4) {
+        financialYearStart = year;
+        financialYearEnd = year + 1;
+    } else {
+        financialYearStart = year - 1;
+        financialYearEnd = year;
+    }
+    
+    // Get counter from localStorage or initialize
+    let counter = localStorage.getItem(`receipt_counter_${financialYearStart}`);
+    if (!counter) {
+        counter = 1;
+    } else {
+        counter = parseInt(counter) + 1;
+    }
+    
+    // Save counter
+    localStorage.setItem(`receipt_counter_${financialYearStart}`, counter);
+    
+    // Format: SLR-2026-27/001
+    const receiptNumber = `SLR-${financialYearStart}-${financialYearEnd.toString().slice(-2)}/${counter.toString().padStart(3, '0')}`;
+    
+    return receiptNumber;
+}
+
+// Process POS Sale with Customer Details & Receipt Number
 async function processPOSSale() {
     if (posCart.length === 0) {
         showToast('Cart is empty', 'error');
         return;
+    }
+    
+    // Get customer details first
+    const customerDetails = await getCustomerDetails();
+    if (!customerDetails) {
+        return; // User cancelled
     }
     
     const subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -237,9 +433,16 @@ async function processPOSSale() {
     
     const total = subtotal - discountAmount + shipping;
     
+    // Generate receipt number
+    const receiptNumber = await generateReceiptNumber();
+    
     const orderData = {
         source: 'counter',
-        customerName: 'Walk-in Customer',
+        receiptNumber: receiptNumber,
+        customerName: customerDetails.name,
+        customerPhone: customerDetails.phone,
+        customerEmail: customerDetails.email,
+        customerAddress: customerDetails.address,
         items: posCart.map(item => ({
             id: item.productId,
             title: item.name,
@@ -259,7 +462,7 @@ async function processPOSSale() {
         status: 'completed'
     };
     
-    if (!confirm(`Confirm Sale?\n\nTotal: ₹${total.toFixed(2)}`)) return;
+    if (!confirm(`Confirm Sale?\n\nReceipt: ${receiptNumber}\nCustomer: ${customerDetails.name}\nPhone: ${customerDetails.phone}\nTotal: ₹${total.toFixed(2)}`)) return;
     
     try {
         showLoading(true);
@@ -278,7 +481,12 @@ async function processPOSSale() {
         if (result.success) {
             showToast('Sale completed successfully!', 'success');
             printPOSReceipt({
+                receiptNumber: receiptNumber,
                 orderId: result.orderId,
+                customerName: customerDetails.name,
+                customerPhone: customerDetails.phone,
+                customerEmail: customerDetails.email,
+                customerAddress: customerDetails.address,
                 items: posCart,
                 subtotal: subtotal,
                 discount: discountAmount,
@@ -307,7 +515,7 @@ async function processPOSSale() {
     }
 }
 
-// Print Receipt
+// Print Receipt with Customer Details
 function printPOSReceipt(data) {
     const receiptWindow = window.open('', '_blank', 'width=400,height=600');
     if (!receiptWindow) return;
@@ -315,22 +523,33 @@ function printPOSReceipt(data) {
     receiptWindow.document.write(`
         <html>
         <head>
-            <title>Receipt - ${data.orderId}</title>
+            <title>Receipt - ${data.receiptNumber}</title>
             <style>
-                body { font-family: monospace; padding: 20px; }
-                h2, h3 { text-align: center; }
-                hr { margin: 15px 0; }
+                body { font-family: monospace; padding: 20px; font-size: 12px; }
+                h2, h3 { text-align: center; margin: 5px 0; }
+                hr { margin: 10px 0; }
                 table { width: 100%; border-collapse: collapse; }
-                th, td { text-align: left; padding: 5px 0; }
-                .total { font-weight: bold; font-size: 1.2em; }
+                th, td { text-align: left; padding: 5px 0; border-bottom: 1px dotted #ccc; }
+                .total { font-weight: bold; font-size: 1.1em; }
                 .center { text-align: center; }
+                .customer-info { margin: 10px 0; padding: 8px; background: #f5f5f5; border-radius: 5px; }
+                .receipt-no { font-size: 14px; font-weight: bold; text-align: center; margin: 5px 0; }
             </style>
         </head>
         <body>
             <h2>SHASTRAPRATHISTA</h2>
             <h3>Counter Sale Receipt</h3>
+            <div class="receipt-no">Receipt No: ${data.receiptNumber}</div>
             <p class="center">${new Date().toLocaleString()}</p>
-            <p><strong>Order #:</strong> ${data.orderId}</p>
+            
+            <div class="customer-info">
+                <strong>Customer Details:</strong><br>
+                Name: ${data.customerName}<br>
+                Phone: ${data.customerPhone}<br>
+                ${data.customerEmail ? `Email: ${data.customerEmail}<br>` : ''}
+                ${data.customerAddress ? `Address: ${data.customerAddress}<br>` : ''}
+            </div>
+            
             <hr>
             <table>
                 <thead>
@@ -355,6 +574,7 @@ function printPOSReceipt(data) {
             <hr>
             <p class="center">Thank you for your purchase!</p>
             <p class="center">Books HSN - 4901 (GST Exempt)</p>
+            <p class="center" style="font-size: 10px;">www.shastraprathista.in</p>
             <script>
                 window.print();
                 setTimeout(() => window.close(), 500);
@@ -2097,5 +2317,9 @@ window.removePOSItem = removePOSItem;
 window.clearPOSCart = clearPOSCart;
 window.processPOSSale = processPOSSale;
 window.updatePOSTotals = updatePOSTotals;
+window.getCustomerDetails = getCustomerDetails;
+window.submitCustomerDetails = submitCustomerDetails;
+window.closeCustomerModal = closeCustomerModal;
+window.generateReceiptNumber = generateReceiptNumber;
 
 console.log('✅ Admin UI fully loaded with all functions including POS System!');
