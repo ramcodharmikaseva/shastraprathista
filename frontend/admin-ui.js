@@ -433,79 +433,263 @@ function generateReceiptNumber() {
     return receiptNumber;
 }
 
-// Print Receipt with Customer Details
+// Print Receipt with Professional Header (matching online invoice)
 function printPOSReceipt(data) {
     const receiptWindow = window.open('', '_blank', 'width=400,height=600');
     if (!receiptWindow) return;
     
     receiptWindow.document.write(`
+        <!DOCTYPE html>
         <html>
         <head>
             <title>Receipt - ${data.receiptNumber}</title>
             <style>
-                body { font-family: monospace; padding: 20px; font-size: 12px; }
-                h2, h3 { text-align: center; margin: 5px 0; }
-                hr { margin: 10px 0; }
-                table { width: 100%; border-collapse: collapse; }
-                th, td { text-align: left; padding: 5px 0; border-bottom: 1px dotted #ccc; }
-                .total { font-weight: bold; font-size: 1.1em; }
-                .center { text-align: center; }
-                .customer-info { margin: 10px 0; padding: 8px; background: #f5f5f5; border-radius: 5px; }
-                .receipt-no { font-size: 14px; font-weight: bold; text-align: center; margin: 5px 0; }
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                body {
+                    font-family: 'Courier New', monospace;
+                    padding: 20px;
+                    font-size: 11px;
+                    line-height: 1.4;
+                    color: #000;
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 15px;
+                    padding-bottom: 8px;
+                    border-bottom: 2px solid #000;
+                }
+                .trust-name {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #8B0000;
+                    letter-spacing: 1px;
+                    margin-bottom: 3px;
+                }
+                .subtitle {
+                    font-size: 11px;
+                    font-style: italic;
+                    font-weight: bold;
+                    color: #0000FF;
+                    margin-bottom: 8px;
+                }
+                .address {
+                    font-size: 9px;
+                    margin-bottom: 3px;
+                }
+                .receipt-title {
+                    font-size: 16px;
+                    font-weight: bold;
+                    margin: 10px 0;
+                    text-align: center;
+                    letter-spacing: 2px;
+                }
+                .receipt-no {
+                    text-align: center;
+                    font-size: 10px;
+                    font-weight: bold;
+                    margin: 5px 0;
+                    padding: 3px;
+                    background: #f0f0f0;
+                }
+                .divider {
+                    border-top: 1px dashed #000;
+                    margin: 8px 0;
+                }
+                .divider-solid {
+                    border-top: 1px solid #000;
+                    margin: 8px 0;
+                }
+                .customer-info {
+                    margin: 10px 0;
+                    padding: 8px;
+                    background: #f9f9f9;
+                    border: 1px solid #ddd;
+                    font-size: 9px;
+                }
+                .customer-info strong {
+                    font-size: 10px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 10px 0;
+                }
+                th, td {
+                    text-align: left;
+                    padding: 5px 3px;
+                    border-bottom: 1px dotted #ccc;
+                }
+                th {
+                    font-weight: bold;
+                    background: #f5f5f5;
+                    font-size: 9px;
+                }
+                .text-right {
+                    text-align: right;
+                }
+                .text-center {
+                    text-align: center;
+                }
+                .total-row {
+                    font-weight: bold;
+                    font-size: 11px;
+                    margin-top: 5px;
+                }
+                .grand-total {
+                    font-size: 12px;
+                    font-weight: bold;
+                    border-top: 2px solid #000;
+                    padding-top: 5px;
+                    margin-top: 5px;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 15px;
+                    padding-top: 8px;
+                    border-top: 1px solid #000;
+                    font-size: 9px;
+                }
+                .signature {
+                    margin-top: 20px;
+                    display: flex;
+                    justify-content: space-between;
+                }
+                @media print {
+                    body {
+                        padding: 10px;
+                    }
+                    .no-print {
+                        display: none;
+                    }
+                }
             </style>
         </head>
         <body>
-            <h2>SHASTRAPRATHISTA</h2>
-            <h3>Counter Sale Receipt</h3>
-            <div class="receipt-no">Receipt No: ${data.receiptNumber}</div>
-            <p class="center">${new Date().toLocaleString()}</p>
-            
-            <div class="customer-info">
-                <strong>Customer Details:</strong><br>
-                Name: ${data.customerName}<br>
-                Phone: ${data.customerPhone}<br>
-                ${data.customerEmail ? `Email: ${data.customerEmail}<br>` : ''}
-                ${data.customerAddress ? `Address: ${data.customerAddress}<br>` : ''}
+            <!-- Header Section - Matching Online Invoice -->
+            <div class="header">
+                <div class="trust-name">SMT LINGAMMAL RAMARAJU SHASTRAPRATHISTA TRUST</div>
+                <div class="subtitle">"RAMCO DHARMIKA SEVA"</div>
+                <div class="address">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117,</div>
+                <div class="address">Tamilnadu, India.</div>
+                <div class="address">email: shastraprathista@gmail.com | Mob: 88704 12345</div>
             </div>
             
-            <hr>
+            <div class="receipt-title">CASH SALE RECEIPT</div>
+            <div class="receipt-no">Receipt No: ${data.receiptNumber}</div>
+            <div class="text-center" style="font-size: 9px; margin-bottom: 5px;">Date: ${new Date().toLocaleString()}</div>
+            
+            <div class="divider-solid"></div>
+            
+            <!-- Customer Information -->
+            <div class="customer-info">
+                <strong>Customer Details:</strong><br>
+                Name: ${escapeHtml(data.customerName)}<br>
+                Phone: ${data.customerPhone}<br>
+                ${data.customerEmail ? `Email: ${escapeHtml(data.customerEmail)}<br>` : ''}
+                ${data.customerAddress ? `Address: ${escapeHtml(data.customerAddress)}<br>` : ''}
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Items Table -->
             <table>
                 <thead>
-                    <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th class="text-right">Qty</th>
+                        <th class="text-right">Price</th>
+                        <th class="text-right">Total</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    ${data.items.map(item => `
+                    ${data.items.map((item, idx) => `
                         <tr>
-                            <td>${item.name.substring(0, 30)}</td>
-                            <td class="center">${item.quantity}</td>
-                            <td class="center">₹${item.price}</td>
-                            <td class="center">₹${(item.price * item.quantity).toFixed(2)}</td>
+                            <td>${idx + 1}</td>
+                            <td>${escapeHtml(item.name.length > 25 ? item.name.substring(0, 22) + '...' : item.name)}</td>
+                            <td class="text-right">${item.quantity}</td>
+                            <td class="text-right">₹${item.price.toFixed(2)}</td>
+                            <td class="text-right">₹${(item.price * item.quantity).toFixed(2)}</td>
                         </tr>
                     `).join('')}
                 </tbody>
             </table>
-            <hr>
-            <p><strong>Subtotal:</strong> ₹${data.subtotal.toFixed(2)}</p>
-            ${data.discount > 0 ? `<p><strong>Discount:</strong> -₹${data.discount.toFixed(2)}</p>` : ''}
-            ${data.shipping > 0 ? `<p><strong>Shipping:</strong> ₹${data.shipping.toFixed(2)}</p>` : ''}
-            <p class="total"><strong>Total:</strong> ₹${data.total.toFixed(2)}</p>
-            <hr>
-            <p class="center">Thank you for your purchase!</p>
-            <p class="center">Books HSN - 4901 (GST Exempt)</p>
-            <p class="center" style="font-size: 10px;">www.shastraprathista.in</p>
+            
+            <div class="divider"></div>
+            
+            <!-- Totals Section -->
+            <div style="margin-top: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                    <span>Subtotal:</span>
+                    <span>₹${data.subtotal.toFixed(2)}</span>
+                </div>
+                ${data.discount > 0 ? `
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: #d32f2f;">
+                    <span>Discount:</span>
+                    <span>-₹${data.discount.toFixed(2)}</span>
+                </div>
+                ` : ''}
+                ${data.shipping > 0 ? `
+                <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                    <span>Shipping:</span>
+                    <span>₹${data.shipping.toFixed(2)}</span>
+                </div>
+                ` : ''}
+                <div class="divider" style="margin: 5px 0;"></div>
+                <div class="total-row" style="display: flex; justify-content: space-between;">
+                    <span>GRAND TOTAL:</span>
+                    <span>₹${data.total.toFixed(2)}</span>
+                </div>
+            </div>
+            
+            <div class="divider-solid"></div>
+            
+            <!-- Payment Details -->
+            <div style="margin: 8px 0; font-size: 9px;">
+                <strong>Payment Mode:</strong> Cash<br>
+                <strong>Status:</strong> Paid ✓
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <div>Thank you for your purchase!</div>
+                <div style="font-size: 8px; margin-top: 3px;">Books HSN - 4901 (GST Exempt)</div>
+                <div style="font-size: 8px; margin-top: 3px;">www.shastraprathista.in</div>
+            </div>
+            
+            <!-- Signature Lines -->
+            <div class="signature">
+                <div style="font-size: 9px;">Customer Signature</div>
+                <div style="font-size: 9px;">Authorized Signatory</div>
+            </div>
+            
+            <!-- Print Instructions -->
+            <div class="no-print" style="text-align: center; margin-top: 20px; padding: 10px; background: #f0f0f0;">
+                <button onclick="window.print()" style="padding: 5px 15px; margin: 5px; cursor: pointer;">🖨️ Print Receipt</button>
+                <button onclick="window.close()" style="padding: 5px 15px; margin: 5px; cursor: pointer;">✖️ Close</button>
+            </div>
+            
             <script>
-                window.print();
-                setTimeout(() => window.close(), 500);
+                // Auto-print when loaded
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                    }, 500);
+                };
             </script>
         </body>
         </html>
     `);
 }
 
-// Escape HTML helper
+// Escape HTML helper (make sure this exists)
 function escapeHtml(str) {
     if (!str) return '';
-    return str
+    return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
