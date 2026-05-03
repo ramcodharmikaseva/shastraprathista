@@ -774,11 +774,17 @@ async function loadCounterOrders(filter = 'all') {
         
         const result = await response.json();
         
+        console.log('🔥 loadCounterOrders response:', result);
+        
         if (result.success) {
             // Update summary cards
-            document.getElementById('counterTotalRevenue').innerText = `₹${result.totalRevenue.toFixed(2)}`;
-            document.getElementById('counterTotalOrders').innerText = result.total;
-            document.getElementById('counterTotalItems').innerText = result.totalItems;
+            const revenueEl = document.getElementById('counterTotalRevenue');
+            const ordersEl = document.getElementById('counterTotalOrders');
+            const itemsEl = document.getElementById('counterTotalItems');
+            
+            if (revenueEl) revenueEl.innerText = `₹${result.totalRevenue.toFixed(2)}`;
+            if (ordersEl) ordersEl.innerText = result.total;
+            if (itemsEl) itemsEl.innerText = result.totalItems;
             
             // Filter orders based on selection
             let filteredOrders = result.orders;
@@ -789,16 +795,19 @@ async function loadCounterOrders(filter = 'all') {
                     if (filter === 'today') {
                         return orderDate.toDateString() === now.toDateString();
                     } else if (filter === 'week') {
-                        const weekAgo = new Date(now.setDate(now.getDate() - 7));
+                        const weekAgo = new Date();
+                        weekAgo.setDate(weekAgo.getDate() - 7);
                         return orderDate >= weekAgo;
                     } else if (filter === 'month') {
-                        const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
+                        const monthAgo = new Date();
+                        monthAgo.setMonth(monthAgo.getMonth() - 1);
                         return orderDate >= monthAgo;
                     }
                     return true;
                 });
             }
             
+            console.log('📊 Filtered orders count:', filteredOrders.length);
             renderCounterOrders(filteredOrders);
         } else {
             showToast('Failed to load counter orders', 'error');
@@ -814,7 +823,12 @@ async function loadCounterOrders(filter = 'all') {
 // Render counter orders table
 function renderCounterOrders(orders) {
     const tbody = document.getElementById('counterOrdersBody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error('❌ counterOrdersBody element not found');
+        return;
+    }
+    
+    console.log('📋 Rendering counter orders:', orders ? orders.length : 0);
     
     if (!orders || orders.length === 0) {
         tbody.innerHTML = `
@@ -822,33 +836,52 @@ function renderCounterOrders(orders) {
                 <td colspan="8" class="empty-state">
                     <i class="fas fa-inbox"></i>
                     <div>No counter orders found</div>
+                    <small>Create a counter sale to see orders here</small>
                 </td>
             </tr>
         `;
         return;
     }
     
-    tbody.innerHTML = orders.map(order => `
-        <tr>
-            <td><strong>${order.receiptNumber || order.orderId}</strong></td>
-            <td>${escapeHtml(order.customerName)}</td>
-            <td>${order.customerPhone || '-'}</td>
-            <td>${new Date(order.createdAt).toLocaleString()}</td>
-            <td>${order.items.length} item(s)</td>
-            <td><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
-            <td><span class="status-badge status-paid">${order.paymentMethod?.toUpperCase() || 'CASH'}</span></td>
-            <td>
-                <div style="display: flex; gap: 5px;">
-                    <button class="btn btn-sm btn-primary" onclick="viewCounterOrder('${order._id}')">
-                        <i class="fas fa-eye"></i> View
-                    </button>
-                    <button class="btn btn-sm btn-info" onclick="reprintCounterReceipt('${order._id}')">
-                        <i class="fas fa-print"></i> Reprint
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+    // Sort orders by date (newest first)
+    const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    tbody.innerHTML = sortedOrders.map(order => {
+        // Debug each order
+        console.log('Rendering order:', order.orderId, 'Receipt:', order.receiptNumber);
+        
+        const formattedDate = new Date(order.createdAt).toLocaleString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        return `
+            <tr>
+                <td><strong>${order.receiptNumber || order.orderId}</strong></td>
+                <td>${escapeHtml(order.customerName || 'Unknown')}</td>
+                <td>${order.customerPhone || '-'}</td>
+                <td>${formattedDate}</td>
+                <td>${order.items?.length || 0} item(s)</td>
+                <td><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+                <td><span class="status-badge status-paid">${order.paymentMethod?.toUpperCase() || 'CASH'}</span></td>
+                <td>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-sm btn-primary" onclick="viewCounterOrder('${order._id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-info" onclick="reprintCounterReceipt('${order._id}')">
+                            <i class="fas fa-print"></i> Reprint
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    console.log('✅ Counter orders rendered successfully, rows:', sortedOrders.length);
 }
 
 // View counter order details
