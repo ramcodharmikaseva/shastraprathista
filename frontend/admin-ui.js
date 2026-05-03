@@ -1033,6 +1033,14 @@ function showCounterOrderDetails(orderId) {
     });
 }
 
+// Close counter receipt modal - FIXED
+function closeCounterReceiptModal() {
+    const modal = document.getElementById('counterReceiptModal');
+    if (modal) {
+        modal.remove();  // Use remove() instead of style.display
+    }
+}
+
 // Print function for counter receipt - WIDER VERSION
 function printCounterReceipt() {
     const receiptContent = document.getElementById('receiptPrintArea');
@@ -1112,7 +1120,7 @@ function printCounterReceipt() {
     printWindow.document.close();
 }
 
-// Reprint counter receipt - UPDATED to use new receipt format
+// Reprint counter receipt - UPDATED with proper width
 async function reprintCounterReceipt(orderId) {
     try {
         const token = localStorage.getItem('token');
@@ -1134,20 +1142,40 @@ async function reprintCounterReceipt(orderId) {
                 <head>
                     <title>Reprint Receipt - ${order.receiptNumber || order.orderId}</title>
                     <style>
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
                         body {
                             font-family: 'Courier New', monospace;
                             margin: 0;
-                            padding: 20px;
+                            padding: 30px;
+                            background: white;
                         }
                         .receipt {
-                            max-width: 300px;
+                            max-width: 800px;
+                            width: 90%;
                             margin: 0 auto;
+                            background: white;
+                            padding: 20px;
                         }
                         @media print {
                             body {
                                 margin: 0;
+                                padding: 15px;
+                            }
+                            .receipt {
+                                max-width: 100%;
                                 padding: 0;
                             }
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            padding: 8px;
                         }
                     </style>
                 </head>
@@ -1155,10 +1183,19 @@ async function reprintCounterReceipt(orderId) {
                     <div class="receipt">
                         ${receiptHtml}
                     </div>
+                    <div class="no-print" style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f0f0;">
+                        <button onclick="window.print()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;">
+                            🖨️ Print
+                        </button>
+                        <button onclick="window.close()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #666; color: white; border: none; border-radius: 5px;">
+                            ✖️ Close
+                        </button>
+                    </div>
                     <script>
                         window.onload = function() {
-                            window.print();
-                            setTimeout(() => window.close(), 500);
+                            setTimeout(function() {
+                                window.print();
+                            }, 500);
                         };
                     <\/script>
                 </body>
