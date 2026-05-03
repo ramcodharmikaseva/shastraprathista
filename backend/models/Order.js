@@ -173,7 +173,16 @@ const orderSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// ✅ FIXED: Auto-calculate totals WITHOUT tax and WITHOUT discount subtraction
+// ============ ✅ INDEXES - Add for better query performance ============
+orderSchema.index({ receiptNumber: 1 }, { unique: true, sparse: true });
+orderSchema.index({ orderId: 1 }, { unique: true });
+orderSchema.index({ source: 1 }); // For filtering online vs counter orders
+orderSchema.index({ createdAt: -1 }); // For date-based queries (recent orders)
+orderSchema.index({ customerPhone: 1 }); // For customer search
+orderSchema.index({ status: 1 }); // For filtering by status
+orderSchema.index({ paymentStatus: 1 }); // For filtering by payment
+
+// ============ ✅ PRE-SAVE MIDDLEWARE ============
 orderSchema.pre('save', function(next) {
   // Calculate subtotal from items (already includes discounts)
   this.totals.subtotal = this.items.reduce((sum, item) => {
@@ -190,7 +199,7 @@ orderSchema.pre('save', function(next) {
   next();
 });
 
-// ✅ FIXED: Update helper methods too
+// ============ ✅ HELPER METHODS ============
 orderSchema.methods.calculateTotals = function() {
   const subtotal = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shipping = this.totals.shipping || 0;
@@ -199,12 +208,11 @@ orderSchema.methods.calculateTotals = function() {
     subtotal: subtotal,
     shipping: shipping,
     discount: this.totals.discount || 0,
-    tax: 0, // ✅ No tax
-    total: subtotal + shipping // ✅ Don't subtract discount
+    tax: 0,
+    total: subtotal + shipping
   };
 };
 
-// ✅ FIXED: Update static method
 orderSchema.statics.verifyOrderAmounts = function(items, shipping = 0, discount = 0) {
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   
@@ -212,8 +220,8 @@ orderSchema.statics.verifyOrderAmounts = function(items, shipping = 0, discount 
     subtotal: subtotal,
     shipping: shipping,
     discount: discount,
-    tax: 0, // ✅ No tax
-    total: subtotal + shipping, // ✅ Don't subtract discount
+    tax: 0,
+    total: subtotal + shipping,
     isValid: subtotal >= 0 && (subtotal + shipping) >= 0
   };
 };

@@ -758,6 +758,225 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ============ END POS SYSTEM FIX ============
 
+// ============ 🏪 COUNTER ORDERS MANAGEMENT ============
+
+// Load counter orders
+async function loadCounterOrders(filter = 'all') {
+    try {
+        showLoading(true);
+        const token = localStorage.getItem('token');
+        
+        let url = '/api/orders/counter-orders';
+        
+        const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update summary cards
+            document.getElementById('counterTotalRevenue').innerText = `₹${result.totalRevenue.toFixed(2)}`;
+            document.getElementById('counterTotalOrders').innerText = result.total;
+            document.getElementById('counterTotalItems').innerText = result.totalItems;
+            
+            // Filter orders based on selection
+            let filteredOrders = result.orders;
+            if (filter !== 'all') {
+                const now = new Date();
+                filteredOrders = result.orders.filter(order => {
+                    const orderDate = new Date(order.createdAt);
+                    if (filter === 'today') {
+                        return orderDate.toDateString() === now.toDateString();
+                    } else if (filter === 'week') {
+                        const weekAgo = new Date(now.setDate(now.getDate() - 7));
+                        return orderDate >= weekAgo;
+                    } else if (filter === 'month') {
+                        const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
+                        return orderDate >= monthAgo;
+                    }
+                    return true;
+                });
+            }
+            
+            renderCounterOrders(filteredOrders);
+        } else {
+            showToast('Failed to load counter orders', 'error');
+        }
+        showLoading(false);
+    } catch (error) {
+        console.error('Error loading counter orders:', error);
+        showToast('Failed to load counter orders', 'error');
+        showLoading(false);
+    }
+}
+
+// Render counter orders table
+function renderCounterOrders(orders) {
+    const tbody = document.getElementById('counterOrdersBody');
+    if (!tbody) return;
+    
+    if (!orders || orders.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <div>No counter orders found</div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tbody.innerHTML = orders.map(order => `
+        <tr>
+            <td><strong>${order.receiptNumber || order.orderId}</strong></td>
+            <td>${escapeHtml(order.customerName)}</td>
+            <td>${order.customerPhone || '-'}</td>
+            <td>${new Date(order.createdAt).toLocaleString()}</td>
+            <td>${order.items.length} item(s)</td>
+            <td><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+            <td><span class="status-badge status-paid">${order.paymentMethod?.toUpperCase() || 'CASH'}</span></td>
+            <td>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn btn-sm btn-primary" onclick="viewCounterOrder('${order._id}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="btn btn-sm btn-info" onclick="reprintCounterReceipt('${order._id}')">
+                        <i class="fas fa-print"></i> Reprint
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// View counter order details
+async function viewCounterOrder(orderId) {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/orders/${orderId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Use existing viewOrderDetails function
+            renderOrderDetailsInModal(result.order);
+            document.getElementById('viewOrderModal').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error viewing counter order:', error);
+        showToast('Failed to load order details', 'error');
+    }
+}
+
+// Reprint counter receipt
+async function reprintCounterReceipt(orderId) {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/orders/${orderId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const order = result.order;
+            
+            // Call print function with order data
+            printPOSReceipt({
+                receiptNumber: order.receiptNumber || order.orderId,
+                orderId: order.orderId,
+                customerName: order.customerName,
+                customerPhone: order.customerPhone,
+                customerEmail: order.customerEmail,
+                customerAddress: order.customerAddress,
+                items: order.items.map(item => ({
+                    name: item.title,
+                    quantity: item.quantity,
+                    price: item.price,
+                    total: item.itemTotal || (item.price * item.quantity)
+                })),
+                subtotal: order.totals?.subtotal || 0,
+                discount: order.totals?.discount || 0,
+                shipping: order.totals?.shipping || 0,
+                total: order.totals?.total || 0
+            });
+            showToast('Reprinting receipt...', 'success');
+        }
+    } catch (error) {
+        console.error('Error reprinting receipt:', error);
+        showToast('Failed to reprint receipt', 'error');
+    }
+}
+
+// Filter counter orders
+function filterCounterOrders() {
+    const filter = document.getElementById('counterOrderFilter')?.value || 'all';
+    loadCounterOrders(filter);
+}
+
+// Refresh counter orders
+function refreshCounterOrders() {
+    loadCounterOrders(document.getElementById('counterOrderFilter')?.value || 'all');
+}
+
+// Search counter orders
+function searchCounterOrders() {
+    const searchTerm = document.getElementById('counterOrderSearch')?.value.toLowerCase();
+    const rows = document.querySelectorAll('#counterOrdersBody tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// Export counter orders to Excel
+function exportCounterOrders() {
+    const table = document.querySelector('#counterOrdersBody');
+    if (!table) return;
+    
+    const rows = table.querySelectorAll('tr');
+    let csv = 'Receipt No,Customer Name,Phone,Date & Time,Items,Total,Payment\n';
+    
+    rows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        if (cols.length > 0 && cols[0].innerText !== 'No counter orders found') {
+            const receiptNo = cols[0]?.innerText.replace(/\n/g, ' ') || '';
+            const customerName = cols[1]?.innerText || '';
+            const phone = cols[2]?.innerText || '';
+            const dateTime = cols[3]?.innerText || '';
+            const items = cols[4]?.innerText || '';
+            const total = cols[5]?.innerText || '';
+            const payment = cols[6]?.innerText || '';
+            
+            csv += `"${receiptNo}","${customerName}","${phone}","${dateTime}","${items}","${total}","${payment}"\n`;
+        }
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `counter_orders_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Export completed!', 'success');
+}
+
+// Add event listener for search
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('counterOrderSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', searchCounterOrders);
+    }
+});
+
+// ============ END COUNTER ORDERS MANAGEMENT ============
+
 // ✅ ROLE-BASED ACCESS CONTROL - Add this at the very beginning
 async function checkAdminAccess() {
   try {
@@ -2281,12 +2500,37 @@ function showSection(sectionName) {
         targetSection.classList.add('active');
     }
     
+    // Load section-specific data
+    if (sectionName === 'counter-orders') {
+        if (typeof loadCounterOrders === 'function') {
+            loadCounterOrders('all');
+        }
+    }
+    
+    // Load orders data if needed
+    if (sectionName === 'orders' && typeof loadOrdersFromBackend === 'function') {
+        loadOrdersFromBackend();
+    }
+    
+    // Load customers data if needed
+    if (sectionName === 'customers' && typeof loadCustomersFromBackend === 'function') {
+        loadCustomersFromBackend();
+    }
+    
+    // Load reports data if needed
+    if (sectionName === 'reports' && typeof loadReportsData === 'function') {
+        loadReportsData();
+    }
+    
     // Update active nav link
     const navLinks = document.querySelectorAll('.admin-nav a');
     navLinks.forEach(link => {
         link.classList.remove('active');
-        if (link.getAttribute('onclick')?.includes(sectionName) || 
-            link.getAttribute('href') === `#${sectionName}`) {
+        const href = link.getAttribute('href');
+        const onclick = link.getAttribute('onclick');
+        
+        if ((href && href === `#${sectionName}`) || 
+            (onclick && onclick.includes(sectionName))) {
             link.classList.add('active');
         }
     });
@@ -2429,5 +2673,12 @@ window.processPOSSale = processPOSSale;
 window.updatePOSTotals = updatePOSTotals;
 window.generateReceiptNumber = generateReceiptNumber;
 window.setupPhoneValidation = setupPhoneValidation;
+
+window.loadCounterOrders = loadCounterOrders;
+window.filterCounterOrders = filterCounterOrders;
+window.refreshCounterOrders = refreshCounterOrders;
+window.exportCounterOrders = exportCounterOrders;
+window.viewCounterOrder = viewCounterOrder;
+window.reprintCounterReceipt = reprintCounterReceipt;
 
 console.log('✅ Admin UI fully loaded with all functions including POS System!');
