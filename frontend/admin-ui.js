@@ -884,28 +884,205 @@ function renderCounterOrders(orders) {
     console.log('✅ Counter orders rendered successfully, rows:', sortedOrders.length);
 }
 
-// View counter order details
+// View counter order details - NEW RECEIPT STYLE VIEW
 async function viewCounterOrder(orderId) {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/orders/${orderId}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+    // Call the new receipt-style detail function
+    showCounterOrderDetails(orderId);
+}
+
+// Show counter order details in receipt-style modal
+function showCounterOrderDetails(orderId) {
+    // Fetch the counter order details
+    fetch(`/api/orders/${orderId}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch order');
+        return res.json();
+    })
+    .then(result => {
+        if (!result.success) throw new Error('Order not found');
+        const order = result.order;
         
-        const result = await response.json();
+        // Create receipt-styled modal
+        const modalHtml = `
+            <div id="counterReceiptModal" class="modal" style="display: block;">
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                        <h2 style="margin: 0; color: #333;">🧾 Counter Sale Receipt</h2>
+                        <button onclick="closeCounterReceiptModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                    </div>
+                    <div class="modal-body" style="padding: 20px 0;">
+                        <!-- Receipt Content -->
+                        <div id="receiptPrintArea" style="font-family: 'Courier New', monospace;">
+                            <!-- Header -->
+                            <div style="text-align: center; margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 10px;">
+                                <h3 style="margin: 0; color: #8B0000;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
+                                <p style="margin: 5px 0; font-size: 12px;">"RAMCO DHARMIKA SEVA"</p>
+                                <p style="margin: 5px 0; font-size: 11px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
+                                <p style="margin: 5px 0; font-size: 11px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
+                            </div>
+                            
+                            <h4 style="text-align: center; margin: 15px 0;">CASH SALE RECEIPT</h4>
+                            
+                            <div style="margin: 15px 0;">
+                                <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
+                                <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
+                            </div>
+                            
+                            <div style="margin: 15px 0; padding: 10px; background: #f9f9f9;">
+                                <p><strong>Customer Details:</strong></p>
+                                <p><strong>Name:</strong> ${order.customerName || 'N/A'}</p>
+                                <p><strong>Phone:</strong> ${order.customerPhone || 'N/A'}</p>
+                                ${order.customerEmail ? `<p><strong>Email:</strong> ${order.customerEmail}</p>` : ''}
+                                ${order.customerAddress ? `<p><strong>Address:</strong> ${order.customerAddress}</p>` : ''}
+                            </div>
+                            
+                            <!-- Items Table -->
+                            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid #333;">
+                                        <th style="text-align: left; padding: 5px;">#</th>
+                                        <th style="text-align: left; padding: 5px;">Item</th>
+                                        <th style="text-align: right; padding: 5px;">Qty</th>
+                                        <th style="text-align: right; padding: 5px;">Price</th>
+                                        <th style="text-align: right; padding: 5px;">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${(order.items || []).map((item, idx) => `
+                                        <tr style="border-bottom: 1px solid #ddd;">
+                                            <td style="padding: 5px;">${idx + 1}</td>
+                                            <td style="padding: 5px;">${item.title || item.name}</td>
+                                            <td style="text-align: right; padding: 5px;">${item.quantity}</td>
+                                            <td style="text-align: right; padding: 5px;">₹${parseFloat(item.price).toFixed(2)}</td>
+                                            <td style="text-align: right; padding: 5px;">₹${(item.quantity * item.price).toFixed(2)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                                <tfoot>
+                                    <tr style="border-top: 1px solid #333;">
+                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>Subtotal:</strong></td>
+                                        <td style="text-align: right; padding: 5px;">₹${(order.totals?.subtotal || 0).toFixed(2)}</td>
+                                    </tr>
+                                    ${(order.totals?.discount || 0) > 0 ? `
+                                    <tr>
+                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>Discount:</strong></td>
+                                        <td style="text-align: right; padding: 5px;">-₹${(order.totals?.discount || 0).toFixed(2)}</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${(order.totals?.shipping || 0) > 0 ? `
+                                    <tr>
+                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>Shipping:</strong></td>
+                                        <td style="text-align: right; padding: 5px;">₹${(order.totals?.shipping || 0).toFixed(2)}</td>
+                                    </tr>
+                                    ` : ''}
+                                    <tr style="border-top: 2px solid #333;">
+                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>GRAND TOTAL:</strong></td>
+                                        <td style="text-align: right; padding: 5px;"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            
+                            <div style="margin: 15px 0;">
+                                <p><strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'}</p>
+                                <p><strong>Status:</strong> Paid ✓</p>
+                            </div>
+                            
+                            <div style="text-align: center; margin-top: 30px; border-top: 1px dashed #333; padding-top: 15px;">
+                                <p style="font-size: 11px;">Thank you for your purchase!</p>
+                                <p style="font-size: 10px;">Books HSN - 4901 (GST Exempt)</p>
+                                <p style="font-size: 10px;">www.shastraprathista.in</p>
+                                <br><br>
+                                <p style="margin-top: 20px;">_________________________</p>
+                                <p style="font-size: 10px;">Customer Signature</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 15px;">
+                        <button onclick="printCounterReceipt()" class="btn btn-primary">🖨️ Print Receipt</button>
+                        <button onclick="closeCounterReceiptModal()" class="btn btn-secondary">Close</button>
+                    </div>
+                </div>
+            </div>
+        `;
         
-        if (result.success) {
-            // Use existing viewOrderDetails function
-            renderOrderDetailsInModal(result.order);
-            document.getElementById('viewOrderModal').style.display = 'block';
-        }
-    } catch (error) {
-        console.error('Error viewing counter order:', error);
+        // Remove existing modal if any
+        const existingModal = document.getElementById('counterReceiptModal');
+        if (existingModal) existingModal.remove();
+        
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Store order data for printing
+        window.currentReceiptOrder = order;
+    })
+    .catch(err => {
+        console.error('Error fetching counter order:', err);
         showToast('Failed to load order details', 'error');
+    });
+}
+
+// Print function for counter receipt
+function printCounterReceipt() {
+    const receiptContent = document.getElementById('receiptPrintArea');
+    if (!receiptContent) {
+        showToast('Receipt content not found', 'error');
+        return;
+    }
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Receipt - ${window.currentReceiptOrder?.receiptNumber || 'Counter Sale'}</title>
+            <style>
+                body {
+                    font-family: 'Courier New', monospace;
+                    margin: 0;
+                    padding: 20px;
+                }
+                .receipt {
+                    max-width: 300px;
+                    margin: 0 auto;
+                }
+                @media print {
+                    body {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    button {
+                        display: none;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="receipt">
+                ${receiptContent.innerHTML}
+            </div>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(() => window.close(), 500);
+                };
+            <\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
+// Close counter receipt modal
+function closeCounterReceiptModal() {
+    const modal = document.getElementById('counterReceiptModal');
+    if (modal) {
+        modal.remove();
     }
 }
 
-// Reprint counter receipt
+// Reprint counter receipt - UPDATED to use new receipt format
 async function reprintCounterReceipt(orderId) {
     try {
         const token = localStorage.getItem('token');
@@ -918,31 +1095,108 @@ async function reprintCounterReceipt(orderId) {
         if (result.success) {
             const order = result.order;
             
-            // Call print function with order data
-            printPOSReceipt({
-                receiptNumber: order.receiptNumber || order.orderId,
-                orderId: order.orderId,
-                customerName: order.customerName,
-                customerPhone: order.customerPhone,
-                customerEmail: order.customerEmail,
-                customerAddress: order.customerAddress,
-                items: order.items.map(item => ({
-                    name: item.title,
-                    quantity: item.quantity,
-                    price: item.price,
-                    total: item.itemTotal || (item.price * item.quantity)
-                })),
-                subtotal: order.totals?.subtotal || 0,
-                discount: order.totals?.discount || 0,
-                shipping: order.totals?.shipping || 0,
-                total: order.totals?.total || 0
-            });
+            // Generate receipt HTML directly for printing
+            const receiptHtml = generateCounterReceiptHTML(order);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Reprint Receipt - ${order.receiptNumber || order.orderId}</title>
+                    <style>
+                        body {
+                            font-family: 'Courier New', monospace;
+                            margin: 0;
+                            padding: 20px;
+                        }
+                        .receipt {
+                            max-width: 300px;
+                            margin: 0 auto;
+                        }
+                        @media print {
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="receipt">
+                        ${receiptHtml}
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            setTimeout(() => window.close(), 500);
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
             showToast('Reprinting receipt...', 'success');
         }
     } catch (error) {
         console.error('Error reprinting receipt:', error);
         showToast('Failed to reprint receipt', 'error');
     }
+}
+
+// Generate counter receipt HTML for reprint
+function generateCounterReceiptHTML(order) {
+    return `
+        <div style="text-align: center; margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 10px;">
+            <h3 style="margin: 0; color: #8B0000;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
+            <p style="margin: 5px 0; font-size: 12px;">"RAMCO DHARMIKA SEVA"</p>
+            <p style="margin: 5px 0; font-size: 11px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
+            <p style="margin: 5px 0; font-size: 11px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
+        </div>
+        
+        <h4 style="text-align: center; margin: 15px 0;">CASH SALE RECEIPT</h4>
+        <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
+        <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN')}</p>
+        
+        <div style="margin: 15px 0; padding: 10px; background: #f9f9f9;">
+            <p><strong>Customer:</strong> ${order.customerName || 'N/A'}</p>
+            <p><strong>Phone:</strong> ${order.customerPhone || 'N/A'}</p>
+            ${order.customerEmail ? `<p><strong>Email:</strong> ${order.customerEmail}</p>` : ''}
+            ${order.customerAddress ? `<p><strong>Address:</strong> ${order.customerAddress}</p>` : ''}
+        </div>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #333;">
+                <th>Item</th>
+                <th style="text-align:right">Qty</th>
+                <th style="text-align:right">Price</th>
+                <th style="text-align:right">Total</th>
+            </tr>
+            ${(order.items || []).map(item => `
+                <tr>
+                    <td>${item.title || item.name}</td>
+                    <td style="text-align:right">${item.quantity}</td>
+                    <td style="text-align:right">₹${parseFloat(item.price).toFixed(2)}</td>
+                    <td style="text-align:right">₹${(item.quantity * item.price).toFixed(2)}</td>
+                </tr>
+            `).join('')}
+            <tr style="border-top: 1px solid #333;">
+                <td colspan="3" style="text-align:right"><strong>Total:</strong></td>
+                <td style="text-align:right"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+            </tr>
+        </table>
+        
+        <div style="margin: 15px 0;">
+            <p><strong>Payment:</strong> ${order.paymentMethod?.toUpperCase() || 'CASH'} | Status: PAID ✓</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; border-top: 1px dashed #333; padding-top: 15px;">
+            <p>Thank you for your purchase!</p>
+            <p>www.shastraprathista.in</p>
+            <br><br>
+            <p>_________________________</p>
+            <p>Customer Signature</p>
+        </div>
+    `;
 }
 
 // Filter counter orders
@@ -2719,5 +2973,11 @@ window.refreshCounterOrders = refreshCounterOrders;
 window.exportCounterOrders = exportCounterOrders;
 window.viewCounterOrder = viewCounterOrder;
 window.reprintCounterReceipt = reprintCounterReceipt;
+
+// Add these to the existing window exports
+window.showCounterOrderDetails = showCounterOrderDetails;
+window.printCounterReceipt = printCounterReceipt;
+window.closeCounterReceiptModal = closeCounterReceiptModal;
+window.generateCounterReceiptHTML = generateCounterReceiptHTML;
 
 console.log('✅ Admin UI fully loaded with all functions including POS System!');
