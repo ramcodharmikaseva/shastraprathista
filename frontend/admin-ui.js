@@ -890,7 +890,7 @@ async function viewCounterOrder(orderId) {
     showCounterOrderDetails(orderId);
 }
 
-// Show counter order details in receipt-style modal
+// Show counter order details in receipt-style modal (WIDER VERSION)
 function showCounterOrderDetails(orderId) {
     // Fetch the counter order details
     fetch(`/api/orders/${orderId}`, {
@@ -904,104 +904,114 @@ function showCounterOrderDetails(orderId) {
         if (!result.success) throw new Error('Order not found');
         const order = result.order;
         
-        // Create receipt-styled modal
+        // Create receipt-styled modal - WIDER
         const modalHtml = `
             <div id="counterReceiptModal" class="modal" style="display: block;">
-                <div class="modal-content" style="max-width: 600px;">
-                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                <div class="modal-content" style="max-width: 800px; width: 90%;">
+                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px;">
                         <h2 style="margin: 0; color: #333;">🧾 Counter Sale Receipt</h2>
-                        <button onclick="closeCounterReceiptModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                        <button onclick="closeCounterReceiptModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
                     </div>
                     <div class="modal-body" style="padding: 20px 0;">
                         <!-- Receipt Content -->
-                        <div id="receiptPrintArea" style="font-family: 'Courier New', monospace;">
+                        <div id="receiptPrintArea" style="font-family: 'Courier New', monospace; font-size: 13px;">
                             <!-- Header -->
-                            <div style="text-align: center; margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 10px;">
-                                <h3 style="margin: 0; color: #8B0000;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
-                                <p style="margin: 5px 0; font-size: 12px;">"RAMCO DHARMIKA SEVA"</p>
-                                <p style="margin: 5px 0; font-size: 11px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
-                                <p style="margin: 5px 0; font-size: 11px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
+                            <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
+                                <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
+                                <p style="margin: 8px 0; font-size: 13px; font-weight: bold;">"RAMCO DHARMIKA SEVA"</p>
+                                <p style="margin: 5px 0; font-size: 12px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
+                                <p style="margin: 5px 0; font-size: 12px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
                             </div>
                             
-                            <h4 style="text-align: center; margin: 15px 0;">CASH SALE RECEIPT</h4>
+                            <h4 style="text-align: center; margin: 20px 0; font-size: 16px;">CASH SALE RECEIPT</h4>
                             
-                            <div style="margin: 15px 0;">
-                                <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
-                                <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
+                            <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                                <div><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</div>
+                                <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</div>
                             </div>
                             
-                            <div style="margin: 15px 0; padding: 10px; background: #f9f9f9;">
-                                <p><strong>Customer Details:</strong></p>
-                                <p><strong>Name:</strong> ${order.customerName || 'N/A'}</p>
-                                <p><strong>Phone:</strong> ${order.customerPhone || 'N/A'}</p>
-                                ${order.customerEmail ? `<p><strong>Email:</strong> ${order.customerEmail}</p>` : ''}
-                                ${order.customerAddress ? `<p><strong>Address:</strong> ${order.customerAddress}</p>` : ''}
+                            <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                                <strong style="font-size: 14px;">Customer Details:</strong><br>
+                                <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
+                                <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
+                                ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
+                                ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
                             </div>
                             
-                            <!-- Items Table -->
-                            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                            <!-- Items Table - WIDER -->
+                            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                                 <thead>
-                                    <tr style="border-bottom: 1px solid #333;">
-                                        <th style="text-align: left; padding: 5px;">#</th>
-                                        <th style="text-align: left; padding: 5px;">Item</th>
-                                        <th style="text-align: right; padding: 5px;">Qty</th>
-                                        <th style="text-align: right; padding: 5px;">Price</th>
-                                        <th style="text-align: right; padding: 5px;">Total</th>
+                                    <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
+                                        <th style="text-align: left; padding: 10px;">#</th>
+                                        <th style="text-align: left; padding: 10px;">Item</th>
+                                        <th style="text-align: center; padding: 10px;">Qty</th>
+                                        <th style="text-align: right; padding: 10px;">Price (₹)</th>
+                                        <th style="text-align: right; padding: 10px;">Total (₹)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${(order.items || []).map((item, idx) => `
                                         <tr style="border-bottom: 1px solid #ddd;">
-                                            <td style="padding: 5px;">${idx + 1}</td>
-                                            <td style="padding: 5px;">${item.title || item.name}</td>
-                                            <td style="text-align: right; padding: 5px;">${item.quantity}</td>
-                                            <td style="text-align: right; padding: 5px;">₹${parseFloat(item.price).toFixed(2)}</td>
-                                            <td style="text-align: right; padding: 5px;">₹${(item.quantity * item.price).toFixed(2)}</td>
+                                            <td style="padding: 10px;">${idx + 1}</td>
+                                            <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
+                                            <td style="text-align: center; padding: 10px;">${item.quantity}</td>
+                                            <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
+                                            <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                                 <tfoot>
-                                    <tr style="border-top: 1px solid #333;">
-                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>Subtotal:</strong></td>
-                                        <td style="text-align: right; padding: 5px;">₹${(order.totals?.subtotal || 0).toFixed(2)}</td>
+                                    <tr style="border-top: 2px solid #333;">
+                                        <td colspan="4" style="text-align: right; padding: 10px;"><strong>Subtotal:</strong></td>
+                                        <td style="text-align: right; padding: 10px;"><strong>₹${(order.totals?.subtotal || 0).toFixed(2)}</strong></td>
                                     </tr>
                                     ${(order.totals?.discount || 0) > 0 ? `
                                     <tr>
-                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>Discount:</strong></td>
-                                        <td style="text-align: right; padding: 5px;">-₹${(order.totals?.discount || 0).toFixed(2)}</td>
+                                        <td colspan="4" style="text-align: right; padding: 8px; color: #d32f2f;"><strong>Discount:</strong></td>
+                                        <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${(order.totals?.discount || 0).toFixed(2)}</strong></td>
                                     </tr>
                                     ` : ''}
                                     ${(order.totals?.shipping || 0) > 0 ? `
                                     <tr>
-                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>Shipping:</strong></td>
-                                        <td style="text-align: right; padding: 5px;">₹${(order.totals?.shipping || 0).toFixed(2)}</td>
+                                        <td colspan="4" style="text-align: right; padding: 8px;"><strong>Shipping:</strong></td>
+                                        <td style="text-align: right; padding: 8px;"><strong>₹${(order.totals?.shipping || 0).toFixed(2)}</strong></td>
                                     </tr>
                                     ` : ''}
-                                    <tr style="border-top: 2px solid #333;">
-                                        <td colspan="4" style="text-align: right; padding: 5px;"><strong>GRAND TOTAL:</strong></td>
-                                        <td style="text-align: right; padding: 5px;"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+                                    <tr style="border-top: 2px solid #333; background: #f5f5f5;">
+                                        <td colspan="4" style="text-align: right; padding: 12px; font-size: 16px;"><strong>GRAND TOTAL:</strong></td>
+                                        <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
                                     </tr>
                                 </tfoot>
                             </table>
                             
-                            <div style="margin: 15px 0;">
-                                <p><strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'}</p>
-                                <p><strong>Status:</strong> Paid ✓</p>
+                            <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
+                                <strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'} &nbsp;&nbsp;|&nbsp;&nbsp;
+                                <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
                             </div>
                             
-                            <div style="text-align: center; margin-top: 30px; border-top: 1px dashed #333; padding-top: 15px;">
-                                <p style="font-size: 11px;">Thank you for your purchase!</p>
-                                <p style="font-size: 10px;">Books HSN - 4901 (GST Exempt)</p>
-                                <p style="font-size: 10px;">www.shastraprathista.in</p>
+                            <div style="text-align: center; margin-top: 30px; border-top: 2px dashed #333; padding-top: 20px;">
+                                <p style="font-size: 13px;">Thank you for your purchase!</p>
+                                <p style="font-size: 11px; color: #666;">Books HSN - 4901 (GST Exempt)</p>
+                                <p style="font-size: 11px;">www.shastraprathista.in</p>
                                 <br><br>
-                                <p style="margin-top: 20px;">_________________________</p>
-                                <p style="font-size: 10px;">Customer Signature</p>
+                                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                                    <p>_________________________</p>
+                                    <p>_________________________</p>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                                    <p>Customer Signature</p>
+                                    <p>Authorized Signatory</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 15px;">
-                        <button onclick="printCounterReceipt()" class="btn btn-primary">🖨️ Print Receipt</button>
-                        <button onclick="closeCounterReceiptModal()" class="btn btn-secondary">Close</button>
+                        <button onclick="printCounterReceipt()" class="btn btn-primary" style="padding: 10px 20px;">
+                            <i class="fas fa-print"></i> 🖨️ Print Receipt
+                        </button>
+                        <button onclick="closeCounterReceiptModal()" class="btn btn-secondary" style="padding: 10px 20px;">
+                            <i class="fas fa-times"></i> Close
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1023,7 +1033,7 @@ function showCounterOrderDetails(orderId) {
     });
 }
 
-// Print function for counter receipt
+// Print function for counter receipt - WIDER VERSION
 function printCounterReceipt() {
     const receiptContent = document.getElementById('receiptPrintArea');
     if (!receiptContent) {
@@ -1038,23 +1048,42 @@ function printCounterReceipt() {
         <head>
             <title>Receipt - ${window.currentReceiptOrder?.receiptNumber || 'Counter Sale'}</title>
             <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
                 body {
                     font-family: 'Courier New', monospace;
                     margin: 0;
-                    padding: 20px;
+                    padding: 30px;
+                    background: white;
                 }
                 .receipt {
-                    max-width: 300px;
+                    max-width: 800px;
                     margin: 0 auto;
+                    background: white;
+                    padding: 20px;
                 }
                 @media print {
                     body {
                         margin: 0;
+                        padding: 15px;
+                    }
+                    .receipt {
+                        max-width: 100%;
                         padding: 0;
                     }
-                    button {
+                    button, .no-print {
                         display: none;
                     }
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                th, td {
+                    padding: 8px;
                 }
             </style>
         </head>
@@ -1062,24 +1091,25 @@ function printCounterReceipt() {
             <div class="receipt">
                 ${receiptContent.innerHTML}
             </div>
+            <div class="no-print" style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f0f0;">
+                <button onclick="window.print()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;">
+                    🖨️ Print
+                </button>
+                <button onclick="window.close()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #666; color: white; border: none; border-radius: 5px;">
+                    ✖️ Close
+                </button>
+            </div>
             <script>
                 window.onload = function() {
-                    window.print();
-                    setTimeout(() => window.close(), 500);
+                    setTimeout(function() {
+                        window.print();
+                    }, 500);
                 };
             <\/script>
         </body>
         </html>
     `);
     printWindow.document.close();
-}
-
-// Close counter receipt modal
-function closeCounterReceiptModal() {
-    const modal = document.getElementById('counterReceiptModal');
-    if (modal) {
-        modal.remove();
-    }
 }
 
 // Reprint counter receipt - UPDATED to use new receipt format
@@ -1143,58 +1173,68 @@ async function reprintCounterReceipt(orderId) {
     }
 }
 
-// Generate counter receipt HTML for reprint
+// Generate counter receipt HTML for reprint - WIDER VERSION
 function generateCounterReceiptHTML(order) {
     return `
-        <div style="text-align: center; margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 10px;">
-            <h3 style="margin: 0; color: #8B0000;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
-            <p style="margin: 5px 0; font-size: 12px;">"RAMCO DHARMIKA SEVA"</p>
-            <p style="margin: 5px 0; font-size: 11px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
-            <p style="margin: 5px 0; font-size: 11px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
+        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
+            <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
+            <p style="margin: 8px 0; font-size: 13px; font-weight: bold;">"RAMCO DHARMIKA SEVA"</p>
+            <p style="margin: 5px 0; font-size: 12px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
+            <p style="margin: 5px 0; font-size: 12px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
         </div>
         
-        <h4 style="text-align: center; margin: 15px 0;">CASH SALE RECEIPT</h4>
-        <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
-        <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN')}</p>
+        <h4 style="text-align: center; margin: 20px 0; font-size: 16px;">CASH SALE RECEIPT</h4>
         
-        <div style="margin: 15px 0; padding: 10px; background: #f9f9f9;">
-            <p><strong>Customer:</strong> ${order.customerName || 'N/A'}</p>
-            <p><strong>Phone:</strong> ${order.customerPhone || 'N/A'}</p>
-            ${order.customerEmail ? `<p><strong>Email:</strong> ${order.customerEmail}</p>` : ''}
-            ${order.customerAddress ? `<p><strong>Address:</strong> ${order.customerAddress}</p>` : ''}
+        <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <div><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</div>
+            <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN')}</div>
         </div>
         
-        <table style="width: 100%; border-collapse: collapse;">
-            <tr style="border-bottom: 1px solid #333;">
-                <th>Item</th>
-                <th style="text-align:right">Qty</th>
-                <th style="text-align:right">Price</th>
-                <th style="text-align:right">Total</th>
+        <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+            <strong style="font-size: 14px;">Customer Details:</strong><br>
+            <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
+            <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
+            ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
+            ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
+        </div>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
+                <th style="text-align: left; padding: 10px;">Item</th>
+                <th style="text-align: center; padding: 10px;">Qty</th>
+                <th style="text-align: right; padding: 10px;">Price (₹)</th>
+                <th style="text-align: right; padding: 10px;">Total (₹)</th>
             </tr>
             ${(order.items || []).map(item => `
-                <tr>
-                    <td>${item.title || item.name}</td>
-                    <td style="text-align:right">${item.quantity}</td>
-                    <td style="text-align:right">₹${parseFloat(item.price).toFixed(2)}</td>
-                    <td style="text-align:right">₹${(item.quantity * item.price).toFixed(2)}</td>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
+                    <td style="text-align: center; padding: 10px;">${item.quantity}</td>
+                    <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
+                    <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
                 </tr>
             `).join('')}
-            <tr style="border-top: 1px solid #333;">
-                <td colspan="3" style="text-align:right"><strong>Total:</strong></td>
-                <td style="text-align:right"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+            <tr style="border-top: 2px solid #333;">
+                <td colspan="3" style="text-align: right; padding: 12px;"><strong>TOTAL:</strong></td>
+                <td style="text-align: right; padding: 12px;"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
             </tr>
         </table>
         
-        <div style="margin: 15px 0;">
-            <p><strong>Payment:</strong> ${order.paymentMethod?.toUpperCase() || 'CASH'} | Status: PAID ✓</p>
+        <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
+            <strong>Payment:</strong> ${order.paymentMethod?.toUpperCase() || 'CASH'} | <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
         </div>
         
-        <div style="text-align: center; margin-top: 30px; border-top: 1px dashed #333; padding-top: 15px;">
+        <div style="text-align: center; margin-top: 30px; border-top: 2px dashed #333; padding-top: 20px;">
             <p>Thank you for your purchase!</p>
             <p>www.shastraprathista.in</p>
             <br><br>
-            <p>_________________________</p>
-            <p>Customer Signature</p>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <p>_________________________</p>
+                <p>_________________________</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                <p>Customer Signature</p>
+                <p>Authorized Signatory</p>
+            </div>
         </div>
     `;
 }
