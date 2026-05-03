@@ -2533,26 +2533,32 @@ function showSection(sectionName) {
         targetSection.classList.add('active');
     }
     
-    // Load section-specific data
+    // 🔥 LOAD DATA FOR SPECIFIC SECTIONS 🔥
     if (sectionName === 'counter-orders') {
+        console.log('🔄 Loading counter orders...');
         if (typeof loadCounterOrders === 'function') {
             loadCounterOrders('all');
+        } else {
+            console.error('❌ loadCounterOrders function not found!');
         }
     }
     
-    // Load orders data if needed
-    if (sectionName === 'orders' && typeof loadOrdersFromBackend === 'function') {
-        loadOrdersFromBackend();
+    if (sectionName === 'orders') {
+        if (typeof loadOrdersFromBackend === 'function') {
+            loadOrdersFromBackend();
+        }
     }
     
-    // Load customers data if needed
-    if (sectionName === 'customers' && typeof loadCustomersFromBackend === 'function') {
-        loadCustomersFromBackend();
+    if (sectionName === 'customers') {
+        if (typeof loadCustomersFromBackend === 'function') {
+            loadCustomersFromBackend();
+        }
     }
     
-    // Load reports data if needed
-    if (sectionName === 'reports' && typeof loadReportsData === 'function') {
-        loadReportsData();
+    if (sectionName === 'reports') {
+        if (typeof loadReportsData === 'function') {
+            loadReportsData();
+        }
     }
     
     // Update active nav link
