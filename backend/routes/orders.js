@@ -575,6 +575,213 @@ router.get('/recent', async (req, res) => {
   }
 });
 
+// ============ 🏪 COUNTER ORDERS ROUTES - ADD HERE ============
+
+// ✅ Get all counter sales (POS orders)
+router.get('/counter-orders', authMiddleware, async (req, res) => {
+    try {
+        // Check if user is admin
+        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Access denied. Admin privileges required.' 
+            });
+        }
+        
+        const { startDate, endDate, limit } = req.query;
+        
+        let filter = { source: 'counter' };
+        
+        // Date filter
+        if (startDate || endDate) {
+            filter.createdAt = {};
+            if (startDate) filter.createdAt.$gte = new Date(startDate);
+            if (endDate) filter.createdAt.$lte = new Date(endDate);
+        }
+        
+        let query = Order.find(filter).sort({ createdAt: -1 });
+        
+        if (limit) {
+            query = query.limit(parseInt(limit));
+        }
+        
+        const orders = await query;
+        const total = await Order.countDocuments(filter);
+        
+        // Calculate summary
+        const totalRevenue = orders.reduce((sum, order) => sum + (order.totals?.total || 0), 0);
+        const totalItems = orders.reduce((sum, order) => sum + order.items.length, 0);
+        
+        res.json({
+            success: true,
+            source: 'counter',
+            total: total,
+            totalRevenue: totalRevenue,
+            totalItems: totalItems,
+            orders: orders
+        });
+        
+    } catch (error) {
+        console.error('❌ Error fetching counter orders:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// ✅ Get single counter order by receipt number
+router.get('/counter-order/:receiptNumber', authMiddleware, async (req, res) => {
+    try {
+        const { receiptNumber } = req.params;
+        
+        // Check if user is admin
+        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Access denied. Admin privileges required.' 
+            });
+        }
+        
+        const order = await Order.findOne({ 
+            $or: [
+                { receiptNumber: receiptNumber },
+                { orderId: receiptNumber }
+            ],
+            source: 'counter'
+        });
+        
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                error: 'Counter order not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            order: order
+        });
+        
+    } catch (error) {
+        console.error('❌ Error fetching counter order:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// ✅ Generate counter sales report
+router.get('/counter-sales-report', authMiddleware, async (req, res) => {
+    try {
+        // Check if user is admin
+        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Access denied. Admin privileges required.' 
+            });
+        }
+        
+        const { period = 'today' } = req.query;
+        
+        let startDate, endDate = new Date();
+        
+        switch(period) {
+            case 'today':
+                startDate = new Date();
+                startDate.setHours(0, 0, 0, 0);
+                break;
+            case 'yesterday':
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - 1);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(startDate);
+                endDate.setHours(23, 59, 59, 999);
+                break;
+            case 'week':
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - 7);
+                break;
+            case 'month':
+                startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 1);
+                break;
+            case 'year':
+                startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                break;
+            default:
+                startDate = new Date(0);
+        }
+        
+        const orders = await Order.find({
+            source: 'counter',
+            createdAt: { $gte: startDate, $lte: endDate }
+        }).sort({ createdAt: -1 });
+        
+        // Calculate statistics
+        const totalSales = orders.length;
+        const totalRevenue = orders.reduce((sum, order) => sum + (order.totals?.total || 0), 0);
+        const totalItems = orders.reduce((sum, order) => sum + order.items.length, 0);
+        const averageOrderValue = totalSales > 0 ? totalRevenue / totalSales : 0;
+        
+        // Group by date
+        const salesByDate = {};
+        orders.forEach(order => {
+            const date = order.createdAt.toISOString().split('T')[0];
+            if (!salesByDate[date]) {
+                salesByDate[date] = { count: 0, revenue: 0 };
+            }
+            salesByDate[date].count++;
+            salesByDate[date].revenue += order.totals?.total || 0;
+        });
+        
+        // Top selling books from counter sales
+        const bookSales = {};
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                if (!bookSales[item.title]) {
+                    bookSales[item.title] = { title: item.title, quantity: 0, revenue: 0 };
+                }
+                bookSales[item.title].quantity += item.quantity;
+                bookSales[item.title].revenue += item.itemTotal || (item.price * item.quantity);
+            });
+        });
+        
+        const topBooks = Object.values(bookSales)
+            .sort((a, b) => b.quantity - a.quantity)
+            .slice(0, 10);
+        
+        res.json({
+            success: true,
+            period: period,
+            dateRange: {
+                from: startDate,
+                to: endDate
+            },
+            summary: {
+                totalSales: totalSales,
+                totalRevenue: totalRevenue,
+                totalItems: totalItems,
+                averageOrderValue: averageOrderValue
+            },
+            salesByDate: salesByDate,
+            topBooks: topBooks,
+            recentOrders: orders.slice(0, 20)
+        });
+        
+    } catch (error) {
+        console.error('❌ Error generating counter sales report:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// ============ END COUNTER ORDERS ROUTES ============
+
 // ✅ Get single order by ID - WITH BETTER OBJECTID HANDLING
 router.get('/:id', async (req, res) => {
   try {
@@ -1131,212 +1338,5 @@ router.get('/receipt-counter', authMiddleware, async (req, res) => {
         });
     }
 });
-
-// ============ 🏪 COUNTER ORDERS ROUTES - ADD HERE ============
-
-// ✅ Get all counter sales (POS orders)
-router.get('/counter-orders', authMiddleware, async (req, res) => {
-    try {
-        // Check if user is admin
-        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
-            return res.status(403).json({ 
-                success: false, 
-                error: 'Access denied. Admin privileges required.' 
-            });
-        }
-        
-        const { startDate, endDate, limit } = req.query;
-        
-        let filter = { source: 'counter' };
-        
-        // Date filter
-        if (startDate || endDate) {
-            filter.createdAt = {};
-            if (startDate) filter.createdAt.$gte = new Date(startDate);
-            if (endDate) filter.createdAt.$lte = new Date(endDate);
-        }
-        
-        let query = Order.find(filter).sort({ createdAt: -1 });
-        
-        if (limit) {
-            query = query.limit(parseInt(limit));
-        }
-        
-        const orders = await query;
-        const total = await Order.countDocuments(filter);
-        
-        // Calculate summary
-        const totalRevenue = orders.reduce((sum, order) => sum + (order.totals?.total || 0), 0);
-        const totalItems = orders.reduce((sum, order) => sum + order.items.length, 0);
-        
-        res.json({
-            success: true,
-            source: 'counter',
-            total: total,
-            totalRevenue: totalRevenue,
-            totalItems: totalItems,
-            orders: orders
-        });
-        
-    } catch (error) {
-        console.error('❌ Error fetching counter orders:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
-        });
-    }
-});
-
-// ✅ Get single counter order by receipt number
-router.get('/counter-order/:receiptNumber', authMiddleware, async (req, res) => {
-    try {
-        const { receiptNumber } = req.params;
-        
-        // Check if user is admin
-        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
-            return res.status(403).json({ 
-                success: false, 
-                error: 'Access denied. Admin privileges required.' 
-            });
-        }
-        
-        const order = await Order.findOne({ 
-            $or: [
-                { receiptNumber: receiptNumber },
-                { orderId: receiptNumber }
-            ],
-            source: 'counter'
-        });
-        
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                error: 'Counter order not found'
-            });
-        }
-        
-        res.json({
-            success: true,
-            order: order
-        });
-        
-    } catch (error) {
-        console.error('❌ Error fetching counter order:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
-        });
-    }
-});
-
-// ✅ Generate counter sales report
-router.get('/counter-sales-report', authMiddleware, async (req, res) => {
-    try {
-        // Check if user is admin
-        if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
-            return res.status(403).json({ 
-                success: false, 
-                error: 'Access denied. Admin privileges required.' 
-            });
-        }
-        
-        const { period = 'today' } = req.query;
-        
-        let startDate, endDate = new Date();
-        
-        switch(period) {
-            case 'today':
-                startDate = new Date();
-                startDate.setHours(0, 0, 0, 0);
-                break;
-            case 'yesterday':
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - 1);
-                startDate.setHours(0, 0, 0, 0);
-                endDate = new Date(startDate);
-                endDate.setHours(23, 59, 59, 999);
-                break;
-            case 'week':
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - 7);
-                break;
-            case 'month':
-                startDate = new Date();
-                startDate.setMonth(startDate.getMonth() - 1);
-                break;
-            case 'year':
-                startDate = new Date();
-                startDate.setFullYear(startDate.getFullYear() - 1);
-                break;
-            default:
-                startDate = new Date(0);
-        }
-        
-        const orders = await Order.find({
-            source: 'counter',
-            createdAt: { $gte: startDate, $lte: endDate }
-        }).sort({ createdAt: -1 });
-        
-        // Calculate statistics
-        const totalSales = orders.length;
-        const totalRevenue = orders.reduce((sum, order) => sum + (order.totals?.total || 0), 0);
-        const totalItems = orders.reduce((sum, order) => sum + order.items.length, 0);
-        const averageOrderValue = totalSales > 0 ? totalRevenue / totalSales : 0;
-        
-        // Group by date
-        const salesByDate = {};
-        orders.forEach(order => {
-            const date = order.createdAt.toISOString().split('T')[0];
-            if (!salesByDate[date]) {
-                salesByDate[date] = { count: 0, revenue: 0 };
-            }
-            salesByDate[date].count++;
-            salesByDate[date].revenue += order.totals?.total || 0;
-        });
-        
-        // Top selling books from counter sales
-        const bookSales = {};
-        orders.forEach(order => {
-            order.items.forEach(item => {
-                if (!bookSales[item.title]) {
-                    bookSales[item.title] = { title: item.title, quantity: 0, revenue: 0 };
-                }
-                bookSales[item.title].quantity += item.quantity;
-                bookSales[item.title].revenue += item.itemTotal || (item.price * item.quantity);
-            });
-        });
-        
-        const topBooks = Object.values(bookSales)
-            .sort((a, b) => b.quantity - a.quantity)
-            .slice(0, 10);
-        
-        res.json({
-            success: true,
-            period: period,
-            dateRange: {
-                from: startDate,
-                to: endDate
-            },
-            summary: {
-                totalSales: totalSales,
-                totalRevenue: totalRevenue,
-                totalItems: totalItems,
-                averageOrderValue: averageOrderValue
-            },
-            salesByDate: salesByDate,
-            topBooks: topBooks,
-            recentOrders: orders.slice(0, 20)
-        });
-        
-    } catch (error) {
-        console.error('❌ Error generating counter sales report:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
-        });
-    }
-});
-
-// ============ END COUNTER ORDERS ROUTES ============
 
 module.exports = router;
