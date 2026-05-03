@@ -318,6 +318,91 @@
       </div>
     </div>
 
+    <!-- ============ 🏪 COUNTER ORDERS SECTION - ADD HERE ============ -->
+    <div id="counter-orders" class="content-section">
+        <div class="section-header">
+            <h1 class="section-title">
+                <i class="fas fa-cash-register"></i> Counter Sales Orders
+            </h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" id="counterOrderSearch" placeholder="Search by receipt number..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <select id="counterOrderFilter" onchange="filterCounterOrders()" class="form-select" style="width: auto;">
+                    <option value="all">All Orders</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+                <button class="btn btn-success" onclick="exportCounterOrders()">
+                    <i class="fas fa-file-excel"></i> Export to Excel
+                </button>
+                <button class="btn btn-primary" onclick="refreshCounterOrders()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="dashboard-cards" style="margin-bottom: 20px;">
+            <div class="card revenue-card">
+                <div class="card-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">Total Counter Sales</div>
+                    <div class="card-value" id="counterTotalRevenue">₹0</div>
+                </div>
+            </div>
+            <div class="card orders-card">
+                <div class="card-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">Total Orders</div>
+                    <div class="card-value" id="counterTotalOrders">0</div>
+                </div>
+            </div>
+            <div class="card customers-card">
+                <div class="card-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">Items Sold</div>
+                    <div class="card-value" id="counterTotalItems">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Orders Table -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Receipt No</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Date & Time</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="counterOrdersBody">
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <div>Loading counter orders...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- ============ END COUNTER ORDERS SECTION ============ -->
+
     <!-- Customers Section -->
     <div id="customers" class="content-section">
       <div class="section-header">
