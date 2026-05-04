@@ -1465,7 +1465,6 @@ if (!window.adminState) {
   };
 }
 
-// Update the DOMContentLoaded event
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🔐 Checking admin access...');
     
@@ -1476,11 +1475,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     console.log('✅ Access granted! Loading admin dashboard...');
     
-    // ✅ Check if current section is counter orders and add floating button
-    const activeSection = document.querySelector('.content-section.active');
-    if (activeSection && activeSection.id === 'counter-orders') {
-        addFloatingCounterButton();
-    }
+    // ✅ Add floating button immediately
+    addFloatingCounterButton();
 });
 
 // ✅ Correct global variable initialization
@@ -2896,7 +2892,6 @@ function closeViewModal() {
     }
 }
 
-// ✅ Show section function WITH FLOATING BUTTON
 function showSection(sectionName) {
     console.log('Showing section:', sectionName);
     
@@ -2920,11 +2915,6 @@ function showSection(sectionName) {
         } else {
             console.error('❌ loadCounterOrders function not found!');
         }
-        // ✅ Add floating button for counter orders section
-        addFloatingCounterButton();
-    } else {
-        // ✅ Remove floating button for other sections
-        removeFloatingCounterButton();
     }
     
     if (sectionName === 'orders') {
@@ -2962,9 +2952,12 @@ function showSection(sectionName) {
     if (typeof loadSectionData === 'function') {
         loadSectionData(sectionName);
     }
+    
+    // ✅ ALWAYS show floating button on admin page
+    addFloatingCounterButton();
 }
 
-// Add floating button directly to body with forced positioning
+// Add floating button directly to body with forced positioning - TOP RIGHT VERSION
 function addFloatingCounterButton() {
     // Check if button already exists
     if (document.getElementById('floatingCounterBtn')) return;
@@ -2977,48 +2970,42 @@ function addFloatingCounterButton() {
     `;
     button.onclick = () => openPOSModal();
     
-    // Apply styles directly with JavaScript (bypasses any CSS conflicts)
+    // Apply styles directly with JavaScript - TOP RIGHT positioning
     button.style.cssText = `
         position: fixed !important;
-        bottom: 30px !important;
-        right: 30px !important;
+        top: 80px !important;
+        right: 20px !important;
         z-index: 999999 !important;
         background: linear-gradient(135deg, #28a745, #1e7e34) !important;
         color: white !important;
         border: none !important;
         border-radius: 50px !important;
-        padding: 15px 25px !important;
-        font-size: 16px !important;
+        padding: 12px 20px !important;
+        font-size: 14px !important;
         font-weight: bold !important;
         cursor: pointer !important;
         display: flex !important;
         align-items: center !important;
-        gap: 10px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        gap: 8px !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
         transition: all 0.3s ease !important;
         font-family: inherit !important;
     `;
     
     // Add hover effect
     button.onmouseenter = () => {
-        button.style.transform = 'translateY(-3px)';
-        button.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+        button.style.transform = 'translateY(-2px)';
+        button.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
         button.style.background = 'linear-gradient(135deg, #34ce57, #28a745)';
     };
     button.onmouseleave = () => {
         button.style.transform = 'translateY(0)';
-        button.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+        button.style.boxShadow = '0 2px 10px rgba(0,0,0,0.15)';
         button.style.background = 'linear-gradient(135deg, #28a745, #1e7e34)';
     };
     
     // Append directly to body
     document.body.appendChild(button);
-}
-
-// Remove floating button
-function removeFloatingCounterButton() {
-    const button = document.getElementById('floatingCounterBtn');
-    if (button) button.remove();
 }
 
 // ✅ Print order function
