@@ -1210,8 +1210,14 @@ async function reprintCounterReceipt(orderId) {
     }
 }
 
-// Generate counter receipt HTML for reprint - WIDER VERSION
+// Generate counter receipt HTML for reprint - MATCHING MAIN RECEIPT FORMAT
 function generateCounterReceiptHTML(order) {
+    // Extract totals properly
+    const subtotal = order.totals?.subtotal || 0;
+    const discount = order.totals?.discount || 0;
+    const shipping = order.totals?.shipping || 0;
+    const total = order.totals?.total || (subtotal - discount + shipping);
+    
     return `
         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
             <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
@@ -1236,24 +1242,46 @@ function generateCounterReceiptHTML(order) {
         </div>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-            <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
-                <th style="text-align: left; padding: 10px;">Item</th>
-                <th style="text-align: center; padding: 10px;">Qty</th>
-                <th style="text-align: right; padding: 10px;">Price (₹)</th>
-                <th style="text-align: right; padding: 10px;">Total (₹)</th>
-            </tr>
-            ${(order.items || []).map(item => `
-                <tr style="border-bottom: 1px solid #ddd;">
-                    <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
-                    <td style="text-align: center; padding: 10px;">${item.quantity}</td>
-                    <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
-                    <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
+            <thead>
+                <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
+                    <th style="text-align: left; padding: 10px;">Item</th>
+                    <th style="text-align: center; padding: 10px;">Qty</th>
+                    <th style="text-align: right; padding: 10px;">Price (₹)</th>
+                    <th style="text-align: right; padding: 10px;">Total (₹)</th>
+                 </tr>
+            </thead>
+            <tbody>
+                ${(order.items || []).map(item => `
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
+                        <td style="text-align: center; padding: 10px;">${item.quantity}</td>
+                        <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
+                        <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+            <tfoot>
+                <tr style="border-top: 2px solid #333;">
+                    <td colspan="3" style="text-align: right; padding: 10px;"><strong>Subtotal:</strong></td>
+                    <td style="text-align: right; padding: 10px;"><strong>₹${subtotal.toFixed(2)}</strong></td>
                 </tr>
-            `).join('')}
-            <tr style="border-top: 2px solid #333;">
-                <td colspan="3" style="text-align: right; padding: 12px;"><strong>TOTAL:</strong></td>
-                <td style="text-align: right; padding: 12px;"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
-            </tr>
+                ${discount > 0 ? `
+                <tr>
+                    <td colspan="3" style="text-align: right; padding: 8px; color: #d32f2f;"><strong>Discount:</strong></td>
+                    <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${discount.toFixed(2)}</strong></td>
+                </tr>
+                ` : ''}
+                ${shipping > 0 ? `
+                <tr>
+                    <td colspan="3" style="text-align: right; padding: 8px;"><strong>Shipping:</strong></td>
+                    <td style="text-align: right; padding: 8px;"><strong>₹${shipping.toFixed(2)}</strong></td>
+                </tr>
+                ` : ''}
+                <tr style="border-top: 2px solid #333; background: #f5f5f5;">
+                    <td colspan="3" style="text-align: right; padding: 12px; font-size: 16px;"><strong>GRAND TOTAL:</strong></td>
+                    <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${total.toFixed(2)}</strong></td>
+                </tr>
+            </tfoot>
         </table>
         
         <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
