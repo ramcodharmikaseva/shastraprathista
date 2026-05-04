@@ -2957,9 +2957,8 @@ function showSection(sectionName) {
     addFloatingCounterButton();
 }
 
-// Add floating button directly to body with forced positioning - RIGHT VERTICAL VERSION
+// Add floating button directly to body - RIGHT VERTICAL (ROTATED) VERSION
 function addFloatingCounterButton() {
-    // Check if button already exists
     if (document.getElementById('floatingCounterBtn')) return;
     
     const button = document.createElement('button');
@@ -2970,12 +2969,12 @@ function addFloatingCounterButton() {
     `;
     button.onclick = () => openPOSModal();
     
-    // Apply styles directly with JavaScript - RIGHT VERTICAL positioning
+    // Apply styles - RIGHT VERTICAL ROTATED
     button.style.cssText = `
         position: fixed !important;
         right: 20px !important;
         top: 50% !important;
-        transform: translateY(-50%) !important;
+        transform: translateY(-50%) rotate(180deg) !important;
         z-index: 999999 !important;
         background: linear-gradient(135deg, #28a745, #1e7e34) !important;
         color: white !important;
@@ -2991,21 +2990,20 @@ function addFloatingCounterButton() {
         box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
         transition: all 0.3s ease !important;
         font-family: inherit !important;
+        transform-origin: right center !important;
     `;
     
-    // Add hover effect
     button.onmouseenter = () => {
-        button.style.transform = 'translateY(-50%) scale(1.05)';
+        button.style.transform = 'translateY(-50%) rotate(90deg) scale(1.05)';
         button.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
         button.style.background = 'linear-gradient(135deg, #34ce57, #28a745)';
     };
     button.onmouseleave = () => {
-        button.style.transform = 'translateY(-50%)';
+        button.style.transform = 'translateY(-50%) rotate(90deg)';
         button.style.boxShadow = '0 2px 10px rgba(0,0,0,0.15)';
         button.style.background = 'linear-gradient(135deg, #28a745, #1e7e34)';
     };
     
-    // Append directly to body
     document.body.appendChild(button);
 }
 
