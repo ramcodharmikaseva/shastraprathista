@@ -777,14 +777,31 @@ async function loadCounterOrders(filter = 'all') {
         console.log('🔥 loadCounterOrders response:', result);
         
         if (result.success) {
-            // Update summary cards
+            // ✅ CALCULATE CORRECT TOTAL REVENUE (subtotal - discount + shipping)
+            let correctTotalRevenue = 0;
+            let totalItemsSold = 0;
+            
+            result.orders.forEach(order => {
+                const subtotal = order.totals?.subtotal || 0;
+                const discount = order.totals?.discount || 0;
+                const shipping = order.totals?.shipping || 0;
+                const correctTotal = subtotal - discount + shipping;
+                correctTotalRevenue += correctTotal;
+                
+                // Calculate total items sold
+                if (order.items && Array.isArray(order.items)) {
+                    totalItemsSold += order.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                }
+            });
+            
+            // Update summary cards with CORRECT calculations
             const revenueEl = document.getElementById('counterTotalRevenue');
             const ordersEl = document.getElementById('counterTotalOrders');
             const itemsEl = document.getElementById('counterTotalItems');
             
-            if (revenueEl) revenueEl.innerText = `₹${result.totalRevenue.toFixed(2)}`;
+            if (revenueEl) revenueEl.innerText = `₹${correctTotalRevenue.toFixed(2)}`;
             if (ordersEl) ordersEl.innerText = result.total;
-            if (itemsEl) itemsEl.innerText = result.totalItems;
+            if (itemsEl) itemsEl.innerText = totalItemsSold;
             
             // Filter orders based on selection
             let filteredOrders = result.orders;
@@ -808,6 +825,7 @@ async function loadCounterOrders(filter = 'all') {
             }
             
             console.log('📊 Filtered orders count:', filteredOrders.length);
+            console.log('💰 Correct Total Revenue:', correctTotalRevenue);
             renderCounterOrders(filteredOrders);
         } else {
             showToast('Failed to load counter orders', 'error');
@@ -820,7 +838,7 @@ async function loadCounterOrders(filter = 'all') {
     }
 }
 
-// Render counter orders table
+// Render counter orders table with CORRECT totals
 function renderCounterOrders(orders) {
     const tbody = document.getElementById('counterOrdersBody');
     if (!tbody) {
@@ -847,8 +865,11 @@ function renderCounterOrders(orders) {
     const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
     tbody.innerHTML = sortedOrders.map(order => {
-        // Debug each order
-        console.log('Rendering order:', order.orderId, 'Receipt:', order.receiptNumber);
+        // ✅ CALCULATE CORRECT TOTAL (subtotal - discount + shipping)
+        const subtotal = order.totals?.subtotal || 0;
+        const discount = order.totals?.discount || 0;
+        const shipping = order.totals?.shipping || 0;
+        const correctTotal = subtotal - discount + shipping;
         
         const formattedDate = new Date(order.createdAt).toLocaleString('en-IN', {
             day: '2-digit',
@@ -865,7 +886,7 @@ function renderCounterOrders(orders) {
                 <td>${order.customerPhone || '-'}</td>
                 <td>${formattedDate}</td>
                 <td>${order.items?.length || 0} item(s)</td>
-                <td><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+                <td><strong>₹${correctTotal.toFixed(2)}</strong></td>
                 <td><span class="status-badge status-paid">${order.paymentMethod?.toUpperCase() || 'CASH'}</span></td>
                 <td>
                     <div style="display: flex; gap: 5px;">
