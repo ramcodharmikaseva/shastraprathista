@@ -2965,7 +2965,7 @@ function addFloatingCounterButton() {
     button.id = 'floatingCounterBtn';
     button.innerHTML = `
         <i class="fas fa-receipt"></i>
-        <span>🧾 Counter Sale</span>
+        <span>Counter Sale</span>
     `;
     button.onclick = () => openPOSModal();
     
