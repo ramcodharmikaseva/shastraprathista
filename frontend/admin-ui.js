@@ -2973,7 +2973,15 @@ function addFloatingCounterButton() {
         <span>New Counter Sale</span>
     `;
     button.onclick = () => openPOSModal();
+    
+    // ✅ Make sure it's appended to body, not a container
     document.body.appendChild(button);
+    
+    // ✅ Force position fixed with inline styles to ensure it works
+    button.style.position = 'fixed';
+    button.style.bottom = '30px';
+    button.style.right = '30px';
+    button.style.zIndex = '9999';
 }
 
 // Remove floating button when not needed
