@@ -919,7 +919,7 @@ function showCounterOrderDetails(orderId) {
             <div id="counterReceiptModal" class="modal" style="display: block;">
                 <div class="modal-content" style="max-width: 800px; width: 90%;">
                     <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px;">
-                        <h2 style="margin: 0; color: #333;">🧾 Counter Sale Receipt</h2>
+                        <h2 style="margin: 0; color: #333;">Counter Sale Receipt</h2>
                         <button onclick="closeCounterReceiptModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
                     </div>
                     <div class="modal-body" style="padding: 20px 0;">
@@ -2974,7 +2974,7 @@ function addFloatingCounterButton() {
         position: fixed !important;
         right: 20px !important;
         top: 50% !important;
-        transform: translateY(-50%) rotate(180deg) !important;
+        transform: translateY(-50%) rotate(90deg) !important;
         z-index: 999999 !important;
         background: linear-gradient(135deg, #28a745, #1e7e34) !important;
         color: white !important;
