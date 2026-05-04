@@ -1504,37 +1504,204 @@ document.addEventListener('DOMContentLoaded', async function() {
 window.currentOrderId = null;
 
 
-// ✅ Enhanced view order details function in admin-ui.js
+// ✅ Enhanced view order details function - Handles both Online and Counter orders
 async function viewOrderDetails(orderId) {
-  try {
-    window.currentOrderId = orderId;
+    try {
+        window.currentOrderId = orderId;
+        
+        // Show loading in modal
+        document.getElementById('viewOrderContent').innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div class="spinner"></div>
+                <p>Loading order details from server...</p>
+            </div>
+        `;
+        
+        // Show the modal
+        document.getElementById('viewOrderModal').style.display = 'block';
+        
+        // Fetch order details directly from backend
+        const order = await getOrderDetails(orderId);
+        
+        // ✅ CHECK IF IT'S A COUNTER ORDER (source === 'counter' OR has receiptNumber)
+        if (order.source === 'counter' || order.receiptNumber || order.paymentMethod === 'cash') {
+            // Counter Order - Show Receipt Style View
+            console.log('📋 Counter order detected, showing receipt view');
+            renderCounterOrderReceiptInModal(order);
+        } else {
+            // Online Order - Show Detailed Management View
+            console.log('🌐 Online order detected, showing management view');
+            renderOrderDetailsInModal(order);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading order details from backend:', error);
+        document.getElementById('viewOrderContent').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #e74c3c;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                <h3>Error Loading Order</h3>
+                <p>${error.message}</p>
+                <button class="btn btn-primary" onclick="closeViewModal()">Close</button>
+            </div>
+        `;
+    }
+}
+
+// ✅ NEW FUNCTION: Render Counter Order Receipt in Modal (without editing controls)
+function renderCounterOrderReceiptInModal(order) {
+    const modalContent = document.getElementById('viewOrderContent');
+    if (!modalContent) return;
     
-    // Show loading in modal
-    document.getElementById('viewOrderContent').innerHTML = `
-      <div style="text-align: center; padding: 40px;">
-        <div class="spinner"></div>
-        <p>Loading order details from server...</p>
-      </div>
+    // Calculate correct totals
+    const subtotal = order.totals?.subtotal || 0;
+    const discount = order.totals?.discount || 0;
+    const shipping = order.totals?.shipping || 0;
+    const total = subtotal - discount + shipping;
+    
+    modalContent.innerHTML = `
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">
+                <i class="fas fa-receipt"></i> Counter Sale Receipt
+            </h2>
+            <button class="close-btn" onclick="closeViewModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
+        </div>
+        
+        <div id="receiptPrintContent" style="font-family: 'Courier New', monospace; font-size: 13px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
+                <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
+                <p style="margin: 8px 0; font-size: 13px; font-weight: bold;">"RAMCO DHARMIKA SEVA"</p>
+                <p style="margin: 5px 0; font-size: 12px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
+                <p style="margin: 5px 0; font-size: 12px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
+            </div>
+            
+            <h4 style="text-align: center; margin: 20px 0; font-size: 16px;">CASH SALE RECEIPT</h4>
+            
+            <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                <div><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</div>
+                <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</div>
+            </div>
+            
+            <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                <strong style="font-size: 14px;">Customer Details:</strong><br>
+                <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
+                <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
+                ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
+                ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
+            </div>
+            
+            <!-- Items Table -->
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
+                        <th style="text-align: left; padding: 10px;">#</th>
+                        <th style="text-align: left; padding: 10px;">Item</th>
+                        <th style="text-align: center; padding: 10px;">Qty</th>
+                        <th style="text-align: right; padding: 10px;">Price (₹)</th>
+                        <th style="text-align: right; padding: 10px;">Total (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${(order.items || []).map((item, idx) => `
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 10px;">${idx + 1}</td>
+                            <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
+                            <td style="text-align: center; padding: 10px;">${item.quantity}</td>
+                            <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
+                            <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr style="border-top: 2px solid #333;">
+                        <td colspan="4" style="text-align: right; padding: 10px;"><strong>Subtotal:</strong></td>
+                        <td style="text-align: right; padding: 10px;"><strong>₹${subtotal.toFixed(2)}</strong></td>
+                    </tr>
+                    ${discount > 0 ? `
+                    <tr>
+                        <td colspan="4" style="text-align: right; padding: 8px; color: #d32f2f;"><strong>Discount:</strong></td>
+                        <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${discount.toFixed(2)}</strong></td>
+                    </tr>
+                    ` : ''}
+                    ${shipping > 0 ? `
+                    <tr>
+                        <td colspan="4" style="text-align: right; padding: 8px;"><strong>Shipping:</strong></td>
+                        <td style="text-align: right; padding: 8px;"><strong>₹${shipping.toFixed(2)}</strong></td>
+                    </tr>
+                    ` : ''}
+                    <tr style="border-top: 2px solid #333; background: #f5f5f5;">
+                        <td colspan="4" style="text-align: right; padding: 12px; font-size: 16px;"><strong>GRAND TOTAL:</strong></td>
+                        <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${total.toFixed(2)}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
+                <strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'} &nbsp;&nbsp;|&nbsp;&nbsp;
+                <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; border-top: 2px dashed #333; padding-top: 20px;">
+                <p style="font-size: 13px;">Thank you for your purchase!</p>
+                <p style="font-size: 11px; color: #666;">Books HSN - 4901 (GST Exempt)</p>
+                <p style="font-size: 11px;">www.shastraprathista.in</p>
+                <br><br>
+                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <p>_________________________</p>
+                    <p>_________________________</p>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <p>Customer Signature</p>
+                    <p>Authorized Signatory</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 15px; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="closeViewModal()">
+                <i class="fas fa-times"></i> Close
+            </button>
+            <button class="btn btn-primary" onclick="printCounterReceiptFromModal()">
+                <i class="fas fa-print"></i> Print Receipt
+            </button>
+        </div>
     `;
+}
+
+// ✅ Function to print receipt from modal
+function printCounterReceiptFromModal() {
+    const receiptContent = document.getElementById('receiptPrintContent');
+    if (!receiptContent) {
+        showToast('Receipt content not found', 'error');
+        return;
+    }
     
-    // Show the modal
-    document.getElementById('viewOrderModal').style.display = 'block';
-    
-    // Fetch order details directly from backend
-    const order = await getOrderDetails(orderId);
-    renderOrderDetailsInModal(order);
-    
-  } catch (error) {
-    console.error('❌ Error loading order details from backend:', error);
-    document.getElementById('viewOrderContent').innerHTML = `
-      <div style="text-align: center; padding: 40px; color: #e74c3c;">
-        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
-        <h3>Error Loading Order</h3>
-        <p>${error.message}</p>
-        <button class="btn btn-primary" onclick="closeViewModal()">Close</button>
-      </div>
-    `;
-  }
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Receipt - Counter Sale</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Courier New', monospace; margin: 0; padding: 30px; background: white; }
+                .receipt { max-width: 800px; margin: 0 auto; background: white; padding: 20px; }
+                @media print { body { margin: 0; padding: 15px; } .receipt { max-width: 100%; padding: 0; } button { display: none; } }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { padding: 8px; }
+            </style>
+        </head>
+        <body>
+            <div class="receipt">${receiptContent.innerHTML}</div>
+            <div class="no-print" style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f0f0;">
+                <button onclick="window.print()" style="padding: 10px 20px; margin: 5px; background: #4CAF50; color: white; border: none; border-radius: 5px;">🖨️ Print</button>
+                <button onclick="window.close()" style="padding: 10px 20px; margin: 5px; background: #666; color: white; border: none; border-radius: 5px;">✖️ Close</button>
+            </div>
+            <script>window.onload = () => setTimeout(() => window.print(), 500);<\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
 }
 
 // ✅ Simplified Accessibility Manager for Admin
@@ -3123,6 +3290,8 @@ window.quickStatusChange = quickStatusChange;
 window.saveStatusChanges = saveStatusChanges;
 window.downloadAdminInvoice = downloadAdminInvoice;
 window.viewOrderDetails = viewOrderDetails;
+window.renderCounterOrderReceiptInModal = renderCounterOrderReceiptInModal;
+window.printCounterReceiptFromModal = printCounterReceiptFromModal;
 window.currentOrderId = currentOrderId;
 window.initializeOrdersSearch = initializeOrdersSearch;
 window.renderAllOrders = renderAllOrders;
