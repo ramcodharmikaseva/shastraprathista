@@ -890,7 +890,7 @@ async function viewCounterOrder(orderId) {
     showCounterOrderDetails(orderId);
 }
 
-// Show counter order details in receipt-style modal (WIDER VERSION)
+// Show counter order details in receipt-style modal (WIDER VERSION) - WITH FORCED RECALCULATION
 function showCounterOrderDetails(orderId) {
     // Fetch the counter order details
     fetch(`/api/orders/${orderId}`, {
@@ -903,6 +903,16 @@ function showCounterOrderDetails(orderId) {
     .then(result => {
         if (!result.success) throw new Error('Order not found');
         const order = result.order;
+        
+        // ✅ FORCE RECALCULATE totals to fix any database errors
+        const subtotal = order.totals?.subtotal || 0;
+        const discount = order.totals?.discount || 0;
+        const shipping = order.totals?.shipping || 0;
+        // 👇 THIS IS THE KEY FIX - Recalculate, don't trust stored total
+        const calculatedTotal = subtotal - discount + shipping;
+        
+        // Use calculated total instead of stored total
+        const displayTotal = calculatedTotal;
         
         // Create receipt-styled modal - WIDER
         const modalHtml = `
@@ -963,23 +973,23 @@ function showCounterOrderDetails(orderId) {
                                 <tfoot>
                                     <tr style="border-top: 2px solid #333;">
                                         <td colspan="4" style="text-align: right; padding: 10px;"><strong>Subtotal:</strong></td>
-                                        <td style="text-align: right; padding: 10px;"><strong>₹${(order.totals?.subtotal || 0).toFixed(2)}</strong></td>
+                                        <td style="text-align: right; padding: 10px;"><strong>₹${subtotal.toFixed(2)}</strong></td>
                                     </tr>
-                                    ${(order.totals?.discount || 0) > 0 ? `
+                                    ${discount > 0 ? `
                                     <tr>
                                         <td colspan="4" style="text-align: right; padding: 8px; color: #d32f2f;"><strong>Discount:</strong></td>
-                                        <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${(order.totals?.discount || 0).toFixed(2)}</strong></td>
+                                        <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${discount.toFixed(2)}</strong></td>
                                     </tr>
                                     ` : ''}
-                                    ${(order.totals?.shipping || 0) > 0 ? `
+                                    ${shipping > 0 ? `
                                     <tr>
                                         <td colspan="4" style="text-align: right; padding: 8px;"><strong>Shipping:</strong></td>
-                                        <td style="text-align: right; padding: 8px;"><strong>₹${(order.totals?.shipping || 0).toFixed(2)}</strong></td>
+                                        <td style="text-align: right; padding: 8px;"><strong>₹${shipping.toFixed(2)}</strong></td>
                                     </tr>
                                     ` : ''}
                                     <tr style="border-top: 2px solid #333; background: #f5f5f5;">
                                         <td colspan="4" style="text-align: right; padding: 12px; font-size: 16px;"><strong>GRAND TOTAL:</strong></td>
-                                        <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${(order.totals?.total || 0).toFixed(2)}</strong></td>
+                                        <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${displayTotal.toFixed(2)}</strong></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1024,8 +1034,12 @@ function showCounterOrderDetails(orderId) {
         // Add modal to body
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         
-        // Store order data for printing
-        window.currentReceiptOrder = order;
+        // Store order data for printing (with corrected total)
+        window.currentReceiptOrder = {
+            ...order,
+            displayTotal: displayTotal,
+            correctedTotal: displayTotal
+        };
     })
     .catch(err => {
         console.error('Error fetching counter order:', err);
@@ -1210,13 +1224,14 @@ async function reprintCounterReceipt(orderId) {
     }
 }
 
-// Generate counter receipt HTML for reprint - MATCHING MAIN RECEIPT FORMAT
+// Generate counter receipt HTML for reprint - WITH FORCED RECALCULATION
 function generateCounterReceiptHTML(order) {
     // Extract totals properly
     const subtotal = order.totals?.subtotal || 0;
     const discount = order.totals?.discount || 0;
     const shipping = order.totals?.shipping || 0;
-    const total = order.totals?.total || (subtotal - discount + shipping);
+    // ✅ FORCE RECALCULATE - don't use stored total
+    const total = subtotal - discount + shipping;
     
     return `
         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
