@@ -2964,7 +2964,6 @@ function showSection(sectionName) {
     }
 }
 
-// ============ FLOATING COUNTER SALE BUTTON ============
 // Add floating button directly to body with forced positioning
 function addFloatingCounterButton() {
     // Check if button already exists
@@ -2973,8 +2972,8 @@ function addFloatingCounterButton() {
     const button = document.createElement('button');
     button.id = 'floatingCounterBtn';
     button.innerHTML = `
-        <i class="fas fa-shopping-cart"></i>
-        <span>New Counter Sale</span>
+        <i class="fas fa-receipt"></i>
+        <span>🧾 Counter Sale</span>
     `;
     button.onclick = () => openPOSModal();
     
