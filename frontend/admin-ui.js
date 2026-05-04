@@ -1465,17 +1465,22 @@ if (!window.adminState) {
   };
 }
 
-// ✅ Check access when page loads
+// Update the DOMContentLoaded event (around line 3000+)
 document.addEventListener('DOMContentLoaded', async function() {
-  console.log('🔐 Checking admin access...');
-  
-  const hasAccess = await checkAdminAccess();
-  if (!hasAccess) {
-    return; // User will be redirected
-  }
-  
-  console.log('✅ Access granted! Loading admin dashboard...');
-  
+    console.log('🔐 Checking admin access...');
+    
+    const hasAccess = await checkAdminAccess();
+    if (!hasAccess) {
+        return; // User will be redirected
+    }
+    
+    console.log('✅ Access granted! Loading admin dashboard...');
+    
+    // ✅ Check if current section is counter orders and add floating button
+    const activeSection = document.querySelector('.content-section.active');
+    if (activeSection && activeSection.id === 'counter-orders') {
+        addFloatingCounterButton();
+    }
 });
 
 // ✅ Correct global variable initialization
@@ -2952,6 +2957,29 @@ function showSection(sectionName) {
     if (typeof loadSectionData === 'function') {
         loadSectionData(sectionName);
     }
+}
+
+// ============ FLOATING COUNTER SALE BUTTON ============
+// Add floating button dynamically
+function addFloatingCounterButton() {
+    // Check if button already exists
+    if (document.getElementById('floatingCounterBtn')) return;
+    
+    const button = document.createElement('button');
+    button.id = 'floatingCounterBtn';
+    button.className = 'floating-counter-btn';
+    button.innerHTML = `
+        <i class="fas fa-shopping-cart"></i>
+        <span>New Counter Sale</span>
+    `;
+    button.onclick = () => openPOSModal();
+    document.body.appendChild(button);
+}
+
+// Remove floating button when not needed
+function removeFloatingCounterButton() {
+    const button = document.getElementById('floatingCounterBtn');
+    if (button) button.remove();
 }
 
 // ✅ Print order function
