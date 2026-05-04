@@ -124,8 +124,8 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* Floating New Counter Sale Button - Stronger CSS */
-body .floating-counter-btn {
+/* Floating New Counter Sale Button */
+.floating-counter-btn {
     position: fixed !important;
     bottom: 30px !important;
     right: 30px !important;
@@ -145,30 +145,30 @@ body .floating-counter-btn {
     gap: 10px !important;
 }
 
-body .floating-counter-btn:hover {
+.floating-counter-btn:hover {
     transform: translateY(-3px) !important;
     box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
     background: linear-gradient(135deg, #34ce57 0%, #28a745 100%) !important;
 }
 
-body .floating-counter-btn:active {
+.floating-counter-btn:active {
     transform: translateY(0) !important;
 }
 
-body .floating-counter-btn i {
+.floating-counter-btn i {
     font-size: 20px !important;
 }
 
 @media (max-width: 768px) {
-    body .floating-counter-btn {
+    .floating-counter-btn {
         bottom: 20px !important;
         right: 20px !important;
         padding: 12px 18px !important;
     }
-    body .floating-counter-btn span {
+    .floating-counter-btn span {
         display: none !important;
     }
-    body .floating-counter-btn i {
+    .floating-counter-btn i {
         margin: 0 !important;
         font-size: 18px !important;
     }
