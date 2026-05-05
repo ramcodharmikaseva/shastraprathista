@@ -1,3 +1,6 @@
+// ✅ Make sure API_BASE is defined at the top of admin-ui.js (add if missing)
+const API_BASE = window.API_BASE || (window.location.origin + '/api');
+
 console.log('🎨 Admin UI loading...');
 
 // ============ 🏪 NEW POS SYSTEM (Using posModal from HTML) ============
@@ -1503,31 +1506,57 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ✅ Correct global variable initialization
 window.currentOrderId = null;
 
-// ✅ Enhanced view order details function - Handles both Online and Counter orders
+// ✅ Replace the existing viewOrderDetails function with this enhanced version
 async function viewOrderDetails(orderId) {
     try {
         window.currentOrderId = orderId;
         
         // Show loading in modal
-        document.getElementById('viewOrderContent').innerHTML = `
-            <div style="text-align: center; padding: 40px;">
-                <div class="spinner"></div>
-                <p>Loading order details from server...</p>
-            </div>
-        `;
+        const modalContent = document.getElementById('viewOrderContent');
+        if (modalContent) {
+            modalContent.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div class="spinner"></div>
+                    <p>Loading order details from server...</p>
+                </div>
+            `;
+        }
         
         // Show the modal
-        document.getElementById('viewOrderModal').style.display = 'block';
+        const modal = document.getElementById('viewOrderModal');
+        if (modal) {
+            modal.style.display = 'block';
+        }
         
-        // Fetch order details directly from backend
-        const order = await getOrderDetails(orderId);
+        // Fetch order details from backend using the function from admin-data.js
+        let order;
+        try {
+            order = await getOrderDetails(orderId);
+        } catch (fetchError) {
+            console.error('Error fetching order:', fetchError);
+            // Try alternative endpoint
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_BASE}/orders/${orderId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await response.json();
+            order = result.order || result;
+        }
         
         // Debug logging
         console.log('🔍 Order received in viewOrderDetails:', order);
         console.log('🔍 Order receiptNumber:', order.receiptNumber);
+        console.log('🔍 Order source:', order.source);
+        console.log('🔍 Order type:', order.orderType);
         
-        // ✅ CHECK IF IT'S A COUNTER ORDER (receipt starts with SLR)
-        const isCounterOrder = order.receiptNumber && order.receiptNumber.startsWith('SLR');
+        // ✅ MULTIPLE DETECTION METHODS FOR COUNTER ORDERS
+        const isCounterOrder = (
+            (order.receiptNumber && order.receiptNumber.startsWith('SLR')) ||  // Receipt number starts with SLR
+            order.source === 'counter' ||  // Source field indicates counter
+            order.orderType === 'counter' ||  // Alternative field
+            (order.receiptNumber && order.receiptNumber.includes('SLR-')) ||  // Fallback pattern
+            (order.receiptNumber && /^SLR-\d{4}-\d{2}\/\d{3}$/.test(order.receiptNumber)) // Regex pattern
+        );
         
         console.log('🔍 Is counter order?', isCounterOrder);
         
@@ -1542,33 +1571,54 @@ async function viewOrderDetails(orderId) {
         }
         
     } catch (error) {
-        console.error('❌ Error loading order details from backend:', error);
-        document.getElementById('viewOrderContent').innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #e74c3c;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
-                <h3>Error Loading Order</h3>
-                <p>${error.message}</p>
-                <button class="btn btn-primary" onclick="closeViewModal()">Close</button>
-            </div>
-        `;
+        console.error('❌ Error loading order details:', error);
+        const modalContent = document.getElementById('viewOrderContent');
+        if (modalContent) {
+            modalContent.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #e74c3c;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                    <h3>Error Loading Order</h3>
+                    <p>${error.message}</p>
+                    <button class="btn btn-primary" onclick="closeViewModal()">Close</button>
+                </div>
+            `;
+        }
     }
 }
 
-// ✅ Counter Order Receipt View - Add this BEFORE renderOrderDetailsInModal
+// ✅ Enhanced renderCounterOrderReceiptInModal with better error handling
 function renderCounterOrderReceiptInModal(order) {
-    console.log('📋 renderCounterOrderReceiptInModal CALLED!');
+    console.log('📋 renderCounterOrderReceiptInModal CALLED with order:', order);
     
     const modalContent = document.getElementById('viewOrderContent');
     if (!modalContent) {
-        console.error('modalContent not found');
+        console.error('❌ modalContent element not found!');
         return;
     }
     
-    // Calculate correct totals
+    // Calculate correct totals (force recalculation)
     const subtotal = order.totals?.subtotal || 0;
     const discount = order.totals?.discount || 0;
     const shipping = order.totals?.shipping || 0;
     const total = subtotal - discount + shipping;
+    
+    // Get customer info safely
+    const customerName = order.customerName || 'Walk-in Customer';
+    const customerPhone = order.customerPhone || 'Not provided';
+    const customerEmail = order.customerEmail || '';
+    const customerAddress = order.customerAddress || '';
+    
+    // Get receipt number
+    const receiptNumber = order.receiptNumber || order.orderId || 'Unknown';
+    
+    // Format date
+    const orderDate = new Date(order.createdAt || order.date || Date.now()).toLocaleString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
     
     modalContent.innerHTML = `
         <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
@@ -1578,7 +1628,7 @@ function renderCounterOrderReceiptInModal(order) {
             <button class="close-btn" onclick="closeViewModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
         </div>
         
-        <div style="font-family: 'Courier New', monospace; font-size: 13px;">
+        <div id="receiptPrintContent" style="font-family: 'Courier New', monospace; font-size: 13px;">
             <!-- Header -->
             <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
                 <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
@@ -1590,15 +1640,16 @@ function renderCounterOrderReceiptInModal(order) {
             <h4 style="text-align: center; margin: 20px 0; font-size: 16px;">CASH SALE RECEIPT</h4>
             
             <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap;">
-                <div><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</div>
-                <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN')}</div>
+                <div><strong>Receipt No:</strong> ${receiptNumber}</div>
+                <div><strong>Date:</strong> ${orderDate}</div>
             </div>
             
             <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
                 <strong style="font-size: 14px;">Customer Details:</strong><br>
-                <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
-                <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
-                ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
+                <strong>Name:</strong> ${escapeHtml(customerName)}<br>
+                <strong>Phone:</strong> ${customerPhone}<br>
+                ${customerEmail ? `<strong>Email:</strong> ${escapeHtml(customerEmail)}<br>` : ''}
+                ${customerAddress ? `<strong>Address:</strong> ${escapeHtml(customerAddress)}<br>` : ''}
             </div>
             
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -1615,7 +1666,7 @@ function renderCounterOrderReceiptInModal(order) {
                     ${(order.items || []).map((item, idx) => `
                         <tr style="border-bottom: 1px solid #ddd;">
                             <td style="padding: 10px;">${idx + 1}</td>
-                            <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
+                            <td style="padding: 10px;"><strong>${escapeHtml(item.title || item.name || 'Item')}</strong></td>
                             <td style="text-align: center; padding: 10px;">${item.quantity}</td>
                             <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
                             <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
@@ -1647,7 +1698,7 @@ function renderCounterOrderReceiptInModal(order) {
             </table>
             
             <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
-                <strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'} &nbsp;&nbsp;|&nbsp;&nbsp;
+                <strong>Payment Mode:</strong> ${(order.paymentMethod || 'CASH').toUpperCase()} &nbsp;&nbsp;|&nbsp;&nbsp;
                 <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
             </div>
             
@@ -1655,6 +1706,15 @@ function renderCounterOrderReceiptInModal(order) {
                 <p style="font-size: 13px;">Thank you for your purchase!</p>
                 <p style="font-size: 11px; color: #666;">Books HSN - 4901 (GST Exempt)</p>
                 <p style="font-size: 11px;">www.shastraprathista.in</p>
+                <br><br>
+                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <p>_________________________</p>
+                    <p>_________________________</p>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <p>Customer Signature</p>
+                    <p>Authorized Signatory</p>
+                </div>
             </div>
         </div>
         
@@ -1662,7 +1722,7 @@ function renderCounterOrderReceiptInModal(order) {
             <button class="btn btn-secondary" onclick="closeViewModal()">
                 <i class="fas fa-times"></i> Close
             </button>
-            <button class="btn btn-primary" onclick="window.print()">
+            <button class="btn btn-primary" onclick="printCounterReceiptFromModal()">
                 <i class="fas fa-print"></i> Print Receipt
             </button>
         </div>
@@ -3303,6 +3363,46 @@ function getCustomerEmailById(customerId) {
   const customer = window.adminState.allCustomers?.find(c => c._id === customerId);
   return customer?.email || null;
 }
+
+// ✅ Debug function to check order type
+async function debugOrderType(orderId) {
+    try {
+        console.log('🔍 Debugging order type for:', orderId);
+        const token = localStorage.getItem('token');
+        
+        // Try multiple endpoints
+        const endpoints = [
+            `${API_BASE}/admin/orders/${orderId}`,
+            `${API_BASE}/orders/${orderId}`,
+            `${API_BASE}/counter-orders/${orderId}`
+        ];
+        
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const order = data.order || data;
+                    console.log(`✅ Order from ${endpoint}:`, {
+                        receiptNumber: order.receiptNumber,
+                        source: order.source,
+                        orderType: order.orderType,
+                        hasSLR: order.receiptNumber?.startsWith('SLR')
+                    });
+                }
+            } catch(e) {
+                console.log(`❌ Failed ${endpoint}:`, e.message);
+            }
+        }
+    } catch(error) {
+        console.error('Debug error:', error);
+    }
+}
+
+// Make debug function available globally
+window.debugOrderType = debugOrderType;
 
 // ✅ Make sure to add these to window object too
 window.closeViewModal = closeViewModal;
