@@ -1505,7 +1505,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ✅ Correct global variable initialization
 window.currentOrderId = null;
 
-// ✅ Replace the existing viewOrderDetails function with this enhanced version
+// ✅ REPLACE your existing viewOrderDetails function with this improved version
 async function viewOrderDetails(orderId) {
     try {
         window.currentOrderId = orderId;
@@ -1527,7 +1527,7 @@ async function viewOrderDetails(orderId) {
             modal.style.display = 'block';
         }
         
-        // Fetch order details from backend using the function from admin-data.js
+        // Fetch order details from backend
         let order;
         try {
             order = await getOrderDetails(orderId);
@@ -1542,29 +1542,46 @@ async function viewOrderDetails(orderId) {
             order = result.order || result;
         }
         
-        // Debug logging
-        console.log('🔍 Order received in viewOrderDetails:', order);
+        // Debug logging - CRITICAL to understand what's coming back
+        console.log('🔍 ===== ORDER DETAILS DEBUG =====');
+        console.log('🔍 Full order object:', JSON.stringify(order, null, 2));
         console.log('🔍 Order receiptNumber:', order.receiptNumber);
         console.log('🔍 Order source:', order.source);
-        console.log('🔍 Order type:', order.orderType);
+        console.log('🔍 Order _id:', order._id);
+        console.log('🔍 Order orderId:', order.orderId);
         
-        // ✅ MULTIPLE DETECTION METHODS FOR COUNTER ORDERS
+        // ✅ CHECK BOTH orderId AND receiptNumber since the ID itself might be the receipt number
+        const orderIdValue = order.orderId || order._id || '';
+        const receiptNumberValue = order.receiptNumber || '';
+        
+        // Check if the order ID itself looks like a receipt number (starts with SLR)
+        const looksLikeReceipt = orderIdValue.startsWith('SLR') || receiptNumberValue.startsWith('SLR');
+        
+        // Check if the order ID we passed in looks like a receipt number
+        const orderIdParamLooksLikeReceipt = String(orderId).startsWith('SLR');
+        
+        // MULTIPLE DETECTION METHODS
         const isCounterOrder = (
-            (order.receiptNumber && order.receiptNumber.startsWith('SLR')) ||  // Receipt number starts with SLR
-            order.source === 'counter' ||  // Source field indicates counter
-            order.orderType === 'counter' ||  // Alternative field
-            (order.receiptNumber && order.receiptNumber.includes('SLR-')) ||  // Fallback pattern
-            (order.receiptNumber && /^SLR-\d{4}-\d{2}\/\d{3}$/.test(order.receiptNumber)) // Regex pattern
+            looksLikeReceipt ||
+            orderIdParamLooksLikeReceipt ||
+            order.source === 'counter' ||
+            order.orderType === 'counter' ||
+            (receiptNumberValue && receiptNumberValue.includes('SLR-')) ||
+            (orderIdValue && orderIdValue.includes('SLR-')) ||
+            (order.receiptNumber && /^SLR-\d{4}-\d{2}\/\d{3}$/.test(order.receiptNumber)) ||
+            (orderIdValue && /^SLR-\d{4}-\d{2}\/\d{3}$/.test(orderIdValue))
         );
         
-        console.log('🔍 Is counter order?', isCounterOrder);
+        console.log('🔍 Did orderId param start with SLR?', orderIdParamLooksLikeReceipt);
+        console.log('🔍 Does receiptNumber start with SLR?', receiptNumberValue.startsWith('SLR'));
+        console.log('🔍 Does orderId start with SLR?', orderIdValue.startsWith('SLR'));
+        console.log('🔍 Final isCounterOrder result:', isCounterOrder);
+        console.log('🔍 ================================');
         
         if (isCounterOrder) {
-            // Counter Order - Show Receipt Style View
             console.log('📋 Counter order detected, showing receipt view');
             renderCounterOrderReceiptInModal(order);
         } else {
-            // Online Order - Show Detailed Management View
             console.log('🌐 Online order detected, showing management view');
             renderOrderDetailsInModal(order);
         }
