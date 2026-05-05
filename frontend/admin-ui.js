@@ -1503,6 +1503,62 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ✅ Correct global variable initialization
 window.currentOrderId = null;
 
+// ✅ Counter Order Receipt View - Place this BEFORE viewOrderDetails
+function renderCounterOrderReceiptInModal(order) {
+    console.log('📋 renderCounterOrderReceiptInModal CALLED!');
+    alert('Rendering counter order receipt!');
+    
+    const modalContent = document.getElementById('viewOrderContent');
+    if (!modalContent) return;
+    
+    // Calculate correct totals
+    const subtotal = order.totals?.subtotal || 0;
+    const discount = order.totals?.discount || 0;
+    const shipping = order.totals?.shipping || 0;
+    const total = subtotal - discount + shipping;
+    
+    modalContent.innerHTML = `
+        <div style="padding: 20px; font-family: monospace;">
+            <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+                <h2 style="color: #8B0000;">COUNTER SALE RECEIPT</h2>
+                <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
+                <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+            </div>
+            
+            <div style="background: #f5f5f5; padding: 10px; margin: 10px 0;">
+                <strong>Customer:</strong> ${order.customerName || 'N/A'}<br>
+                <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
+                ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid #333;">
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+                ${(order.items || []).map(item => `
+                    <tr>
+                        <td>${item.title || item.name}</td>
+                        <td style="text-align:center">${item.quantity}</td>
+                        <td style="text-align:right">₹${parseFloat(item.price).toFixed(2)}</td>
+                        <td style="text-align:right">₹${(item.quantity * item.price).toFixed(2)}</td>
+                    </tr>
+                `).join('')}
+                <tr style="border-top:1px solid #333">
+                    <td colspan="3" style="text-align:right"><strong>Total:</strong></td>
+                    <td style="text-align:right"><strong>₹${total.toFixed(2)}</strong></td>
+                </tr>
+            </table>
+            
+            <div style="margin-top:20px; text-align:center;">
+                <p>Thank you for your purchase!</p>
+                <button class="btn btn-primary" onclick="window.print()">Print</button>
+            </div>
+        </div>
+    `;
+}
 
 // ✅ Enhanced view order details function - Handles both Online and Counter orders
 async function viewOrderDetails(orderId) {
@@ -1523,19 +1579,18 @@ async function viewOrderDetails(orderId) {
         // Fetch order details directly from backend
         const order = await getOrderDetails(orderId);
         
-        // Debug: Log the order to see what we have
+        // DEBUG: Alert to see what we received
+        alert(`Order Type Check:\nSource: ${order.source}\nReceipt: ${order.receiptNumber}\nOrder ID: ${order.orderId}`);
+        
         console.log('🔍 Order received:', order);
         console.log('🔍 Order source:', order.source);
         console.log('🔍 Order receiptNumber:', order.receiptNumber);
-        console.log('🔍 Order orderId:', order.orderId);
         
         // ✅ CHECK IF IT'S A COUNTER ORDER
-        // Counter orders have: source === 'counter' OR receiptNumber starts with 'SLR'
         const isCounterOrder = order.source === 'counter' || 
-                              (order.receiptNumber && order.receiptNumber.startsWith('SLR')) ||
-                              (order.orderId && order.orderId.startsWith('SLR'));
+                              (order.receiptNumber && order.receiptNumber.startsWith('SLR'));
         
-        console.log('🔍 Is counter order?', isCounterOrder);
+        alert(`Is Counter Order? ${isCounterOrder}\nShowing ${isCounterOrder ? 'Receipt View' : 'Management View'}`);
         
         if (isCounterOrder) {
             // Counter Order - Show Receipt Style View
@@ -1558,98 +1613,6 @@ async function viewOrderDetails(orderId) {
             </div>
         `;
     }
-}
-
-// ✅ Simple Counter Order Receipt View
-function renderCounterOrderReceiptInModal(order) {
-    const modalContent = document.getElementById('viewOrderContent');
-    if (!modalContent) return;
-    
-    console.log('📋 Rendering counter order receipt');
-    
-    // Calculate correct totals
-    const subtotal = order.totals?.subtotal || 0;
-    const discount = order.totals?.discount || 0;
-    const shipping = order.totals?.shipping || 0;
-    const total = subtotal - discount + shipping;
-    
-    modalContent.innerHTML = `
-        <div style="padding: 20px;">
-            <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px;">
-                <h2 style="color: #8B0000;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h2>
-                <p>"RAMCO DHARMIKA SEVA"</p>
-                <p>No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
-                <p>email: shastraprathista@gmail.com | Mob: 88704 12345</p>
-            </div>
-            
-            <h3 style="text-align: center;">CASH SALE RECEIPT</h3>
-            
-            <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
-            <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
-            
-            <div style="background: #f5f5f5; padding: 10px; margin: 15px 0;">
-                <strong>Customer Details:</strong><br>
-                Name: ${order.customerName || 'N/A'}<br>
-                Phone: ${order.customerPhone || 'N/A'}<br>
-                ${order.customerEmail ? `Email: ${order.customerEmail}<br>` : ''}
-            </div>
-            
-            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
-                <tr style="border-bottom: 1px solid #333;">
-                    <th>Item</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                </tr>
-                ${(order.items || []).map(item => `
-                    <tr>
-                        <td>${item.title || item.name}</td>
-                        <td style="text-align: center;">${item.quantity}</td>
-                        <td style="text-align: right;">₹${parseFloat(item.price).toFixed(2)}</td>
-                        <td style="text-align: right;">₹${(item.quantity * item.price).toFixed(2)}</td>
-                    </tr>
-                `).join('')}
-                <tr style="border-top: 1px solid #333;">
-                    <td colspan="3" style="text-align: right;"><strong>Subtotal:</strong></td>
-                    <td style="text-align: right;">₹${subtotal.toFixed(2)}</td>
-                </tr>
-                ${discount > 0 ? `
-                <tr>
-                    <td colspan="3" style="text-align: right;"><strong>Discount:</strong></td>
-                    <td style="text-align: right; color: red;">-₹${discount.toFixed(2)}</td>
-                </tr>
-                ` : ''}
-                ${shipping > 0 ? `
-                <tr>
-                    <td colspan="3" style="text-align: right;"><strong>Shipping:</strong></td>
-                    <td style="text-align: right;">₹${shipping.toFixed(2)}</td>
-                </tr>
-                ` : ''}
-                <tr style="border-top: 2px solid #333; background: #e8f5e9;">
-                    <td colspan="3" style="text-align: right;"><strong>GRAND TOTAL:</strong></td>
-                    <td style="text-align: right;"><strong>₹${total.toFixed(2)}</strong></td>
-                </tr>
-            </table>
-            
-            <div style="margin: 15px 0;">
-                <strong>Payment Mode:</strong> ${order.paymentMethod?.toUpperCase() || 'CASH'}<br>
-                <strong>Status:</strong> <span style="color: green;">✓ PAID</span>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px; border-top: 1px dashed #333; padding-top: 15px;">
-                <p>Thank you for your purchase!</p>
-                <p>www.shastraprathista.in</p>
-                <br><br>
-                <p>_________________________</p>
-                <p>Customer Signature</p>
-            </div>
-            
-            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-                <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
-                <button class="btn btn-primary" onclick="printCounterReceiptFromModal()">Print Receipt</button>
-            </div>
-        </div>
-    `;
 }
 
 // Function to print receipt from modal
