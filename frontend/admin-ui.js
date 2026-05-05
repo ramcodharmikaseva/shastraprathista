@@ -1522,35 +1522,20 @@ async function viewOrderDetails(orderId) {
         // Fetch order details directly from backend
         const order = await getOrderDetails(orderId);
         
-        // DEBUG: Alert to see what we received
-        alert(`Order Type Check:\nSource: ${order.source}\nReceipt: ${order.receiptNumber}\nOrder ID: ${order.orderId}`);
-        
-        console.log('🔍 Order received:', order);
+        // Debug logging
+        console.log('🔍 Order received in viewOrderDetails:', order);
         console.log('🔍 Order source:', order.source);
         console.log('🔍 Order receiptNumber:', order.receiptNumber);
         
-        // ✅ CHECK IF IT'S A COUNTER ORDER
-        const isCounterOrder = order.source === 'counter' || 
-                              (order.receiptNumber && order.receiptNumber.startsWith('SLR'));
+        // ✅ CHECK IF IT'S A COUNTER ORDER (receipt starts with SLR)
+        const isCounterOrder = (order.receiptNumber && order.receiptNumber.startsWith('SLR')) || order.source === 'counter';
         
-        alert(`Is Counter Order? ${isCounterOrder}\nShowing ${isCounterOrder ? 'Receipt View' : 'Management View'}`);
+        console.log('🔍 Is counter order?', isCounterOrder);
         
         if (isCounterOrder) {
+            // Counter Order - Show Receipt Style View
             console.log('📋 Counter order detected, showing receipt view');
-            if (typeof window.renderCounterOrderReceiptInModal === 'function') {
-                window.renderCounterOrderReceiptInModal(order);
-            } else {
-                alert('ERROR: renderCounterOrderReceiptInModal is not defined!');
-                // Fallback - show simple text
-                document.getElementById('viewOrderContent').innerHTML = `
-                    <div style="padding:20px">
-                        <h3>Counter Order</h3>
-                        <p>Receipt: ${order.receiptNumber}</p>
-                        <p>Total: ₹${order.totals?.total}</p>
-                        <button onclick="closeViewModal()">Close</button>
-                    </div>
-                `;
-            }
+            renderCounterOrderReceiptInModal(order);
         } else {
             // Online Order - Show Detailed Management View
             console.log('🌐 Online order detected, showing management view');
@@ -1570,10 +1555,9 @@ async function viewOrderDetails(orderId) {
     }
 }
 
-// ✅ Counter Order Receipt View - DEFINED AFTER viewOrderDetails
-window.renderCounterOrderReceiptInModal = function(order) {
+// ✅ Counter Order Receipt View
+function renderCounterOrderReceiptInModal(order) {
     console.log('📋 renderCounterOrderReceiptInModal CALLED!');
-    alert('Rendering counter order receipt!');
     
     const modalContent = document.getElementById('viewOrderContent');
     if (!modalContent) {
@@ -1588,63 +1572,104 @@ window.renderCounterOrderReceiptInModal = function(order) {
     const total = subtotal - discount + shipping;
     
     modalContent.innerHTML = `
-        <div style="padding: 20px; font-family: monospace;">
-            <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-                <h2 style="color: #8B0000;">🧾 COUNTER SALE RECEIPT</h2>
-                <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
-                <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">
+                <i class="fas fa-receipt"></i> Counter Sale Receipt
+            </h2>
+            <button class="close-btn" onclick="closeViewModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
+        </div>
+        
+        <div style="font-family: 'Courier New', monospace; font-size: 13px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
+                <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
+                <p style="margin: 8px 0; font-size: 13px; font-weight: bold;">"RAMCO DHARMIKA SEVA"</p>
+                <p style="margin: 5px 0; font-size: 12px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
+                <p style="margin: 5px 0; font-size: 12px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
             </div>
             
-            <div style="background: #f5f5f5; padding: 10px; margin: 10px 0;">
-                <strong>Customer:</strong> ${order.customerName || 'N/A'}<br>
+            <h4 style="text-align: center; margin: 20px 0; font-size: 16px;">CASH SALE RECEIPT</h4>
+            
+            <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                <div><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</div>
+                <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN')}</div>
+            </div>
+            
+            <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                <strong style="font-size: 14px;">Customer Details:</strong><br>
+                <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
                 <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
                 ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
+                ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
             </div>
             
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr style="border-bottom: 1px solid #333; background: #f0f0f0;">
-                    <th style="padding: 8px;">Item</th>
-                    <th style="padding: 8px;">Qty</th>
-                    <th style="padding: 8px;">Price</th>
-                    <th style="padding: 8px;">Total</th>
-                </tr>
-                ${(order.items || []).map(item => `
-                    <tr style="border-bottom: 1px solid #ddd;">
-                        <td style="padding: 8px;">${item.title || item.name}</td>
-                        <td style="padding: 8px; text-align:center">${item.quantity}</td>
-                        <td style="padding: 8px; text-align:right">₹${parseFloat(item.price).toFixed(2)}</td>
-                        <td style="padding: 8px; text-align:right">₹${(item.quantity * item.price).toFixed(2)}</td>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
+                        <th style="text-align: left; padding: 10px;">#</th>
+                        <th style="text-align: left; padding: 10px;">Item</th>
+                        <th style="text-align: center; padding: 10px;">Qty</th>
+                        <th style="text-align: right; padding: 10px;">Price (₹)</th>
+                        <th style="text-align: right; padding: 10px;">Total (₹)</th>
                     </tr>
-                `).join('')}
-                <tr style="border-top: 2px solid #333;">
-                    <td colspan="3" style="padding: 10px; text-align:right"><strong>GRAND TOTAL:</strong></td>
-                    <td style="padding: 10px; text-align:right"><strong>₹${total.toFixed(2)}</strong></td>
-                </tr>
+                </thead>
+                <tbody>
+                    ${(order.items || []).map((item, idx) => `
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 10px;">${idx + 1}</td>
+                            <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
+                            <td style="text-align: center; padding: 10px;">${item.quantity}</td>
+                            <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
+                            <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr style="border-top: 2px solid #333;">
+                        <td colspan="4" style="text-align: right; padding: 10px;"><strong>Subtotal:</strong></td>
+                        <td style="text-align: right; padding: 10px;"><strong>₹${subtotal.toFixed(2)}</strong></td>
+                    </tr>
+                    ${discount > 0 ? `
+                    <tr>
+                        <td colspan="4" style="text-align: right; padding: 8px; color: #d32f2f;"><strong>Discount:</strong></td>
+                        <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${discount.toFixed(2)}</strong></td>
+                    </tr>
+                    ` : ''}
+                    ${shipping > 0 ? `
+                    <tr>
+                        <td colspan="4" style="text-align: right; padding: 8px;"><strong>Shipping:</strong></td>
+                        <td style="text-align: right; padding: 8px;"><strong>₹${shipping.toFixed(2)}</strong></td>
+                    </tr>
+                    ` : ''}
+                    <tr style="border-top: 2px solid #333; background: #f5f5f5;">
+                        <td colspan="4" style="text-align: right; padding: 12px; font-size: 16px;"><strong>GRAND TOTAL:</strong></td>
+                        <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${total.toFixed(2)}</strong></td>
+                    </tr>
+                </tfoot>
             </table>
             
-            <div style="margin: 20px 0; padding: 10px; background: #e8f5e9;">
-                <strong>Payment Mode:</strong> ${order.paymentMethod?.toUpperCase() || 'CASH'} | 
+            <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
+                <strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'} &nbsp;&nbsp;|&nbsp;&nbsp;
                 <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
             </div>
             
-            <div style="text-align: center; margin-top: 30px;">
-                <p>Thank you for your purchase!</p>
-                <p>www.shastraprathista.in</p>
-            </div>
-            
-            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
-                <button class="btn btn-primary" onclick="window.print()">Print</button>
+            <div style="text-align: center; margin-top: 30px; border-top: 2px dashed #333; padding-top: 20px;">
+                <p style="font-size: 13px;">Thank you for your purchase!</p>
+                <p style="font-size: 11px; color: #666;">Books HSN - 4901 (GST Exempt)</p>
+                <p style="font-size: 11px;">www.shastraprathista.in</p>
             </div>
         </div>
+        
+        <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 15px; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="closeViewModal()">
+                <i class="fas fa-times"></i> Close
+            </button>
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="fas fa-print"></i> Print Receipt
+            </button>
+        </div>
     `;
-    
-    // Make sure the close button works
-    const closeBtn = modalContent.querySelector('.btn-secondary');
-    if (closeBtn) {
-        closeBtn.onclick = () => closeViewModal();
-    }
-};
+}
 
 // Function to print receipt from modal
 function printCounterReceiptFromModal() {
