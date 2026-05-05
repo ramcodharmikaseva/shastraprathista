@@ -1503,63 +1503,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ✅ Correct global variable initialization
 window.currentOrderId = null;
 
-// ✅ Counter Order Receipt View - Place this BEFORE viewOrderDetails
-function renderCounterOrderReceiptInModal(order) {
-    console.log('📋 renderCounterOrderReceiptInModal CALLED!');
-    alert('Rendering counter order receipt!');
-    
-    const modalContent = document.getElementById('viewOrderContent');
-    if (!modalContent) return;
-    
-    // Calculate correct totals
-    const subtotal = order.totals?.subtotal || 0;
-    const discount = order.totals?.discount || 0;
-    const shipping = order.totals?.shipping || 0;
-    const total = subtotal - discount + shipping;
-    
-    modalContent.innerHTML = `
-        <div style="padding: 20px; font-family: monospace;">
-            <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-                <h2 style="color: #8B0000;">COUNTER SALE RECEIPT</h2>
-                <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
-                <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
-            </div>
-            
-            <div style="background: #f5f5f5; padding: 10px; margin: 10px 0;">
-                <strong>Customer:</strong> ${order.customerName || 'N/A'}<br>
-                <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
-                ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
-            </div>
-            
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr style="border-bottom: 1px solid #333;">
-                    <th>Item</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                </tr>
-                ${(order.items || []).map(item => `
-                    <tr>
-                        <td>${item.title || item.name}</td>
-                        <td style="text-align:center">${item.quantity}</td>
-                        <td style="text-align:right">₹${parseFloat(item.price).toFixed(2)}</td>
-                        <td style="text-align:right">₹${(item.quantity * item.price).toFixed(2)}</td>
-                    </tr>
-                `).join('')}
-                <tr style="border-top:1px solid #333">
-                    <td colspan="3" style="text-align:right"><strong>Total:</strong></td>
-                    <td style="text-align:right"><strong>₹${total.toFixed(2)}</strong></td>
-                </tr>
-            </table>
-            
-            <div style="margin-top:20px; text-align:center;">
-                <p>Thank you for your purchase!</p>
-                <button class="btn btn-primary" onclick="window.print()">Print</button>
-            </div>
-        </div>
-    `;
-}
-
 // ✅ Enhanced view order details function - Handles both Online and Counter orders
 async function viewOrderDetails(orderId) {
     try {
@@ -1593,9 +1536,21 @@ async function viewOrderDetails(orderId) {
         alert(`Is Counter Order? ${isCounterOrder}\nShowing ${isCounterOrder ? 'Receipt View' : 'Management View'}`);
         
         if (isCounterOrder) {
-            // Counter Order - Show Receipt Style View
             console.log('📋 Counter order detected, showing receipt view');
-            renderCounterOrderReceiptInModal(order);
+            if (typeof window.renderCounterOrderReceiptInModal === 'function') {
+                window.renderCounterOrderReceiptInModal(order);
+            } else {
+                alert('ERROR: renderCounterOrderReceiptInModal is not defined!');
+                // Fallback - show simple text
+                document.getElementById('viewOrderContent').innerHTML = `
+                    <div style="padding:20px">
+                        <h3>Counter Order</h3>
+                        <p>Receipt: ${order.receiptNumber}</p>
+                        <p>Total: ₹${order.totals?.total}</p>
+                        <button onclick="closeViewModal()">Close</button>
+                    </div>
+                `;
+            }
         } else {
             // Online Order - Show Detailed Management View
             console.log('🌐 Online order detected, showing management view');
@@ -1614,6 +1569,82 @@ async function viewOrderDetails(orderId) {
         `;
     }
 }
+
+// ✅ Counter Order Receipt View - DEFINED AFTER viewOrderDetails
+window.renderCounterOrderReceiptInModal = function(order) {
+    console.log('📋 renderCounterOrderReceiptInModal CALLED!');
+    alert('Rendering counter order receipt!');
+    
+    const modalContent = document.getElementById('viewOrderContent');
+    if (!modalContent) {
+        console.error('modalContent not found');
+        return;
+    }
+    
+    // Calculate correct totals
+    const subtotal = order.totals?.subtotal || 0;
+    const discount = order.totals?.discount || 0;
+    const shipping = order.totals?.shipping || 0;
+    const total = subtotal - discount + shipping;
+    
+    modalContent.innerHTML = `
+        <div style="padding: 20px; font-family: monospace;">
+            <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+                <h2 style="color: #8B0000;">🧾 COUNTER SALE RECEIPT</h2>
+                <p><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</p>
+                <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+            </div>
+            
+            <div style="background: #f5f5f5; padding: 10px; margin: 10px 0;">
+                <strong>Customer:</strong> ${order.customerName || 'N/A'}<br>
+                <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
+                ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid #333; background: #f0f0f0;">
+                    <th style="padding: 8px;">Item</th>
+                    <th style="padding: 8px;">Qty</th>
+                    <th style="padding: 8px;">Price</th>
+                    <th style="padding: 8px;">Total</th>
+                </tr>
+                ${(order.items || []).map(item => `
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px;">${item.title || item.name}</td>
+                        <td style="padding: 8px; text-align:center">${item.quantity}</td>
+                        <td style="padding: 8px; text-align:right">₹${parseFloat(item.price).toFixed(2)}</td>
+                        <td style="padding: 8px; text-align:right">₹${(item.quantity * item.price).toFixed(2)}</td>
+                    </tr>
+                `).join('')}
+                <tr style="border-top: 2px solid #333;">
+                    <td colspan="3" style="padding: 10px; text-align:right"><strong>GRAND TOTAL:</strong></td>
+                    <td style="padding: 10px; text-align:right"><strong>₹${total.toFixed(2)}</strong></td>
+                </tr>
+            </table>
+            
+            <div style="margin: 20px 0; padding: 10px; background: #e8f5e9;">
+                <strong>Payment Mode:</strong> ${order.paymentMethod?.toUpperCase() || 'CASH'} | 
+                <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <p>Thank you for your purchase!</p>
+                <p>www.shastraprathista.in</p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+                <button class="btn btn-primary" onclick="window.print()">Print</button>
+            </div>
+        </div>
+    `;
+    
+    // Make sure the close button works
+    const closeBtn = modalContent.querySelector('.btn-secondary');
+    if (closeBtn) {
+        closeBtn.onclick = () => closeViewModal();
+    }
+};
 
 // Function to print receipt from modal
 function printCounterReceiptFromModal() {
