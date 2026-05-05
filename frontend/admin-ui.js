@@ -1505,9 +1505,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ✅ Correct global variable initialization
 window.currentOrderId = null;
 
-// ✅ REPLACE your existing viewOrderDetails function with this improved version
+// ✅ REPLACE THE ENTIRE viewOrderDetails function with this
 async function viewOrderDetails(orderId) {
     try {
+        console.log('🚀 viewOrderDetails called with orderId:', orderId);
         window.currentOrderId = orderId;
         
         // Show loading in modal
@@ -1542,47 +1543,45 @@ async function viewOrderDetails(orderId) {
             order = result.order || result;
         }
         
-        // Debug logging - CRITICAL to understand what's coming back
+        // ===== CRITICAL DEBUGGING =====
         console.log('🔍 ===== ORDER DETAILS DEBUG =====');
-        console.log('🔍 Full order object:', JSON.stringify(order, null, 2));
-        console.log('🔍 Order receiptNumber:', order.receiptNumber);
-        console.log('🔍 Order source:', order.source);
-        console.log('🔍 Order _id:', order._id);
-        console.log('🔍 Order orderId:', order.orderId);
+        console.log('🔍 orderId parameter passed in:', orderId);
+        console.log('🔍 orderId type:', typeof orderId);
+        console.log('🔍 Does orderId start with SLR?', String(orderId).startsWith('SLR'));
+        console.log('🔍 Full order object keys:', Object.keys(order));
+        console.log('🔍 order.receiptNumber:', order.receiptNumber);
+        console.log('🔍 order.source:', order.source);
+        console.log('🔍 order.orderId:', order.orderId);
+        console.log('🔍 order._id:', order._id);
         
-        // ✅ CHECK BOTH orderId AND receiptNumber since the ID itself might be the receipt number
-        const orderIdValue = order.orderId || order._id || '';
-        const receiptNumberValue = order.receiptNumber || '';
+        // Check if the ORDER ID PARAMETER itself looks like a receipt number
+        const orderIdParamIsReceipt = String(orderId).startsWith('SLR');
         
-        // Check if the order ID itself looks like a receipt number (starts with SLR)
-        const looksLikeReceipt = orderIdValue.startsWith('SLR') || receiptNumberValue.startsWith('SLR');
+        // Check if the order object has receipt number starting with SLR
+        const orderHasReceiptNumber = order.receiptNumber && order.receiptNumber.startsWith('SLR');
         
-        // Check if the order ID we passed in looks like a receipt number
-        const orderIdParamLooksLikeReceipt = String(orderId).startsWith('SLR');
+        // Check if the order's ID field starts with SLR
+        const orderIdFieldIsReceipt = (order.orderId && String(order.orderId).startsWith('SLR')) ||
+                                       (order._id && String(order._id).startsWith('SLR'));
         
-        // MULTIPLE DETECTION METHODS
-        const isCounterOrder = (
-            looksLikeReceipt ||
-            orderIdParamLooksLikeReceipt ||
-            order.source === 'counter' ||
-            order.orderType === 'counter' ||
-            (receiptNumberValue && receiptNumberValue.includes('SLR-')) ||
-            (orderIdValue && orderIdValue.includes('SLR-')) ||
-            (order.receiptNumber && /^SLR-\d{4}-\d{2}\/\d{3}$/.test(order.receiptNumber)) ||
-            (orderIdValue && /^SLR-\d{4}-\d{2}\/\d{3}$/.test(orderIdValue))
-        );
+        // Check source field
+        const isCounterSource = order.source === 'counter';
         
-        console.log('🔍 Did orderId param start with SLR?', orderIdParamLooksLikeReceipt);
-        console.log('🔍 Does receiptNumber start with SLR?', receiptNumberValue.startsWith('SLR'));
-        console.log('🔍 Does orderId start with SLR?', orderIdValue.startsWith('SLR'));
-        console.log('🔍 Final isCounterOrder result:', isCounterOrder);
+        // FINAL DETECTION - ANY of these being true means it's a counter order
+        const isCounterOrder = orderIdParamIsReceipt || orderHasReceiptNumber || orderIdFieldIsReceipt || isCounterSource;
+        
+        console.log('🔍 orderIdParamIsReceipt:', orderIdParamIsReceipt);
+        console.log('🔍 orderHasReceiptNumber:', orderHasReceiptNumber);
+        console.log('🔍 orderIdFieldIsReceipt:', orderIdFieldIsReceipt);
+        console.log('🔍 isCounterSource:', isCounterSource);
+        console.log('🔍 FINAL isCounterOrder:', isCounterOrder);
         console.log('🔍 ================================');
         
         if (isCounterOrder) {
-            console.log('📋 Counter order detected, showing receipt view');
+            console.log('📋 COUNTER ORDER DETECTED! Showing receipt view');
             renderCounterOrderReceiptInModal(order);
         } else {
-            console.log('🌐 Online order detected, showing management view');
+            console.log('🌐 ONLINE ORDER - Showing management view');
             renderOrderDetailsInModal(order);
         }
         
