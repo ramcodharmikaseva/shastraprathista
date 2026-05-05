@@ -1,4 +1,3 @@
-// ✅ Make sure API_BASE is defined at the top of admin-ui.js (add if missing)
 const API_BASE = window.API_BASE || (window.location.origin + '/api');
 
 console.log('🎨 Admin UI loading...');
@@ -1727,34 +1726,6 @@ function renderCounterOrderReceiptInModal(order) {
             </button>
         </div>
     `;
-}
-
-// Function to print receipt from modal
-function printCounterReceiptFromModal() {
-    const receiptContent = document.getElementById('receiptPrintContent') || document.querySelector('#viewOrderContent > div');
-    if (!receiptContent) {
-        showToast('Receipt content not found', 'error');
-        return;
-    }
-    
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Counter Sale Receipt</title>
-            <style>
-                body { font-family: 'Courier New', monospace; padding: 30px; }
-                @media print { body { padding: 15px; } button { display: none; } }
-                table { width: 100%; border-collapse: collapse; }
-                th, td { padding: 8px; }
-            </style>
-        </head>
-        <body>${receiptContent.innerHTML}</body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
 }
 
 // ✅ Function to print receipt from modal
