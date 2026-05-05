@@ -1505,12 +1505,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ✅ Correct global variable initialization
 window.currentOrderId = null;
 
-// ============ UPDATED viewOrderDetails with proper counter order detection ============
+// ============ FIXED viewOrderDetails - Fetch first, then check receipt number ============
 async function viewOrderDetails(orderId) {
     try {
-        console.log('🚀🚀🚀 viewOrderDetails CALLED with orderId:', orderId);
-        console.log('🚀 orderId type:', typeof orderId);
-        console.log('🚀 orderId starts with SLR?', String(orderId).startsWith('SLR'));
+        console.log('🚀 viewOrderDetails CALLED with orderId:', orderId);
         
         window.currentOrderId = orderId;
         
@@ -1532,44 +1530,50 @@ async function viewOrderDetails(orderId) {
         }
         
         // Fetch order details from backend
-        let order;
+        let order = null;
+        let fetchError = null;
+        
         try {
+            // Try to get from admin-data.js function first
             order = await getOrderDetails(orderId);
-        } catch (fetchError) {
-            console.error('Error fetching order:', fetchError);
-            // Try alternative endpoint
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_BASE}/orders/${orderId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const result = await response.json();
-            order = result.order || result;
+            console.log('✅ Order fetched via getOrderDetails:', order);
+        } catch (error) {
+            console.error('Error with getOrderDetails:', error);
+            fetchError = error;
         }
         
-        // ===== CRITICAL: Check if the orderId parameter itself is a receipt number =====
-        const isReceiptNumberParam = String(orderId).startsWith('SLR');
+        // If that failed, try direct API call
+        if (!order) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/admin/orders/${orderId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                order = result.order || result;
+                console.log('✅ Order fetched via direct API:', order);
+            } catch (error2) {
+                console.error('Direct API also failed:', error2);
+                throw fetchError || error2;
+            }
+        }
         
-        // ===== Check order object fields =====
-        const hasReceiptNumber = order.receiptNumber && String(order.receiptNumber).startsWith('SLR');
-        const hasSourceCounter = order.source === 'counter';
-        const orderIdStartsWithSLR = order.orderId && String(order.orderId).startsWith('SLR');
-        
-        // ===== FINAL DETECTION =====
-        const isCounterOrder = isReceiptNumberParam || hasReceiptNumber || hasSourceCounter || orderIdStartsWithSLR;
+        // ===== CRITICAL: Check the order's receiptNumber field =====
+        const receiptNumber = order.receiptNumber || '';
+        const isCounterOrder = receiptNumber.startsWith('SLR');
         
         console.log('🔍 ===== COUNTER ORDER DETECTION =====');
-        console.log('🔍 isReceiptNumberParam (param starts with SLR):', isReceiptNumberParam);
-        console.log('🔍 hasReceiptNumber:', hasReceiptNumber, 'value:', order.receiptNumber);
-        console.log('🔍 hasSourceCounter:', hasSourceCounter);
-        console.log('🔍 orderIdStartsWithSLR:', orderIdStartsWithSLR);
-        console.log('🔍 FINAL RESULT - isCounterOrder:', isCounterOrder);
+        console.log('🔍 Order receiptNumber:', receiptNumber);
+        console.log('🔍 Does receiptNumber start with SLR?', receiptNumber.startsWith('SLR'));
+        console.log('🔍 Order source:', order.source);
+        console.log('🔍 FINAL isCounterOrder:', isCounterOrder);
         console.log('🔍 ===================================');
         
         if (isCounterOrder) {
-            console.log('✅✅✅ COUNTER ORDER! Showing receipt view ✅✅✅');
+            console.log('✅✅✅ COUNTER ORDER DETECTED! Showing receipt view ✅✅✅');
             renderCounterOrderReceiptInModal(order);
         } else {
-            console.log('📦 ONLINE ORDER! Showing management view');
+            console.log('📦 ONLINE ORDER - Showing management view');
             renderOrderDetailsInModal(order);
         }
         
