@@ -1505,83 +1505,81 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ✅ Correct global variable initialization
 window.currentOrderId = null;
 
-// ============ FIXED viewOrderDetails - Fetch first, then check receipt number ============
+// ============ FINAL FIXED viewOrderDetails ============
 async function viewOrderDetails(orderId) {
     try {
-        console.log('🚀 viewOrderDetails CALLED with orderId:', orderId);
+        console.log('🚀 viewOrderDetails STARTED with ID:', orderId);
         
-        window.currentOrderId = orderId;
-        
-        // Show loading in modal
-        const modalContent = document.getElementById('viewOrderContent');
-        if (modalContent) {
-            modalContent.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
+        // Show loading in modal first
+        const modalContainer = document.getElementById('viewOrderContent');
+        if (modalContainer) {
+            modalContainer.innerHTML = `
+                <div style="text-align: center; padding: 50px;">
                     <div class="spinner"></div>
-                    <p>Loading order details from server...</p>
+                    <p>Loading order details...</p>
                 </div>
             `;
         }
         
-        // Show the modal
+        // Show modal
         const modal = document.getElementById('viewOrderModal');
-        if (modal) {
-            modal.style.display = 'block';
-        }
+        if (modal) modal.style.display = 'block';
         
-        // Fetch order details from backend
+        // Fetch the complete order data
         let order = null;
-        let fetchError = null;
+        const token = localStorage.getItem('token');
         
-        try {
-            // Try to get from admin-data.js function first
-            order = await getOrderDetails(orderId);
-            console.log('✅ Order fetched via getOrderDetails:', order);
-        } catch (error) {
-            console.error('Error with getOrderDetails:', error);
-            fetchError = error;
-        }
+        // Try multiple endpoints to get order data
+        const endpoints = [
+            `${API_BASE}/admin/orders/${orderId}`,
+            `${API_BASE}/orders/${orderId}`,
+            `${API_BASE}/counter-orders/${orderId}`
+        ];
         
-        // If that failed, try direct API call
-        if (!order) {
+        for (const endpoint of endpoints) {
             try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE}/admin/orders/${orderId}`, {
+                const response = await fetch(endpoint, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const result = await response.json();
-                order = result.order || result;
-                console.log('✅ Order fetched via direct API:', order);
-            } catch (error2) {
-                console.error('Direct API also failed:', error2);
-                throw fetchError || error2;
+                if (response.ok) {
+                    const data = await response.json();
+                    order = data.order || data;
+                    console.log(`✅ Order fetched from ${endpoint}`);
+                    break;
+                }
+            } catch (err) {
+                console.log(`Failed from ${endpoint}:`, err.message);
             }
         }
         
-        // ===== CRITICAL: Check the order's receiptNumber field =====
+        if (!order) {
+            throw new Error('Could not fetch order from any endpoint');
+        }
+        
+        // CRITICAL: Check if this is a counter order by receipt number
         const receiptNumber = order.receiptNumber || '';
         const isCounterOrder = receiptNumber.startsWith('SLR');
         
-        console.log('🔍 ===== COUNTER ORDER DETECTION =====');
-        console.log('🔍 Order receiptNumber:', receiptNumber);
-        console.log('🔍 Does receiptNumber start with SLR?', receiptNumber.startsWith('SLR'));
-        console.log('🔍 Order source:', order.source);
-        console.log('🔍 FINAL isCounterOrder:', isCounterOrder);
-        console.log('🔍 ===================================');
+        console.log('🔍 ===== ORDER DETECTION =====');
+        console.log('🔍 Order ID:', orderId);
+        console.log('🔍 Receipt Number:', receiptNumber);
+        console.log('🔍 Is Counter Order (SLR prefix)?', isCounterOrder);
+        console.log('🔍 Order Source:', order.source);
+        console.log('==============================');
         
         if (isCounterOrder) {
-            console.log('✅✅✅ COUNTER ORDER DETECTED! Showing receipt view ✅✅✅');
+            console.log('🎯 RENDERING COUNTER ORDER RECEIPT VIEW');
             renderCounterOrderReceiptInModal(order);
         } else {
-            console.log('📦 ONLINE ORDER - Showing management view');
+            console.log('🎯 RENDERING ONLINE ORDER MANAGEMENT VIEW');
             renderOrderDetailsInModal(order);
         }
         
     } catch (error) {
-        console.error('❌ Error loading order details:', error);
-        const modalContent = document.getElementById('viewOrderContent');
-        if (modalContent) {
-            modalContent.innerHTML = `
+        console.error('❌ Error in viewOrderDetails:', error);
+        const modalContainer = document.getElementById('viewOrderContent');
+        if (modalContainer) {
+            modalContainer.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: #e74c3c;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
                     <h3>Error Loading Order</h3>
