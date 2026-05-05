@@ -1523,8 +1523,22 @@ async function viewOrderDetails(orderId) {
         // Fetch order details directly from backend
         const order = await getOrderDetails(orderId);
         
-        // ✅ CHECK IF IT'S A COUNTER ORDER (source === 'counter' OR has receiptNumber)
-        if (order.source === 'counter' || order.receiptNumber || order.paymentMethod === 'cash') {
+        // Debug logging to see what we're getting
+        console.log('🔍 Order details:', {
+            id: order._id,
+            source: order.source,
+            receiptNumber: order.receiptNumber,
+            orderId: order.orderId,
+            paymentMethod: order.paymentMethod
+        });
+        
+        // ✅ IMPROVED DETECTION: Check for counter order
+        // Counter orders have: source === 'counter' OR receiptNumber starts with 'SLR'
+        const isCounterOrder = order.source === 'counter' || 
+                              (order.receiptNumber && order.receiptNumber.startsWith('SLR')) ||
+                              order.orderId?.startsWith('SLR');
+        
+        if (isCounterOrder) {
             // Counter Order - Show Receipt Style View
             console.log('📋 Counter order detected, showing receipt view');
             renderCounterOrderReceiptInModal(order);
@@ -1551,6 +1565,8 @@ async function viewOrderDetails(orderId) {
 function renderCounterOrderReceiptInModal(order) {
     const modalContent = document.getElementById('viewOrderContent');
     if (!modalContent) return;
+    
+    console.log('📋 Rendering counter order receipt for:', order.receiptNumber || order.orderId);
     
     // Calculate correct totals
     const subtotal = order.totals?.subtotal || 0;
@@ -1634,7 +1650,7 @@ function renderCounterOrderReceiptInModal(order) {
                         <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${total.toFixed(2)}</strong></td>
                     </tr>
                 </tfoot>
-            </table>
+            <td>
             
             <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
                 <strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'} &nbsp;&nbsp;|&nbsp;&nbsp;
