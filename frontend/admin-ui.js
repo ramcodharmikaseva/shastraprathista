@@ -1524,11 +1524,10 @@ async function viewOrderDetails(orderId) {
         
         // Debug logging
         console.log('🔍 Order received in viewOrderDetails:', order);
-        console.log('🔍 Order source:', order.source);
         console.log('🔍 Order receiptNumber:', order.receiptNumber);
         
         // ✅ CHECK IF IT'S A COUNTER ORDER (receipt starts with SLR)
-        const isCounterOrder = (order.receiptNumber && order.receiptNumber.startsWith('SLR')) || order.source === 'counter';
+        const isCounterOrder = order.receiptNumber && order.receiptNumber.startsWith('SLR');
         
         console.log('🔍 Is counter order?', isCounterOrder);
         
@@ -1555,7 +1554,7 @@ async function viewOrderDetails(orderId) {
     }
 }
 
-// ✅ Counter Order Receipt View
+// ✅ Counter Order Receipt View - Add this BEFORE renderOrderDetailsInModal
 function renderCounterOrderReceiptInModal(order) {
     console.log('📋 renderCounterOrderReceiptInModal CALLED!');
     
@@ -1600,7 +1599,6 @@ function renderCounterOrderReceiptInModal(order) {
                 <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
                 <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
                 ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
-                ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
             </div>
             
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
