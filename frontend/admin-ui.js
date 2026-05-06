@@ -960,7 +960,6 @@ function showCounterOrderDetails(orderId) {
                                 <strong style="font-size: 14px;">Customer Details:</strong><br>
                                 <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
                                 <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
-                                ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
                                 ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
                             </div>
                             
@@ -1268,7 +1267,6 @@ function generateCounterReceiptHTML(order) {
             <strong style="font-size: 14px;">Customer Details:</strong><br>
             <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
             <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
-            ${order.customerEmail ? `<strong>Email:</strong> ${order.customerEmail}<br>` : ''}
             ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
         </div>
         
@@ -1603,7 +1601,6 @@ function renderCounterOrderReceiptInModal(order) {
     // Get customer info safely
     const customerName = order.customerName || 'Walk-in Customer';
     const customerPhone = order.customerPhone || 'Not provided';
-    const customerEmail = order.customerEmail || '';
     const customerAddress = order.customerAddress || '';
     
     // Get receipt number
@@ -1646,7 +1643,6 @@ function renderCounterOrderReceiptInModal(order) {
                 <strong style="font-size: 14px;">Customer Details:</strong><br>
                 <strong>Name:</strong> ${escapeHtml(customerName)}<br>
                 <strong>Phone:</strong> ${customerPhone}<br>
-                ${customerEmail ? `<strong>Email:</strong> ${escapeHtml(customerEmail)}<br>` : ''}
                 ${customerAddress ? `<strong>Address:</strong> ${escapeHtml(customerAddress)}<br>` : ''}
             </div>
             
@@ -2038,11 +2034,13 @@ function renderAllOrders(orders = []) {
     console.log('✅ Orders rendered successfully');
 }
 
+// Update orders results counter
 function updateOrdersResultsCounter() {
     const counter = document.getElementById('ordersResultsCounter');
     if (counter) {
-        counter.textContent =
-          `Showing ${window.adminState.filteredOrders.length} of ${window.adminState.allOrders.length} orders`;
+        const showing = window.adminState.filteredOrders?.length || 0;
+        const total = window.adminState.allOrders?.length || 0;
+        counter.textContent = `Showing ${showing} of ${total} orders`;
     }
 }
 
@@ -3262,12 +3260,6 @@ function printOrder(orderId) {
     showToast('Invoice downloaded. You can print the PDF.', 'info');
 }
 
-function hideNewOrderNotification() {
-  const el = document.getElementById('newOrderNotification');
-  if (el) el.style.display = 'none';
-}
-
-
 // ✅ Show toast notification (ONLY PLACE)
 function showToast(message, type = "info") {
   let toast = document.getElementById('toast');
@@ -3412,7 +3404,6 @@ window.openSettingsTab = openSettingsTab;
 window.editShippingRegions = editShippingRegions;
 window.showAddAdminModal = showAddAdminModal;
 window.prepareForShipping = prepareForShipping;
-window.hideNewOrderNotification = hideNewOrderNotification;
 window.showToast = showToast;
 window.showLoading = showLoading;
 
