@@ -184,3 +184,11 @@ body {
     bottom: 30px !important;
     right: 30px !important;
 }
+
+/* Hide new order notification completely */
+#newOrderNotification,
+.new-order-notification,
+.notification-badge[data-type="order"] {
+    display: none !important;
+    visibility: hidden !important;
+}

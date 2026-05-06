@@ -382,14 +382,6 @@ function generateReport() {
   generateSalesReport();
 }
 
-// ✅ Hide notification function
-function hideNewOrderNotification() {
-  const notification = document.getElementById('newOrderNotification');
-  if (notification) {
-    notification.style.display = 'none';
-  }
-}
-
 // ✅ Initialize date inputs when reports section loads
 function loadReportsSection() {
     console.log('📊 Loading reports section...');
@@ -2093,7 +2085,6 @@ window.toggleCustomersFilters = toggleCustomersFilters;
 window.applyCustomersFilters = applyCustomersFilters;
 window.logoutUser = logoutUser;
 window.generateReport = generateReport;
-window.hideNewOrderNotification = hideNewOrderNotification;
 window.generateSalesReport = generateSalesReport;
 window.refreshReports = refreshReports;
 window.changeReportPeriod = changeReportPeriod;
