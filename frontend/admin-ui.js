@@ -7,25 +7,22 @@ console.log('🎨 Admin UI loading...');
 let posCart = [];
 let posProducts = [];
 
-// Open POS Modal
 function openPOSModal() {
     console.log('🔄 Opening POS Modal...');
     const modal = document.getElementById('posModal');
     if (modal) {
         modal.style.display = 'flex';
-        // Load products when modal opens
         loadPOSProducts();
-        // Reset cart
         clearPOSCart();
         
         // Reset customer fields
         const nameInput = document.getElementById('posCustomerName');
         const phoneInput = document.getElementById('posCustomerPhone');
-        const emailInput = document.getElementById('posCustomerEmail');
         const addressInput = document.getElementById('posCustomerAddress');
+        // ❌ REMOVED: emailInput
+        
         if (nameInput) nameInput.value = '';
         if (phoneInput) phoneInput.value = '';
-        if (emailInput) emailInput.value = '';
         if (addressInput) addressInput.value = '';
         
         // Reset discount/shipping fields
@@ -38,7 +35,6 @@ function openPOSModal() {
         const percentageRadio = document.querySelector('input[name="discountType"][value="percentage"]');
         if (percentageRadio) percentageRadio.checked = true;
         
-        // Update totals
         updatePOSTotals();
     } else {
         console.error('❌ POS Modal not found!');
@@ -229,7 +225,6 @@ function updatePOSTotals() {
     if (totalEl) totalEl.innerText = `₹${total.toFixed(2)}`;
 }
 
-// Process POS Sale - Now reads customer info from the POS page
 async function processPOSSale() {
     if (posCart.length === 0) {
         showToast('Cart is empty', 'error');
@@ -239,8 +234,8 @@ async function processPOSSale() {
     // Get customer details from the POS page fields
     const customerName = document.getElementById('posCustomerName')?.value.trim();
     const customerPhone = document.getElementById('posCustomerPhone')?.value.trim();
-    const customerEmail = document.getElementById('posCustomerEmail')?.value.trim();
     const customerAddress = document.getElementById('posCustomerAddress')?.value.trim();
+    // ❌ REMOVED: customerEmail - not needed for counter sales
     
     // Validate required fields
     if (!customerName) {
@@ -307,7 +302,7 @@ async function processPOSSale() {
             receiptNumber: receiptNumber,
             customerName: customerName,
             customerPhone: customerPhone,
-            customerEmail: customerEmail || '',
+            // ❌ REMOVED: customerEmail: customerEmail || '',
             customerAddress: customerAddress || '',
             items: posCart.map(item => ({
                 id: item.productId,
@@ -342,13 +337,13 @@ async function processPOSSale() {
         if (result.success) {
             showToast('✅ Sale completed successfully!', 'success');
             
-            // Print receipt
+            // Print receipt (email removed from receipt too)
             printPOSReceipt({
                 receiptNumber: receiptNumber,
                 orderId: result.orderId,
                 customerName: customerName,
                 customerPhone: customerPhone,
-                customerEmail: customerEmail,
+                // ❌ REMOVED: customerEmail: customerEmail,
                 customerAddress: customerAddress,
                 items: posCart,
                 subtotal: subtotal,
@@ -363,12 +358,11 @@ async function processPOSSale() {
             // Reset customer fields
             const nameInput = document.getElementById('posCustomerName');
             const phoneInput = document.getElementById('posCustomerPhone');
-            const emailInput = document.getElementById('posCustomerEmail');
             const addressInput = document.getElementById('posCustomerAddress');
+            // ❌ REMOVED: emailInput
             
             if (nameInput) nameInput.value = '';
             if (phoneInput) phoneInput.value = '';
-            if (emailInput) emailInput.value = '';
             if (addressInput) addressInput.value = '';
             
             // Reset discount/shipping
@@ -591,7 +585,6 @@ function printPOSReceipt(data) {
                 <strong>Customer Details:</strong><br>
                 Name: ${escapeHtml(data.customerName)}<br>
                 Phone: ${data.customerPhone}<br>
-                ${data.customerEmail ? `Email: ${escapeHtml(data.customerEmail)}<br>` : ''}
                 ${data.customerAddress ? `Address: ${escapeHtml(data.customerAddress)}<br>` : ''}
             </div>
             
