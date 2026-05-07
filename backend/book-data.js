@@ -828,6 +828,98 @@ const books = [
       size: '5.7x8.8 inches',
       description: '**Laghuvasudevamananam** is a classical Vedantic book that presents the essential teachings of Advaita Vedanta in a simple and systematic way. The original **Sanskrit text, attributed to Vasudeva Yati**, explains the nature of the Self (Ātman), Brahman, ignorance (avidyā), and liberation (mokṣa), guiding the seeker toward self-realization. This **hardcover edition** includes a **clear Tamil explanation written by K. V. Subbaratnam**, making the deep philosophical ideas easy to understand for Tamil readers. The book is valued as a concise and practical guide for students and spiritual aspirants who wish to study Vedanta in both Sanskrit and Tamil.'
     }
+  },
+  {
+    id: 'slrspt-book-037',
+    title: 'Sri Lalitha Sahasranama Stotram and Namavali',
+    author: '-',
+    isbn: "9788196917630",
+    price: 20,
+    discount: 0,
+    images: [
+      'images/book37/book1.jpg',
+      'images/book37/book2.jpg',
+      'images/book37/book3.jpg',
+      'images/book37/book4.jpg',
+      'images/book37/book5.jpg'
+    ],
+    weight: 0.60,
+    specs: {
+      publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+      language: 'Sanskrit',
+      pages: 99,
+      size: '4.2x5.2 inches',
+      description: 'This sacred book contains the Sri Lalitha Sahasranamam, the thousand divine names of Goddess Lalitha Tripurasundari, along with the Namavali for devotional chanting and worship. Presented in a simple and devotional format, this book is ideal for daily parayanam, meditation, and spiritual practice.'
+    }
+  },
+  {
+    id: 'slrspt-book-038',
+    title: 'Sri Lalitha Trisati & Lalitha Astothra Satanamavali',
+    author: '-',
+    isbn: "9788196917661",
+    price: 10,
+    discount: 0,
+    images: [
+      'images/book38/book1.jpg',
+      'images/book38/book2.jpg',
+      'images/book38/book3.jpg',
+      'images/book38/book4.jpg',
+      'images/book38/book5.jpg'
+    ],
+    weight: 400,
+    specs: {
+      publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+      language: 'Sanskrit to Tamil',
+      pages: 203,
+      size: '5.7x8.8 inches',
+      description: 'This sacred book contains the Sri Lalitha Trisati Stotram, comprising the 300 divine names of Goddess Lalitha Tripurasundari, along with the Namavali for devotional recitation and worship. Presented in a simple format, suitable for daily chanting, prayer, meditation, peace, and spiritual growth.'
+    }
+  },
+  {
+    id: 'slrspt-book-039',
+    title: 'Astotra Satanamavaligal',
+    author: '-',
+    isbn: "-",
+    price: 15,
+    discount: 0,
+    images: [
+      'images/book39/book1.jpg',
+      'images/book39/book2.jpg',
+      'images/book39/book3.jpg',
+      'images/book39/book4.jpg',
+      'images/book39/book5.jpg'
+    ],
+    weight: 0.60,
+    specs: {
+      publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+      language: 'Sanskrit and Tamil',
+      pages: 58,
+      size: '4.9x7 inches',
+      description: 'This book is a devotional collection of Ashtottara Satanamavalis (108 sacred names) dedicated to various deities including Lord Ganesha, Goddess Lakshmi, Goddess Gowri, Lord Krishna, Goddess Durga, Goddess Saraswati, Lord Subramanya, Lord Shiva, Goddess Lalitha, Lord Rama, Lord Venkateswara, Lord Hanuman, and Sri Shankaracharya.'
+    }
+  },
+  {
+    id: 'slrspt-book-040',
+    title: 'Devikadgamala Stotram',
+    author: '-',
+    isbn: "-",
+    price: 4,
+    discount: 0,
+    images: [
+      'images/book40/book1.jpg',
+      'images/book40/book2.jpg',
+      'images/book40/book3.jpg',
+      'images/book40/book4.jpg',
+      'images/book40/book5.jpg'
+    ],
+    weight: 0.25,
+    specs: {
+      publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+      language: 'Sanskrit',
+      pages: 21,
+      size: '4.8x3.5 inches',
+      description: 'This sacred book contains the revered Devi Khadgamala Stotram along with the divine Namavali dedicated to Goddess Lalitha Tripurasundari. The Khadgamala is a powerful hymn from the Sri Vidya tradition, glorifying the Divine Mother through the worship of the deities of the Sri Chakra.'
+    }
   }
 ];
 
