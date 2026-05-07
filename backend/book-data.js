@@ -920,6 +920,52 @@ const books = [
       size: '4.8x3.5 inches',
       description: 'This sacred book contains the revered Devi Khadgamala Stotram along with the divine Namavali dedicated to Goddess Lalitha Tripurasundari. The Khadgamala is a powerful hymn from the Sri Vidya tradition, glorifying the Divine Mother through the worship of the deities of the Sri Chakra.'
     }
+  },
+  {
+    id: 'slrspt-book-041',
+    title: 'Brutavali Brahmavithaseervata Paththati',
+    author: 'Sri Vidyaranya Swamigal, Sri Narushimhabharathi Swamigal',
+    isbn: "9788198642622",
+    price: 80,
+    discount: 0,
+    images: [
+      'images/book41/book1.jpg',
+      'images/book41/book2.jpg',
+      'images/book41/book3.jpg',
+      'images/book41/book4.jpg',
+      'images/book41/book5.jpg'
+    ],
+    weight: 183,
+    specs: {
+      publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+      language: 'Sanskrit and Tamil',
+      pages: 104,
+      size: '5.5X8.5 inches',
+      description: 'This devotional book contains sacred hymns, praises, and traditional spiritual compositions dedicated to revered Acharyas and the Guru Parampara. It includes Birudavali, Brahmavidaseervata Padathi, and Sri Nrushimhabharati Swamigal Vednta stotras presented in a simple and readable format.'
+    }
+  },
+  {
+    id: 'slrspt-book-042',
+    title: 'Sri Ganapathy Atharvashirsham, Devi Stotrani & Aditya Hridayam',
+    author: '-',
+    isbn: "-",
+    price: 10,
+    discount: 0,
+    images: [
+      'images/book42/book1.jpg',
+      'images/book42/book2.jpg',
+      'images/book42/book3.jpg',
+      'images/book42/book4.jpg',
+      'images/book42/book5.jpg'
+    ],
+    weight: 35,
+    specs: {
+      publisher: 'Smt Lingammal Ramaraju Shastraprathista Trust',
+      language: 'Sanskrit',
+      pages: 30,
+      size: '5x7 inches',
+      description: 'This devotional book contains the sacred Sri Ganapathy Atharvashirsham, selected Devi Stotrani, and the powerful Aditya Hridayam hymn dedicated to Lord Surya. Presented in a simple and devotional format, this book is ideal for daily chanting, prayer, and spiritual practice, helping devotees attain divine blessings, peace, courage, and spiritual well-being.'
+    }
   }
 ];
 
