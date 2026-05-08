@@ -713,200 +713,196 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
 let allOrdersData = [];
 let filteredOrdersData = [];
 
-// Toggle orders filters panel
-function toggleOrdersFilters() {
-    const panel = document.getElementById('ordersFiltersPanel');
-    if (panel) {
-        panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+// ============ COMPLETE ORDER FILTERS FIX ============
+
+// Apply all order filters
+async function applyOrdersFilters() {
+    console.log('🔍 Applying filters...');
+    showLoading(true);
+    
+    try {
+        // Get fresh orders from backend
+        const allOrders = await loadOrdersFromBackend();
+        
+        // Get filter values
+        const orderStatus = document.getElementById('filterOrderStatus')?.value || '';
+        const paymentStatus = document.getElementById('filterPaymentStatus')?.value || '';
+        const orderType = document.getElementById('filterOrderType')?.value || '';
+        const dateRange = document.getElementById('filterDateRange')?.value || '';
+        const minAmount = parseFloat(document.getElementById('filterMinAmount')?.value) || 0;
+        const maxAmount = parseFloat(document.getElementById('filterMaxAmount')?.value) || Infinity;
+        
+        // Date calculation
+        let startDate = null;
+        let endDate = null;
+        const now = new Date();
+        
+        switch(dateRange) {
+            case 'today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+                break;
+            case 'yesterday':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
+                break;
+            case 'week':
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - 7);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(now);
+                endDate.setHours(23, 59, 59, 999);
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(now);
+                endDate.setHours(23, 59, 59, 999);
+                break;
+            case 'custom':
+                const startDateStr = document.getElementById('filterStartDate')?.value;
+                const endDateStr = document.getElementById('filterEndDate')?.value;
+                if (startDateStr && endDateStr) {
+                    startDate = new Date(startDateStr);
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate = new Date(endDateStr);
+                    endDate.setHours(23, 59, 59, 999);
+                }
+                break;
+            default:
+                break;
+        }
+        
+        // Apply filters
+        let filteredOrders = allOrders.filter(order => {
+            // Order Type filter (separate online vs counter)
+            if (orderType === 'online') {
+                // Online orders have receipt numbers that don't start with SLR
+                if (order.receiptNumber && order.receiptNumber.startsWith('SLR')) return false;
+                if (order.source === 'counter') return false;
+            } else if (orderType === 'counter') {
+                // Counter orders have receipt numbers starting with SLR
+                if (!order.receiptNumber || !order.receiptNumber.startsWith('SLR')) return false;
+                if (order.source !== 'counter') return false;
+            }
+            
+            // Order Status filter
+            if (orderStatus && order.status !== orderStatus) return false;
+            
+            // Payment Status filter
+            if (paymentStatus && order.paymentStatus !== paymentStatus) return false;
+            
+            // Date range filter
+            if (startDate && endDate) {
+                const orderDate = new Date(order.createdAt || order.date);
+                if (orderDate < startDate || orderDate > endDate) return false;
+            }
+            
+            // Amount range filter
+            const orderTotal = order.totals?.total || order.total || 0;
+            if (orderTotal < minAmount || orderTotal > maxAmount) return false;
+            
+            return true;
+        });
+        
+        console.log(`✅ Filtered ${filteredOrders.length} orders from ${allOrders.length}`);
+        
+        // Update state and re-render
+        window.adminState.allOrders = allOrders;
+        window.adminState.filteredOrders = filteredOrders;
+        
+        // Update counter
+        const counter = document.getElementById('ordersResultsCounter');
+        if (counter) {
+            counter.textContent = `Showing ${filteredOrders.length} of ${allOrders.length} orders`;
+        }
+        
+        // Re-render
+        if (typeof renderAllOrders === 'function') {
+            renderAllOrders(filteredOrders);
+        }
+        
+        showToast(`Found ${filteredOrders.length} orders matching filters`, 'success');
+        
+    } catch (error) {
+        console.error('Error applying filters:', error);
+        showToast('Failed to apply filters', 'error');
+    } finally {
+        showLoading(false);
     }
+}
+
+// Clear all order filters
+function clearOrdersFilters() {
+    console.log('Clearing all filters...');
+    
+    // Reset all filter inputs
+    const filters = ['filterOrderStatus', 'filterPaymentStatus', 'filterOrderType', 'filterDateRange', 'filterMinAmount', 'filterMaxAmount', 'filterStartDate', 'filterEndDate'];
+    filters.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (el.type === 'number') {
+                el.value = id === 'filterMinAmount' ? '0' : '100000';
+            } else if (el.type === 'date') {
+                el.value = '';
+            } else {
+                el.value = '';
+            }
+        }
+    });
+    
+    // Hide custom date range
+    const customRange = document.getElementById('ordersCustomDateRange');
+    if (customRange) customRange.style.display = 'none';
+    
+    // Reset date range select
+    const dateRange = document.getElementById('filterDateRange');
+    if (dateRange) dateRange.value = '';
+    
+    // Reload all orders
+    refreshOrdersList();
+    
+    showToast('All filters cleared', 'info');
 }
 
 // Handle date range change
 function handleDateRangeChange() {
-    const dateRange = document.getElementById('filterDateRange').value;
-    const customRangeDiv = document.getElementById('ordersCustomDateRange');
+    const dateRange = document.getElementById('filterDateRange')?.value;
+    const customRange = document.getElementById('ordersCustomDateRange');
     
     if (dateRange === 'custom') {
-        if (customRangeDiv) customRangeDiv.style.display = 'flex';
+        if (customRange) customRange.style.display = 'flex';
     } else {
-        if (customRangeDiv) customRangeDiv.style.display = 'none';
-        applyOrdersFilters();
+        if (customRange) customRange.style.display = 'none';
     }
 }
 
-// Apply all order filters
-function applyOrdersFilters() {
-    console.log('🔍 Applying order filters...');
-    
-    // Get base data from adminState
-    const baseOrders = window.adminState.allOrders || [];
-    
-    if (baseOrders.length === 0) {
-        console.log('No orders to filter');
-        return;
+// Toggle filters panel
+function toggleOrdersFilters() {
+    const panel = document.getElementById('ordersFiltersPanel');
+    if (panel) {
+        const isVisible = panel.style.display !== 'none';
+        panel.style.display = isVisible ? 'none' : 'block';
     }
-    
-    // Get filter values
-    const searchTerm = document.getElementById('orderSearch')?.value.toLowerCase().trim() || '';
-    const orderStatus = document.getElementById('filterOrderStatus')?.value || '';
-    const paymentStatus = document.getElementById('filterPaymentStatus')?.value || '';
-    const dateRange = document.getElementById('filterDateRange')?.value || '';
-    const minAmount = parseFloat(document.getElementById('filterMinAmount')?.value) || 0;
-    const maxAmount = parseFloat(document.getElementById('filterMaxAmount')?.value) || Infinity;
-    
-    let startDate = null;
-    let endDate = null;
-    const now = new Date();
-    
-    // Calculate date range
-    switch(dateRange) {
-        case 'today':
-            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-            break;
-        case 'yesterday':
-            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
-            break;
-        case 'week':
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - 7);
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(now);
-            endDate.setHours(23, 59, 59, 999);
-            break;
-        case 'month':
-            startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(now);
-            endDate.setHours(23, 59, 59, 999);
-            break;
-        case 'custom':
-            const startDateStr = document.getElementById('filterStartDate')?.value;
-            const endDateStr = document.getElementById('filterEndDate')?.value;
-            if (startDateStr && endDateStr) {
-                startDate = new Date(startDateStr);
-                startDate.setHours(0, 0, 0, 0);
-                endDate = new Date(endDateStr);
-                endDate.setHours(23, 59, 59, 999);
-            }
-            break;
-        default:
-            // No date filter
-            break;
-    }
-    
-    // Apply all filters
-    const filtered = baseOrders.filter(order => {
-        // Search filter
-        if (searchTerm) {
-            const matchesSearch = 
-                (order.orderId || order._id || '').toLowerCase().includes(searchTerm) ||
-                (order.customerName || '').toLowerCase().includes(searchTerm) ||
-                (order.customerEmail || '').toLowerCase().includes(searchTerm) ||
-                (order.customerPhone || '').includes(searchTerm) ||
-                (order.status || '').toLowerCase().includes(searchTerm) ||
-                (order.paymentStatus || '').toLowerCase().includes(searchTerm) ||
-                (order.receiptNumber || '').toLowerCase().includes(searchTerm);
-            
-            if (!matchesSearch) return false;
-        }
-        
-        // Order status filter
-        if (orderStatus && order.status !== orderStatus) return false;
-        
-        // Payment status filter
-        if (paymentStatus && order.paymentStatus !== paymentStatus) return false;
-        
-        // Date range filter
-        if (startDate && endDate) {
-            const orderDate = new Date(order.createdAt || order.date);
-            if (orderDate < startDate || orderDate > endDate) return false;
-        }
-        
-        // Amount range filter
-        const orderTotal = order.totals?.total || order.total || 0;
-        if (orderTotal < minAmount || (maxAmount !== Infinity && orderTotal > maxAmount)) return false;
-        
-        return true;
-    });
-    
-    console.log(`✅ Filtered ${filtered.length} orders from ${baseOrders.length}`);
-    
-    // Store filtered orders
-    window.adminState.filteredOrders = filtered;
-    filteredOrdersData = filtered;
-    
-    // Update counter
-    updateOrdersResultsCounter();
-    
-    // Re-render orders table
-    if (typeof renderAllOrders === 'function') {
-        renderAllOrders(filtered);
-    } else {
-        console.error('renderAllOrders function not found');
-    }
-}
-
-// Clear orders search and filters
-function clearOrdersSearch() {
-    console.log('Clearing orders search and filters...');
-    
-    // Clear all filter inputs
-    const searchInput = document.getElementById('orderSearch');
-    const orderStatus = document.getElementById('filterOrderStatus');
-    const paymentStatus = document.getElementById('filterPaymentStatus');
-    const dateRange = document.getElementById('filterDateRange');
-    const minAmount = document.getElementById('filterMinAmount');
-    const maxAmount = document.getElementById('filterMaxAmount');
-    const filterStartDate = document.getElementById('filterStartDate');
-    const filterEndDate = document.getElementById('filterEndDate');
-    const customRangeDiv = document.getElementById('ordersCustomDateRange');
-    
-    if (searchInput) searchInput.value = '';
-    if (orderStatus) orderStatus.value = '';
-    if (paymentStatus) paymentStatus.value = '';
-    if (dateRange) dateRange.value = '';
-    if (minAmount) minAmount.value = '';
-    if (maxAmount) maxAmount.value = '';
-    if (filterStartDate) filterStartDate.value = '';
-    if (filterEndDate) filterEndDate.value = '';
-    if (customRangeDiv) customRangeDiv.style.display = 'none';
-    
-    // Reset to all orders
-    window.adminState.filteredOrders = [...window.adminState.allOrders];
-    filteredOrdersData = [...window.adminState.allOrders];
-    
-    // Update counter
-    updateOrdersResultsCounter();
-    
-    // Re-render
-    if (typeof renderAllOrders === 'function') {
-        renderAllOrders(window.adminState.allOrders);
-    }
-    
-    showToast('Filters cleared', 'info');
-}
-
-// Search orders function
-function searchOrders() {
-    console.log('🔍 Searching orders...');
-    applyOrdersFilters();
 }
 
 // Refresh orders list
 async function refreshOrdersList() {
     try {
+        showLoading(true);
         showToast('Refreshing orders...', 'info');
+        
         const orders = await loadOrdersFromBackend();
+        
         window.adminState.allOrders = orders;
         window.adminState.filteredOrders = [...orders];
-        allOrdersData = orders;
-        filteredOrdersData = [...orders];
         
-        updateOrdersResultsCounter();
+        const counter = document.getElementById('ordersResultsCounter');
+        if (counter) {
+            counter.textContent = `Showing ${orders.length} of ${orders.length} orders`;
+        }
         
         if (typeof renderAllOrders === 'function') {
             renderAllOrders(orders);
@@ -916,7 +912,74 @@ async function refreshOrdersList() {
     } catch (error) {
         console.error('Error refreshing orders:', error);
         showToast('Failed to refresh orders', 'error');
+    } finally {
+        showLoading(false);
     }
+}
+
+// Export orders with current filters
+async function exportOrders() {
+    try {
+        const ordersToExport = window.adminState.filteredOrders || window.adminState.allOrders || [];
+        
+        if (ordersToExport.length === 0) {
+            showToast('No orders to export', 'warning');
+            return;
+        }
+        
+        showLoading(true);
+        showToast(`Exporting ${ordersToExport.length} orders...`, 'info');
+        
+        const csvContent = generateOrdersCSV(ordersToExport, 'filtered', 'all', 'all');
+        downloadCSV(csvContent, `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
+        
+        showToast(`Exported ${ordersToExport.length} orders successfully`, 'success');
+    } catch (error) {
+        console.error('Error exporting orders:', error);
+        showToast('Failed to export orders', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Search orders
+function searchOrders() {
+    const searchTerm = document.getElementById('orderSearch')?.value.toLowerCase().trim();
+    
+    if (!searchTerm) {
+        refreshOrdersList();
+        return;
+    }
+    
+    const allOrders = window.adminState.allOrders || [];
+    
+    const filtered = allOrders.filter(order => {
+        return (
+            (order.orderId || order._id || '').toLowerCase().includes(searchTerm) ||
+            (order.receiptNumber || '').toLowerCase().includes(searchTerm) ||
+            (order.customerName || '').toLowerCase().includes(searchTerm) ||
+            (order.customerEmail || '').toLowerCase().includes(searchTerm) ||
+            (order.customerPhone || '').includes(searchTerm)
+        );
+    });
+    
+    window.adminState.filteredOrders = filtered;
+    
+    const counter = document.getElementById('ordersResultsCounter');
+    if (counter) {
+        counter.textContent = `Showing ${filtered.length} of ${allOrders.length} orders`;
+    }
+    
+    if (typeof renderAllOrders === 'function') {
+        renderAllOrders(filtered);
+    }
+}
+
+// Clear search
+function clearOrdersSearch() {
+    const searchInput = document.getElementById('orderSearch');
+    if (searchInput) searchInput.value = '';
+    refreshOrdersList();
 }
 
 // ✅ Initialize customers search
@@ -2155,6 +2218,7 @@ window.applyCustomDateRange = applyCustomDateRange;
 window.exportOrdersPeriodReport = exportOrdersPeriodReport;
 window.generateOrdersCSV = generateOrdersCSV;
 window.initMobileEnhancements = initMobileEnhancements;
+window.exportOrders = exportOrders;
 
 // ✅ BOOK SALES REPORT FUNCTIONS - ADD TO WINDOW EXPORTS
 window.initializeBookSalesReport = initializeBookSalesReport;

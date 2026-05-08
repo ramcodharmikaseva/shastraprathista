@@ -468,65 +468,6 @@ function generateCustomersCSV(customers) {
   return csvContent;
 }
 
-// ✅ Export orders using client-side generation (FIXED)
-async function exportOrders() {
-  try {
-    console.log('📊 Exporting orders using client-side generation...');
-    showToast('Preparing orders export...', 'info');
-    
-    // Load all orders from backend
-    const allOrders = await loadOrdersFromBackend();
-    
-    if (allOrders.length === 0) {
-      showToast('No orders found to export', 'warning');
-      return;
-    }
-    
-    // Use the same generateOrdersCSV function from admin.js
-    const csvContent = generateOrdersCSV(allOrders, 'all', 'all-time', 'all-time');
-    
-    // Download the CSV using data URL method (not blob)
-    downloadCSV(csvContent, `All_Orders_Export.csv`);
-    
-    showToast(`Orders exported successfully (${allOrders.length} orders)`, 'success');
-    
-  } catch (error) {
-    console.error('❌ Error exporting orders:', error);
-    showToast('Failed to export orders', 'error');
-    
-    // Fallback: Try the original backend export - FIXED VERSION
-    console.log('🔄 Trying fallback to backend export...');
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/admin/export/orders`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to export orders');
-      
-      // ✅ FIX: Use response.text() instead of blob() to avoid blob URLs
-      const csvText = await response.text();
-      
-      // Create data URL instead of blob URL
-      const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\uFEFF' + csvText);
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      showToast('Orders exported successfully via backend', 'success');
-    } catch (fallbackError) {
-      console.error('❌ Fallback export also failed:', fallbackError);
-      showToast('Both export methods failed', 'error');
-    }
-  }
-}
-
 // ✅ Sync function - just refreshes data from backend
 async function refreshAllData() {
   return refreshDashboardData();
@@ -1071,7 +1012,6 @@ Object.assign(window, {
   getDashboardStats,
   refreshDashboardData,
   exportCustomers,
-  exportOrders,
   refreshAllData,
   debugOrderStructure,
   downloadInvoice,
