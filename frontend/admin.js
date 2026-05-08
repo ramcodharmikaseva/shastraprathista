@@ -506,7 +506,7 @@ function calculateDateRange(period) {
     };
 }
 
-// ✅ GENERATE CSV IN YOUR DESIRED FORMAT
+// ✅ GENERATE CSV IN YOUR DESIRED FORMAT - WITH COUNTER ORDER SUPPORT
 function generateOrdersCSV(orders, period, startDate, endDate) {
     // CSV headers - MATCHING YOUR FORMAT
     const headers = [
@@ -550,32 +550,78 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
         const orderId = order.orderId || order._id || '';
         const orderDate = new Date(order.createdAt || order.date).toLocaleDateString('en-IN').split('/').join('-');
         
-        // Customer data (flat fields)
+        // Check if this is a counter order
+        const isCounterOrder = order.receiptNumber?.startsWith('SLR') || order.source === 'counter';
+        
+        // Customer data - handle counter orders differently
         const customerName = order.customerName || '';
-        const customerEmail = order.customerEmail || '';
+        
+        // ✅ For counter orders, email should be empty (not dummy email)
+        let customerEmail = '';
+        if (!isCounterOrder) {
+            customerEmail = order.customerEmail || '';
+        }
+        
         const customerPhone = order.customerPhone || 'Not provided';
         
-        // Shipping address (nested object)
-        const shipping = order.shippingAddress || {};
-        const shippingAddress = `${shipping.addressLine1 || ''} ${shipping.addressLine2 || ''}`.trim() || 'Not provided';
-        const city = shipping.city || 'Not provided';
-        const state = shipping.state || 'Not provided';
-        const pincode = shipping.pincode || 'Not provided';
+        // ✅ Handle address based on order type
+        let shippingAddress = 'Not provided';
+        let city = 'Not provided';
+        let state = 'Not provided';
+        let pincode = 'Not provided';
+        let shippingMethod = order.shippingMethod || order.shippingRegion || '';
         
-        // Totals (nested object)
+        if (isCounterOrder && order.customerAddress && order.customerAddress.trim()) {
+            // Counter order - use customerAddress
+            shippingAddress = order.customerAddress;
+            
+            // Try to extract pincode (6 digits)
+            const pincodeMatch = order.customerAddress.match(/\b\d{6}\b/);
+            if (pincodeMatch) {
+                pincode = pincodeMatch[0];
+            }
+            
+            // Try to extract city and state from address
+            // Look for patterns like "City, State" or "City State"
+            const parts = order.customerAddress.split(',').map(p => p.trim());
+            if (parts.length >= 2) {
+                // Last part might contain city/state/pincode
+                const lastPart = parts[parts.length - 1];
+                const cityStateMatch = lastPart.match(/([A-Za-z\s]+)\s+([A-Za-z\s]+)/);
+                if (cityStateMatch) {
+                    city = cityStateMatch[1].trim() || 'Not provided';
+                    state = cityStateMatch[2].trim() || 'Not provided';
+                }
+            }
+        } else if (order.shippingAddress && Object.keys(order.shippingAddress).length > 0) {
+            // Online order - use shippingAddress object
+            const shipping = order.shippingAddress;
+            const addressParts = [
+                shipping.addressLine1,
+                shipping.addressLine2
+            ].filter(part => part && part.trim());
+            shippingAddress = addressParts.length > 0 ? addressParts.join(', ') : 'Not provided';
+            city = shipping.city || 'Not provided';
+            state = shipping.state || 'Not provided';
+            pincode = shipping.pincode || 'Not provided';
+        }
+        
+        // ✅ Totals - FORCE CORRECT CALCULATION for counter orders
         const totals = order.totals || {};
         const subtotal = totals.subtotal || 0;
         const shippingCharge = totals.shipping || 0;
         const tax = totals.tax || 0;
         const discount = totals.discount || 0;
-        const grandTotal = totals.total || 0;
+        
+        // ✅ Recalculate Grand Total to ensure accuracy (subtotal - discount + shipping)
+        const calculatedGrandTotal = subtotal - discount + shippingCharge;
+        const grandTotal = calculatedGrandTotal;
         
         // Other order details
         const orderStatus = order.status || '';
         const paymentStatus = order.paymentStatus || '';
         const paymentMethod = order.paymentMethod || '';
         const trackingNumber = order.trackingNumber || '';
-        const shippingMethod = order.shippingMethod || order.shippingRegion || '';
         const notes = order.notes || '';
 
         // Process items array
@@ -591,33 +637,33 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
                 const itemTotal = unitPrice * quantity;
                 
                 const row = [
-                    isFirstItem ? serialNumber : '', // S.No only for first item
-                    isFirstItem ? `"${orderId}"` : '', // Order ID only for first item
-                    isFirstItem ? `"${orderDate}"` : '', // Order Date only for first item
-                    isFirstItem ? `"${customerName}"` : '', // Customer Name only for first item
-                    isFirstItem ? `"${customerEmail}"` : '', // Customer Email only for first item
-                    isFirstItem ? `"${customerPhone}"` : '', // Customer Phone only for first item
-                    isFirstItem ? `"${shippingAddress}"` : '', // Shipping Address only for first item
-                    isFirstItem ? `"${city}"` : '', // City only for first item
-                    isFirstItem ? `"${state}"` : '', // State only for first item
-                    isFirstItem ? `"${pincode}"` : '', // Pincode only for first item
-                    isFirstItem ? `"${shippingMethod}"` : '', // Shipping Method only for first item
+                    isFirstItem ? serialNumber : '',
+                    isFirstItem ? `"${orderId}"` : '',
+                    isFirstItem ? `"${orderDate}"` : '',
+                    isFirstItem ? `"${customerName}"` : '',
+                    isFirstItem ? `"${customerEmail}"` : '',
+                    isFirstItem ? `"${customerPhone}"` : '',
+                    isFirstItem ? `"${shippingAddress}"` : '',
+                    isFirstItem ? `"${city}"` : '',
+                    isFirstItem ? `"${state}"` : '',
+                    isFirstItem ? `"${pincode}"` : '',
+                    isFirstItem ? `"${shippingMethod}"` : '',
                     `"${bookTitle}"`,
                     `"${bookCategory}"`,
                     quantity,
                     originalUnitPrice.toFixed(0),
                     unitPrice.toFixed(0),
                     itemTotal.toFixed(0),
-                    isFirstItem ? subtotal.toFixed(0) : '', // Subtotal only for first item
-                    isFirstItem ? shippingCharge.toFixed(0) : '', // Shipping only for first item
-                    isFirstItem ? tax.toFixed(0) : '', // Tax only for first item
-                    isFirstItem ? discount.toFixed(0) : '', // Discount only for first item
-                    isFirstItem ? grandTotal.toFixed(0) : '', // Grand Total only for first item
-                    isFirstItem ? `"${orderStatus}"` : '', // Order Status only for first item
-                    isFirstItem ? `"${paymentStatus}"` : '', // Payment Status only for first item
-                    isFirstItem ? `"${paymentMethod}"` : '', // Payment Method only for first item
-                    isFirstItem ? `"${trackingNumber}"` : '', // Tracking only for first item
-                    isFirstItem ? `"${notes}"` : '' // Notes only for first item
+                    isFirstItem ? subtotal.toFixed(0) : '',
+                    isFirstItem ? shippingCharge.toFixed(0) : '',
+                    isFirstItem ? tax.toFixed(0) : '',
+                    isFirstItem ? discount.toFixed(0) : '',
+                    isFirstItem ? grandTotal.toFixed(0) : '',
+                    isFirstItem ? `"${orderStatus}"` : '',
+                    isFirstItem ? `"${paymentStatus}"` : '',
+                    isFirstItem ? `"${paymentMethod}"` : '',
+                    isFirstItem ? `"${trackingNumber}"` : '',
+                    isFirstItem ? `"${notes}"` : ''
                 ];
                 
                 csvContent += row.join(',') + '\n';
@@ -667,11 +713,11 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
         }
     });
     
-    // Add empty rows for better separation (like your format)
+    // Add empty rows for better separation
     csvContent += ',,,,,,,,,,,,,,,,,,,,,,,,,,\n';
     csvContent += ',,,,,,,,,,,,,,,,,,,,,,,,,,\n';
     
-    // Enhanced summary section (matching your format)
+    // Enhanced summary section
     csvContent += ',SUMMARY,,,,,,,,,,,,,,,,,,,,,,,,,\n';
     const formattedStartDate = startDate.split('-').reverse().join('-');
     const formattedEndDate = endDate.split('-').reverse().join('-');
@@ -679,7 +725,14 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
     csvContent += ',Start Date,' + formattedStartDate + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     csvContent += ',End Date,' + formattedEndDate + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     
-    const totalRevenue = orders.reduce((sum, order) => sum + (order.totals?.total || 0), 0);
+    // ✅ Use RE-calculated totals for summary
+    const totalRevenue = orders.reduce((sum, order) => {
+        const totals = order.totals || {};
+        const subtotal = totals.subtotal || 0;
+        const discount = totals.discount || 0;
+        const shipping = totals.shipping || 0;
+        return sum + (subtotal - discount + shipping);
+    }, 0);
     csvContent += ',Total Revenue,₹' + totalRevenue.toFixed(2) + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     
     const totalOriginalRevenue = orders.reduce((sum, order) => {
