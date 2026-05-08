@@ -867,15 +867,27 @@ function clearOrdersFilters() {
     showToast('All filters cleared', 'info');
 }
 
-// Handle date range change
+// Handle date range change - FIXED
 function handleDateRangeChange() {
     const dateRange = document.getElementById('filterDateRange')?.value;
-    const customRange = document.getElementById('ordersCustomDateRange');
+    const customRangeDiv = document.getElementById('ordersCustomDateRange');
+    
+    console.log('Date range changed to:', dateRange); // Debug log
     
     if (dateRange === 'custom') {
-        if (customRange) customRange.style.display = 'flex';
+        if (customRangeDiv) {
+            customRangeDiv.style.display = 'flex';
+            console.log('Showing custom date range inputs');
+        }
     } else {
-        if (customRange) customRange.style.display = 'none';
+        if (customRangeDiv) {
+            customRangeDiv.style.display = 'none';
+            console.log('Hiding custom date range inputs');
+        }
+        // Apply filters when non-custom range is selected
+        if (typeof applyOrdersFilters === 'function') {
+            applyOrdersFilters();
+        }
     }
 }
 
