@@ -1160,7 +1160,7 @@
                       <!-- Cart items appear here -->
                   </div>
 
-                  <!-- 🆕 CUSTOMER INFORMATION SECTION -->
+                  <!-- Customer Information Section in POS Modal -->
                   <div class="pos-customer-section" style="margin-top: 15px; padding: 15px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
                       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
                           <i class="fas fa-user" style="color: #22c55e;"></i>
@@ -1186,16 +1186,45 @@
                                 style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                       </div>
                       
-                      <div class="pos-input-group" style="margin-bottom: 0;">
+                      <!-- ✅ NEW: Separate Address Fields -->
+                      <div class="pos-input-group" style="margin-bottom: 10px;">
                           <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
-                              Delivery Address
+                              Address Line
                           </label>
-                          <textarea id="posCustomerAddress" class="form-textarea" 
-                                    placeholder="Enter complete address (Optional)" 
+                          <textarea id="posAddressLine" class="form-textarea" 
+                                    placeholder="Street address, building name, etc." 
                                     rows="2"
                                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit;"></textarea>
+                      </div>
+                      
+                      <div class="pos-input-group" style="margin-bottom: 10px;">
+                          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
+                              City
+                          </label>
+                          <input type="text" id="posCity" class="form-input" 
+                                placeholder="City name"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                      </div>
+                      
+                      <div class="pos-input-group" style="margin-bottom: 10px;">
+                          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
+                              State
+                          </label>
+                          <input type="text" id="posState" class="form-input" 
+                                placeholder="State name"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                      </div>
+                      
+                      <div class="pos-input-group" style="margin-bottom: 0;">
+                          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #166534;">
+                              Pincode
+                          </label>
+                          <input type="text" id="posPincode" class="form-input" 
+                                placeholder="6-digit pincode" maxlength="6"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                           <small style="color: #666; font-size: 10px;">Optional - For delivery reference</small>
                       </div>
+                  </div>
                   
                   <!-- Discount & Shipping -->
                   <div class="pos-discount-section">

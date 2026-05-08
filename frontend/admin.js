@@ -506,7 +506,7 @@ function calculateDateRange(period) {
     };
 }
 
-// ✅ GENERATE CSV IN YOUR DESIRED FORMAT - WITH COUNTER ORDER SUPPORT
+// ✅ GENERATE CSV IN YOUR DESIRED FORMAT - WITH FULL COUNTER ORDER SUPPORT
 function generateOrdersCSV(orders, period, startDate, endDate) {
     // CSV headers - MATCHING YOUR FORMAT
     const headers = [
@@ -571,29 +571,56 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
         let pincode = 'Not provided';
         let shippingMethod = order.shippingMethod || order.shippingRegion || '';
         
-        if (isCounterOrder && order.customerAddress && order.customerAddress.trim()) {
-            // Counter order - use customerAddress
-            shippingAddress = order.customerAddress;
-            
-            // Try to extract pincode (6 digits)
-            const pincodeMatch = order.customerAddress.match(/\b\d{6}\b/);
-            if (pincodeMatch) {
-                pincode = pincodeMatch[0];
-            }
-            
-            // Try to extract city and state from address
-            // Look for patterns like "City, State" or "City State"
-            const parts = order.customerAddress.split(',').map(p => p.trim());
-            if (parts.length >= 2) {
-                // Last part might contain city/state/pincode
-                const lastPart = parts[parts.length - 1];
-                const cityStateMatch = lastPart.match(/([A-Za-z\s]+)\s+([A-Za-z\s]+)/);
+        if (isCounterOrder) {
+            // Counter order - check for structured address first (new format)
+            if (order.shippingAddress && order.shippingAddress.city) {
+                // New format with separate fields from POS
+                const shipping = order.shippingAddress;
+                const addressParts = [
+                    shipping.addressLine1,
+                    shipping.addressLine2
+                ].filter(part => part && part.trim());
+                shippingAddress = addressParts.length > 0 ? addressParts.join(', ') : 'Not provided';
+                city = shipping.city || 'Not provided';
+                state = shipping.state || 'Not provided';
+                pincode = shipping.pincode || 'Not provided';
+                
+                // If no address line but customerAddress exists, use that
+                if (shippingAddress === 'Not provided' && order.customerAddress) {
+                    shippingAddress = order.customerAddress;
+                }
+            } 
+            // Old format - single customerAddress field
+            else if (order.customerAddress && order.customerAddress.trim()) {
+                shippingAddress = order.customerAddress;
+                
+                // Extract pincode (6 digits)
+                const pincodeMatch = order.customerAddress.match(/\b\d{6}\b/);
+                if (pincodeMatch) {
+                    pincode = pincodeMatch[0];
+                }
+                
+                // Try to extract city and state from address
+                // Look for patterns like "City, State" or "City State - Pincode"
+                const lines = order.customerAddress.split('\n').map(l => l.trim()).filter(l => l);
+                const lastLine = lines[lines.length - 1] || '';
+                
+                // Try to extract city and state from last line
+                // Pattern: "City Name, State Name - 123456" or "City Name State Name - 123456"
+                const cityStateMatch = lastLine.match(/^([A-Za-z\s\.]+)[,\s]+([A-Za-z\s\.]+)\s*[-–]\s*\d{6}/);
                 if (cityStateMatch) {
-                    city = cityStateMatch[1].trim() || 'Not provided';
-                    state = cityStateMatch[2].trim() || 'Not provided';
+                    city = cityStateMatch[1].trim();
+                    state = cityStateMatch[2].trim();
+                } else {
+                    // Alternative: just city from last line before pincode
+                    const cityOnlyMatch = lastLine.match(/^([A-Za-z\s\.]+)\s*[-–]\s*\d{6}/);
+                    if (cityOnlyMatch) {
+                        city = cityOnlyMatch[1].trim();
+                    }
                 }
             }
-        } else if (order.shippingAddress && Object.keys(order.shippingAddress).length > 0) {
+        } 
+        else if (order.shippingAddress && Object.keys(order.shippingAddress).length > 0) {
             // Online order - use shippingAddress object
             const shipping = order.shippingAddress;
             const addressParts = [
@@ -606,7 +633,7 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
             pincode = shipping.pincode || 'Not provided';
         }
         
-        // ✅ Totals - FORCE CORRECT CALCULATION for counter orders
+        // ✅ Totals - FORCE CORRECT CALCULATION
         const totals = order.totals || {};
         const subtotal = totals.subtotal || 0;
         const shippingCharge = totals.shipping || 0;
@@ -643,13 +670,13 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
                     isFirstItem ? `"${customerName}"` : '',
                     isFirstItem ? `"${customerEmail}"` : '',
                     isFirstItem ? `"${customerPhone}"` : '',
-                    isFirstItem ? `"${shippingAddress}"` : '',
+                    isFirstItem ? `"${shippingAddress.replace(/"/g, '""')}"` : '',
                     isFirstItem ? `"${city}"` : '',
                     isFirstItem ? `"${state}"` : '',
                     isFirstItem ? `"${pincode}"` : '',
                     isFirstItem ? `"${shippingMethod}"` : '',
-                    `"${bookTitle}"`,
-                    `"${bookCategory}"`,
+                    `"${bookTitle.replace(/"/g, '""')}"`,
+                    `"${bookCategory.replace(/"/g, '""')}"`,
                     quantity,
                     originalUnitPrice.toFixed(0),
                     unitPrice.toFixed(0),
@@ -663,7 +690,7 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
                     isFirstItem ? `"${paymentStatus}"` : '',
                     isFirstItem ? `"${paymentMethod}"` : '',
                     isFirstItem ? `"${trackingNumber}"` : '',
-                    isFirstItem ? `"${notes}"` : ''
+                    isFirstItem ? `"${notes.replace(/"/g, '""')}"` : ''
                 ];
                 
                 csvContent += row.join(',') + '\n';
@@ -685,7 +712,7 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
                 `"${customerName}"`,
                 `"${customerEmail}"`,
                 `"${customerPhone}"`,
-                `"${shippingAddress}"`,
+                `"${shippingAddress.replace(/"/g, '""')}"`,
                 `"${city}"`,
                 `"${state}"`,
                 `"${pincode}"`,
@@ -705,7 +732,7 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
                 `"${paymentStatus}"`,
                 `"${paymentMethod}"`,
                 `"${trackingNumber}"`,
-                `"${notes}"`
+                `"${notes.replace(/"/g, '""')}"`
             ];
             
             csvContent += row.join(',') + '\n';
@@ -719,8 +746,8 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
     
     // Enhanced summary section
     csvContent += ',SUMMARY,,,,,,,,,,,,,,,,,,,,,,,,,\n';
-    const formattedStartDate = startDate.split('-').reverse().join('-');
-    const formattedEndDate = endDate.split('-').reverse().join('-');
+    const formattedStartDate = startDate && startDate !== 'all' ? startDate.split('-').reverse().join('-') : 'All Time';
+    const formattedEndDate = endDate && endDate !== 'all' ? endDate.split('-').reverse().join('-') : 'All Time';
     csvContent += ',Report Period,' + period + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     csvContent += ',Start Date,' + formattedStartDate + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     csvContent += ',End Date,' + formattedEndDate + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
@@ -739,7 +766,15 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
         const totals = order.totals || {};
         const subtotal = totals.subtotal || 0;
         const discount = totals.discount || 0;
-        return sum + subtotal + discount;
+        let itemsOriginalTotal = 0;
+        if (order.items && Array.isArray(order.items)) {
+            itemsOriginalTotal = order.items.reduce((itemSum, item) => {
+                const originalPrice = item.originalPrice || item.price || 0;
+                const qty = item.quantity || 1;
+                return itemSum + (originalPrice * qty);
+            }, 0);
+        }
+        return sum + (itemsOriginalTotal || subtotal + discount);
     }, 0);
     csvContent += ',Total Original Revenue (Before Discount),₹' + totalOriginalRevenue.toFixed(2) + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     
@@ -751,7 +786,10 @@ function generateOrdersCSV(orders, period, startDate, endDate) {
     }, 0);
     csvContent += ',Total Items Sold,' + totalItems + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     
-    const totalDiscount = orders.reduce((sum, order) => sum + (order.totals?.discount || 0), 0);
+    const totalDiscount = orders.reduce((sum, order) => {
+        const discount = order.totals?.discount || 0;
+        return sum + discount;
+    }, 0);
     csvContent += ',Total Discount Given,₹' + totalDiscount.toFixed(2) + ',,,,,,,,,,,,,,,,,,,,,,,,,\n';
     
     const generatedDate = new Date().toLocaleString('en-IN');

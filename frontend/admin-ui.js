@@ -18,12 +18,17 @@ function openPOSModal() {
         // Reset customer fields
         const nameInput = document.getElementById('posCustomerName');
         const phoneInput = document.getElementById('posCustomerPhone');
-        const addressInput = document.getElementById('posCustomerAddress');
-        // ❌ REMOVED: emailInput
+        const addressLine = document.getElementById('posAddressLine');
+        const cityInput = document.getElementById('posCity');
+        const stateInput = document.getElementById('posState');
+        const pincodeInput = document.getElementById('posPincode');
         
         if (nameInput) nameInput.value = '';
         if (phoneInput) phoneInput.value = '';
-        if (addressInput) addressInput.value = '';
+        if (addressLine) addressLine.value = '';
+        if (cityInput) cityInput.value = '';
+        if (stateInput) stateInput.value = '';
+        if (pincodeInput) pincodeInput.value = '';
         
         // Reset discount/shipping fields
         const discountValue = document.getElementById('posDiscountValue');
@@ -234,8 +239,17 @@ async function processPOSSale() {
     // Get customer details from the POS page fields
     const customerName = document.getElementById('posCustomerName')?.value.trim();
     const customerPhone = document.getElementById('posCustomerPhone')?.value.trim();
-    const customerAddress = document.getElementById('posCustomerAddress')?.value.trim();
-    // ❌ REMOVED: customerEmail - not needed for counter sales
+    const addressLine = document.getElementById('posAddressLine')?.value.trim();
+    const city = document.getElementById('posCity')?.value.trim();
+    const state = document.getElementById('posState')?.value.trim();
+    const pincode = document.getElementById('posPincode')?.value.trim();
+    
+    // Build complete address string
+    let customerAddress = '';
+    if (addressLine) customerAddress += addressLine;
+    if (city) customerAddress += (customerAddress ? ', ' : '') + city;
+    if (state) customerAddress += (customerAddress ? ', ' : '') + state;
+    if (pincode) customerAddress += (customerAddress ? ' - ' : '') + pincode;
     
     // Validate required fields
     if (!customerName) {
@@ -297,13 +311,22 @@ async function processPOSSale() {
         showLoading(true);
         const token = localStorage.getItem('token');
         
+        // In orderData, add address fields
         const orderData = {
             source: 'counter',
             receiptNumber: receiptNumber,
             customerName: customerName,
             customerPhone: customerPhone,
-            // ❌ REMOVED: customerEmail: customerEmail || '',
-            customerAddress: customerAddress || '',
+            customerAddress: customerAddress,
+            // ✅ NEW: Add separate address fields for better export
+            shippingAddress: {
+                addressLine1: addressLine || '',
+                addressLine2: '',
+                city: city || '',
+                state: state || '',
+                pincode: pincode || '',
+                country: 'India'
+            },
             items: posCart.map(item => ({
                 id: item.productId,
                 title: item.name,
@@ -358,12 +381,17 @@ async function processPOSSale() {
             // Reset customer fields
             const nameInput = document.getElementById('posCustomerName');
             const phoneInput = document.getElementById('posCustomerPhone');
-            const addressInput = document.getElementById('posCustomerAddress');
-            // ❌ REMOVED: emailInput
-            
+            const addressLine = document.getElementById('posAddressLine');
+            const cityInput = document.getElementById('posCity');
+            const stateInput = document.getElementById('posState');
+            const pincodeInput = document.getElementById('posPincode');
+
             if (nameInput) nameInput.value = '';
             if (phoneInput) phoneInput.value = '';
-            if (addressInput) addressInput.value = '';
+            if (addressLine) addressLine.value = '';
+            if (cityInput) cityInput.value = '';
+            if (stateInput) stateInput.value = '';
+            if (pincodeInput) pincodeInput.value = '';
             
             // Reset discount/shipping
             const discountValueInput = document.getElementById('posDiscountValue');
@@ -586,6 +614,9 @@ function printPOSReceipt(data) {
                 Name: ${escapeHtml(data.customerName)}<br>
                 Phone: ${data.customerPhone}<br>
                 ${data.customerAddress ? `Address: ${escapeHtml(data.customerAddress)}<br>` : ''}
+                ${data.city ? `City: ${data.city}<br>` : ''}
+                ${data.state ? `State: ${data.state}<br>` : ''}
+                ${data.pincode ? `Pincode: ${data.pincode}<br>` : ''}
             </div>
             
             <div class="divider"></div>
