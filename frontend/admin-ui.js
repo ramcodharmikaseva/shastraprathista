@@ -717,8 +717,8 @@ function printPOSReceipt(data) {
                             <th>#</th>
                             <th>Item Description</th>
                             <th class="text-center">Qty</th>
-                            <th class="text-right">Price (₹)</th>
-                            <th class="text-right">Total (₹)</th>
+                            <th class="text-right">Price </th>
+                            <th class="text-right">Total </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -740,23 +740,23 @@ function printPOSReceipt(data) {
                 <div class="totals-section">
                     <div class="total-row">
                         <span class="total-label">Subtotal:</span>
-                        <span>₹${data.subtotal.toFixed(2)}</span>
+                        <span>${data.subtotal.toFixed(2)}</span>
                     </div>
                     ${data.discount > 0 ? `
                     <div class="total-row">
                         <span class="total-label">Discount:</span>
-                        <span style="color: #d32f2f;">-₹${data.discount.toFixed(2)}</span>
+                        <span style="color: #d32f2f;">-${data.discount.toFixed(2)}</span>
                     </div>
                     ` : ''}
                     ${data.shipping > 0 ? `
                     <div class="total-row">
                         <span class="total-label">Shipping Charge:</span>
-                        <span>+₹${data.shipping.toFixed(2)}</span>
+                        <span>+${data.shipping.toFixed(2)}</span>
                     </div>
                     ` : ''}
                     <div class="total-row grand-total">
                         <span class="total-label">GRAND TOTAL:</span>
-                        <span>₹${data.total.toFixed(2)}</span>
+                        <span>${data.total.toFixed(2)}</span>
                     </div>
                 </div>
                 
@@ -1094,8 +1094,8 @@ function showCounterOrderDetails(orderId) {
                                         <th style="text-align: left; padding: 10px;">#</th>
                                         <th style="text-align: left; padding: 10px;">Item</th>
                                         <th style="text-align: center; padding: 10px;">Qty</th>
-                                        <th style="text-align: right; padding: 10px;">Price (₹)</th>
-                                        <th style="text-align: right; padding: 10px;">Total (₹)</th>
+                                        <th style="text-align: right; padding: 10px;">Price </th>
+                                        <th style="text-align: right; padding: 10px;">Total </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1114,23 +1114,23 @@ function showCounterOrderDetails(orderId) {
                             <div style="margin-top: 20px; padding-top: 10px; border-top: 2px solid #ddd;">
                                 <div style="display: flex; justify-content: flex-end; margin: 5px 0;">
                                     <span style="font-weight: bold; width: 150px; text-align: right;">Subtotal:</span>
-                                    <span style="width: 100px; text-align: right;">₹${subtotal.toFixed(2)}</span>
+                                    <span style="width: 100px; text-align: right;">${subtotal.toFixed(2)}</span>
                                 </div>
                                 ${discount > 0 ? `
                                 <div style="display: flex; justify-content: flex-end; margin: 5px 0;">
                                     <span style="font-weight: bold; width: 150px; text-align: right; color: #d32f2f;">Discount:</span>
-                                    <span style="width: 100px; text-align: right; color: #d32f2f;">-₹${discount.toFixed(2)}</span>
+                                    <span style="width: 100px; text-align: right; color: #d32f2f;">-${discount.toFixed(2)}</span>
                                 </div>
                                 ` : ''}
                                 ${shipping > 0 ? `
                                 <div style="display: flex; justify-content: flex-end; margin: 5px 0;">
                                     <span style="font-weight: bold; width: 150px; text-align: right;">Shipping:</span>
-                                    <span style="width: 100px; text-align: right;">+₹${shipping.toFixed(2)}</span>
+                                    <span style="width: 100px; text-align: right;">+${shipping.toFixed(2)}</span>
                                 </div>
                                 ` : ''}
                                 <div style="display: flex; justify-content: flex-end; margin: 10px 0; padding-top: 10px; border-top: 2px solid #8B0000;">
                                     <span style="font-weight: bold; font-size: 16px; width: 150px; text-align: right; color: #8B0000;">GRAND TOTAL:</span>
-                                    <span style="font-size: 16px; font-weight: bold; width: 100px; text-align: right; color: #8B0000;">₹${calculatedTotal.toFixed(2)}</span>
+                                    <span style="font-size: 16px; font-weight: bold; width: 100px; text-align: right; color: #8B0000;">${calculatedTotal.toFixed(2)}</span>
                                 </div>
                             </div>
                             
@@ -1689,8 +1689,8 @@ function generateCounterReceiptHTML(order) {
                 <tr>
                     <th>Item</th>
                     <th class="text-center">Qty</th>
-                    <th class="text-right">Price (₹)</th>
-                    <th class="text-right">Total (₹)</th>
+                    <th class="text-right">Price </th>
+                    <th class="text-right">Total </th>
                 </tr>
             </thead>
             <tbody>
@@ -1708,23 +1708,23 @@ function generateCounterReceiptHTML(order) {
         <div class="totals">
             <div class="total-line">
                 <span class="total-label">Subtotal:</span>
-                <span>₹${subtotal.toFixed(2)}</span>
+                <span>${subtotal.toFixed(2)}</span>
             </div>
             ${discount > 0 ? `
             <div class="total-line">
                 <span class="total-label" style="color: #d32f2f;">Discount:</span>
-                <span style="color: #d32f2f;">-₹${discount.toFixed(2)}</span>
+                <span style="color: #d32f2f;">-${discount.toFixed(2)}</span>
             </div>
             ` : ''}
             ${shipping > 0 ? `
             <div class="total-line">
                 <span class="total-label">Shipping:</span>
-                <span>+₹${shipping.toFixed(2)}</span>
+                <span>+${shipping.toFixed(2)}</span>
             </div>
             ` : ''}
             <div class="total-line grand-total">
                 <span class="total-label">GRAND TOTAL:</span>
-                <span>₹${total.toFixed(2)}</span>
+                <span>${total.toFixed(2)}</span>
             </div>
         </div>
         
