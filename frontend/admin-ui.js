@@ -1192,7 +1192,7 @@ function closeCounterReceiptModal() {
     }
 }
 
-// Print function for counter receipt - WIDER VERSION
+// Print function for counter receipt - UPDATED with Helvetica font
 function printCounterReceipt() {
     const receiptContent = document.getElementById('receiptPrintArea');
     if (!receiptContent) {
@@ -1200,7 +1200,7 @@ function printCounterReceipt() {
         return;
     }
     
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open('', '_blank', 'width=800,height=800');
     printWindow.document.write(`
         <!DOCTYPE html>
         <html>
@@ -1213,16 +1213,152 @@ function printCounterReceipt() {
                     box-sizing: border-box;
                 }
                 body {
-                    font-family: 'Courier New', monospace;
+                    font-family: 'Helvetica', 'Arial', sans-serif;
                     margin: 0;
                     padding: 30px;
                     background: white;
+                    color: #333;
+                    line-height: 1.5;
                 }
                 .receipt {
                     max-width: 800px;
                     margin: 0 auto;
                     background: white;
                     padding: 20px;
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 25px;
+                    border-bottom: 2px solid #8B0000;
+                    padding-bottom: 15px;
+                }
+                .logo-section {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 10px;
+                }
+                .logo {
+                    max-width: 60px;
+                    max-height: 60px;
+                    margin-right: 15px;
+                }
+                .trust-name {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #8B0000;
+                    letter-spacing: 1px;
+                }
+                .subtitle {
+                    font-size: 13px;
+                    font-style: italic;
+                    font-weight: bold;
+                    color: #0000FF;
+                    margin: 5px 0;
+                }
+                .address {
+                    font-size: 10px;
+                    color: #666;
+                    margin: 3px 0;
+                }
+                .receipt-title {
+                    font-size: 20px;
+                    font-weight: bold;
+                    text-align: center;
+                    margin: 20px 0;
+                    color: #2c3e50;
+                    letter-spacing: 2px;
+                }
+                .receipt-info {
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                    display: flex;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+                .customer-section {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    border-left: 4px solid #8B0000;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }
+                th {
+                    background: #f8f9fa;
+                    padding: 10px;
+                    text-align: left;
+                    font-weight: bold;
+                    border-bottom: 2px solid #ddd;
+                }
+                td {
+                    padding: 8px;
+                    border-bottom: 1px solid #eee;
+                }
+                .text-right {
+                    text-align: right;
+                }
+                .text-center {
+                    text-align: center;
+                }
+                .totals {
+                    margin-top: 20px;
+                    padding-top: 10px;
+                    border-top: 2px solid #ddd;
+                }
+                .total-line {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin: 5px 0;
+                }
+                .total-label {
+                    font-weight: bold;
+                    width: 150px;
+                    text-align: right;
+                    margin-right: 15px;
+                }
+                .grand-total {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #8B0000;
+                    margin-top: 10px;
+                    padding-top: 10px;
+                    border-top: 2px solid #8B0000;
+                }
+                .payment-section {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: #e8f5e9;
+                    border-radius: 8px;
+                    text-align: center;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 30px;
+                    padding-top: 15px;
+                    border-top: 1px solid #ddd;
+                    font-size: 10px;
+                    color: #666;
+                }
+                .signature {
+                    margin-top: 40px;
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .signature div {
+                    text-align: center;
+                    width: 200px;
+                }
+                .signature p {
+                    border-top: 1px solid #333;
+                    padding-top: 5px;
+                    margin-top: 30px;
                 }
                 @media print {
                     body {
@@ -1237,24 +1373,17 @@ function printCounterReceipt() {
                         display: none;
                     }
                 }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                th, td {
-                    padding: 8px;
-                }
             </style>
         </head>
         <body>
             <div class="receipt">
                 ${receiptContent.innerHTML}
             </div>
-            <div class="no-print" style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f0f0;">
-                <button onclick="window.print()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;">
+            <div class="no-print" style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                <button onclick="window.print()" style="padding: 10px 25px; margin: 5px; cursor: pointer; background: #8B0000; color: white; border: none; border-radius: 5px; font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px;">
                     🖨️ Print
                 </button>
-                <button onclick="window.close()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #666; color: white; border: none; border-radius: 5px;">
+                <button onclick="window.close()" style="padding: 10px 25px; margin: 5px; cursor: pointer; background: #666; color: white; border: none; border-radius: 5px; font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px;">
                     ✖️ Close
                 </button>
             </div>
@@ -1271,9 +1400,10 @@ function printCounterReceipt() {
     printWindow.document.close();
 }
 
-// Reprint counter receipt - UPDATED with proper width
+// Reprint counter receipt - UPDATED with Helvetica font and professional style
 async function reprintCounterReceipt(orderId) {
     try {
+        showLoading(true);
         const token = localStorage.getItem('token');
         const response = await fetch(`/api/orders/${orderId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -1286,7 +1416,7 @@ async function reprintCounterReceipt(orderId) {
             
             // Generate receipt HTML directly for printing
             const receiptHtml = generateCounterReceiptHTML(order);
-            const printWindow = window.open('', '_blank');
+            const printWindow = window.open('', '_blank', 'width=800,height=800');
             printWindow.document.write(`
                 <!DOCTYPE html>
                 <html>
@@ -1299,10 +1429,12 @@ async function reprintCounterReceipt(orderId) {
                             box-sizing: border-box;
                         }
                         body {
-                            font-family: 'Courier New', monospace;
+                            font-family: 'Helvetica', 'Arial', sans-serif;
                             margin: 0;
                             padding: 30px;
                             background: white;
+                            color: #333;
+                            line-height: 1.5;
                         }
                         .receipt {
                             max-width: 800px;
@@ -1310,6 +1442,159 @@ async function reprintCounterReceipt(orderId) {
                             margin: 0 auto;
                             background: white;
                             padding: 20px;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 25px;
+                            border-bottom: 2px solid #8B0000;
+                            padding-bottom: 15px;
+                        }
+                        .logo-section {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-bottom: 10px;
+                        }
+                        .logo {
+                            max-width: 60px;
+                            max-height: 60px;
+                            margin-right: 15px;
+                        }
+                        .trust-name {
+                            font-size: 18px;
+                            font-weight: bold;
+                            color: #8B0000;
+                            letter-spacing: 1px;
+                        }
+                        .subtitle {
+                            font-size: 13px;
+                            font-style: italic;
+                            font-weight: bold;
+                            color: #0000FF;
+                            margin: 5px 0;
+                        }
+                        .address {
+                            font-size: 10px;
+                            color: #666;
+                            margin: 3px 0;
+                        }
+                        .receipt-title {
+                            font-size: 20px;
+                            font-weight: bold;
+                            text-align: center;
+                            margin: 20px 0;
+                            color: #2c3e50;
+                            letter-spacing: 2px;
+                        }
+                        .receipt-info {
+                            background: #f8f9fa;
+                            padding: 10px;
+                            border-radius: 5px;
+                            margin: 20px 0;
+                            display: flex;
+                            justify-content: space-between;
+                            flex-wrap: wrap;
+                        }
+                        .customer-section {
+                            margin: 20px 0;
+                            padding: 15px;
+                            background: #f8f9fa;
+                            border-radius: 8px;
+                            border-left: 4px solid #8B0000;
+                        }
+                        .customer-section strong {
+                            color: #8B0000;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin: 20px 0;
+                        }
+                        th {
+                            background: #f8f9fa;
+                            padding: 10px;
+                            text-align: left;
+                            font-weight: bold;
+                            font-size: 11px;
+                            border-bottom: 2px solid #ddd;
+                        }
+                        td {
+                            padding: 8px;
+                            border-bottom: 1px solid #eee;
+                            font-size: 11px;
+                        }
+                        .text-right {
+                            text-align: right;
+                        }
+                        .text-center {
+                            text-align: center;
+                        }
+                        .totals {
+                            margin-top: 20px;
+                            padding-top: 10px;
+                            border-top: 2px solid #ddd;
+                        }
+                        .total-line {
+                            display: flex;
+                            justify-content: flex-end;
+                            margin: 5px 0;
+                        }
+                        .total-label {
+                            font-weight: bold;
+                            width: 150px;
+                            text-align: right;
+                            margin-right: 15px;
+                        }
+                        .grand-total {
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #8B0000;
+                            margin-top: 10px;
+                            padding-top: 10px;
+                            border-top: 2px solid #8B0000;
+                        }
+                        .payment-section {
+                            margin: 20px 0;
+                            padding: 15px;
+                            background: #e8f5e9;
+                            border-radius: 8px;
+                            text-align: center;
+                        }
+                        .footer {
+                            text-align: center;
+                            margin-top: 30px;
+                            padding-top: 15px;
+                            border-top: 1px solid #ddd;
+                            font-size: 10px;
+                            color: #666;
+                        }
+                        .signature {
+                            margin-top: 40px;
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        .signature div {
+                            text-align: center;
+                            width: 200px;
+                        }
+                        .signature p {
+                            border-top: 1px solid #333;
+                            padding-top: 5px;
+                            margin-top: 30px;
+                            font-size: 10px;
+                        }
+                        .watermark {
+                            opacity: 0.05;
+                            position: fixed;
+                            bottom: 50%;
+                            right: 50%;
+                            transform: translate(50%, 50%);
+                            font-size: 60px;
+                            font-weight: bold;
+                            color: #8B0000;
+                            white-space: nowrap;
+                            pointer-events: none;
+                            font-family: 'Helvetica', 'Arial', sans-serif;
                         }
                         @media print {
                             body {
@@ -1320,25 +1605,25 @@ async function reprintCounterReceipt(orderId) {
                                 max-width: 100%;
                                 padding: 0;
                             }
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                        th, td {
-                            padding: 8px;
+                            .watermark {
+                                opacity: 0.03;
+                            }
+                            button, .no-print {
+                                display: none;
+                            }
                         }
                     </style>
                 </head>
                 <body>
+                    <div class="watermark">SHASTRAPRATHISTA</div>
                     <div class="receipt">
                         ${receiptHtml}
                     </div>
-                    <div class="no-print" style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f0f0;">
-                        <button onclick="window.print()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;">
-                            🖨️ Print
+                    <div class="no-print" style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                        <button onclick="window.print()" style="padding: 10px 25px; margin: 5px; cursor: pointer; background: #8B0000; color: white; border: none; border-radius: 5px; font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px;">
+                            🖨️ Print Receipt
                         </button>
-                        <button onclick="window.close()" style="padding: 10px 20px; margin: 5px; cursor: pointer; background: #666; color: white; border: none; border-radius: 5px;">
+                        <button onclick="window.close()" style="padding: 10px 25px; margin: 5px; cursor: pointer; background: #666; color: white; border: none; border-radius: 5px; font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px;">
                             ✖️ Close
                         </button>
                     </div>
@@ -1358,10 +1643,12 @@ async function reprintCounterReceipt(orderId) {
     } catch (error) {
         console.error('Error reprinting receipt:', error);
         showToast('Failed to reprint receipt', 'error');
+    } finally {
+        showLoading(false);
     }
 }
 
-// Generate counter receipt HTML for reprint - WITH FORCED RECALCULATION
+// Generate counter receipt HTML for reprint - WITH HELVETICA FONT and professional style
 function generateCounterReceiptHTML(order) {
     // Extract totals properly
     const subtotal = order.totals?.subtotal || 0;
@@ -1371,84 +1658,92 @@ function generateCounterReceiptHTML(order) {
     const total = subtotal - discount + shipping;
     
     return `
-        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
-            <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
-            <p style="margin: 8px 0; font-size: 13px; font-weight: bold;">"RAMCO DHARMIKA SEVA"</p>
-            <p style="margin: 5px 0; font-size: 12px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
-            <p style="margin: 5px 0; font-size: 12px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
+        <div class="header">
+            <div class="logo-section">
+                <img src="/image/logo.jpg" alt="Logo" class="logo" onerror="this.style.display='none'">
+                <div>
+                    <div class="trust-name">SMT LINGAMMAL RAMARAJU SHASTRAPRATHISTA TRUST</div>
+                    <div class="subtitle">"RAMCO DHARMIKA SEVA"</div>
+                </div>
+            </div>
+            <div class="address">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117, Tamilnadu, India.</div>
+            <div class="address">email: shastraprathista@gmail.com | Mob: 88704 12345</div>
         </div>
         
-        <h4 style="text-align: center; margin: 20px 0; font-size: 16px;">CASH SALE RECEIPT</h4>
+        <div class="receipt-title">CASH SALE RECEIPT</div>
         
-        <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <div class="receipt-info">
             <div><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</div>
             <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN')}</div>
         </div>
         
-        <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+        <div class="customer-section">
             <strong style="font-size: 14px;">Customer Details:</strong><br>
             <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
             <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
             ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
         </div>
         
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <table>
             <thead>
-                <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
-                    <th style="text-align: left; padding: 10px;">Item</th>
-                    <th style="text-align: center; padding: 10px;">Qty</th>
-                    <th style="text-align: right; padding: 10px;">Price (₹)</th>
-                    <th style="text-align: right; padding: 10px;">Total (₹)</th>
-                 </tr>
+                <tr>
+                    <th>Item</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-right">Price (₹)</th>
+                    <th class="text-right">Total (₹)</th>
+                </tr>
             </thead>
             <tbody>
                 ${(order.items || []).map(item => `
-                    <tr style="border-bottom: 1px solid #ddd;">
-                        <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
-                        <td style="text-align: center; padding: 10px;">${item.quantity}</td>
-                        <td style="text-align: right; padding: 10px;">${parseFloat(item.price).toFixed(2)}</td>
-                        <td style="text-align: right; padding: 10px;">${(item.quantity * item.price).toFixed(2)}</td>
+                    <tr>
+                        <td><strong>${item.title || item.name}</strong></td>
+                        <td class="text-center">${item.quantity}</td>
+                        <td class="text-right">${parseFloat(item.price).toFixed(2)}</td>
+                        <td class="text-right">${(item.quantity * item.price).toFixed(2)}</td>
                     </tr>
                 `).join('')}
             </tbody>
-            <tfoot>
-                <tr style="border-top: 2px solid #333;">
-                    <td colspan="3" style="text-align: right; padding: 10px;"><strong>Subtotal:</strong></td>
-                    <td style="text-align: right; padding: 10px;"><strong>₹${subtotal.toFixed(2)}</strong></td>
-                </tr>
-                ${discount > 0 ? `
-                <tr>
-                    <td colspan="3" style="text-align: right; padding: 8px; color: #d32f2f;"><strong>Discount:</strong></td>
-                    <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${discount.toFixed(2)}</strong></td>
-                </tr>
-                ` : ''}
-                ${shipping > 0 ? `
-                <tr>
-                    <td colspan="3" style="text-align: right; padding: 8px;"><strong>Shipping:</strong></td>
-                    <td style="text-align: right; padding: 8px;"><strong>₹${shipping.toFixed(2)}</strong></td>
-                </tr>
-                ` : ''}
-                <tr style="border-top: 2px solid #333; background: #f5f5f5;">
-                    <td colspan="3" style="text-align: right; padding: 12px; font-size: 16px;"><strong>GRAND TOTAL:</strong></td>
-                    <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${total.toFixed(2)}</strong></td>
-                </tr>
-            </tfoot>
         </table>
         
-        <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
-            <strong>Payment:</strong> ${order.paymentMethod?.toUpperCase() || 'CASH'} | <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
+        <div class="totals">
+            <div class="total-line">
+                <span class="total-label">Subtotal:</span>
+                <span>₹${subtotal.toFixed(2)}</span>
+            </div>
+            ${discount > 0 ? `
+            <div class="total-line">
+                <span class="total-label" style="color: #d32f2f;">Discount:</span>
+                <span style="color: #d32f2f;">-₹${discount.toFixed(2)}</span>
+            </div>
+            ` : ''}
+            ${shipping > 0 ? `
+            <div class="total-line">
+                <span class="total-label">Shipping:</span>
+                <span>+₹${shipping.toFixed(2)}</span>
+            </div>
+            ` : ''}
+            <div class="total-line grand-total">
+                <span class="total-label">GRAND TOTAL:</span>
+                <span>₹${total.toFixed(2)}</span>
+            </div>
         </div>
         
-        <div style="text-align: center; margin-top: 30px; border-top: 2px dashed #333; padding-top: 20px;">
+        <div class="payment-section">
+            <strong>✓ PAID ✓</strong><br>
+            Payment: ${order.paymentMethod?.toUpperCase() || 'CASH'} | Status: Completed
+        </div>
+        
+        <div class="footer">
             <p>Thank you for your purchase!</p>
-            <p>www.shastraprathista.in</p>
-            <br><br>
-            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <p>_________________________</p>
-                <p>_________________________</p>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11px;">
+            <p style="font-size: 9px; margin-top: 5px;">Books HSN - 4901 (GST Exempt as per Indian Law)</p>
+            <p style="font-size: 9px;">www.shastraprathista.in</p>
+        </div>
+        
+        <div class="signature">
+            <div>
                 <p>Customer Signature</p>
+            </div>
+            <div>
                 <p>Authorized Signatory</p>
             </div>
         </div>
