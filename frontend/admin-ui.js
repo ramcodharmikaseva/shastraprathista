@@ -457,9 +457,9 @@ function generateReceiptNumber() {
     return receiptNumber;
 }
 
-// Print Receipt with Professional Header (matching online invoice)
+// Print Receipt with Professional Header (matching profile invoice style)
 function printPOSReceipt(data) {
-    const receiptWindow = window.open('', '_blank', 'width=400,height=600');
+    const receiptWindow = window.open('', '_blank', 'width=800,height=800');
     if (!receiptWindow) return;
     
     receiptWindow.document.write(`
@@ -474,83 +474,116 @@ function printPOSReceipt(data) {
                     box-sizing: border-box;
                 }
                 body {
-                    font-family: 'Courier New', monospace;
-                    padding: 20px;
+                    font-family: 'Helvetica', 'Arial', sans-serif;
+                    padding: 30px;
                     font-size: 11px;
-                    line-height: 1.4;
-                    color: #000;
+                    line-height: 1.5;
+                    color: #333;
+                    background: white;
+                }
+                .receipt-container {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    background: white;
                 }
                 .header {
                     text-align: center;
-                    margin-bottom: 15px;
-                    padding-bottom: 8px;
-                    border-bottom: 2px solid #000;
+                    margin-bottom: 20px;
+                    border-bottom: 2px solid #8B0000;
+                    padding-bottom: 15px;
+                }
+                .logo-section {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 10px;
+                }
+                .logo {
+                    max-width: 60px;
+                    max-height: 60px;
+                    margin-right: 15px;
                 }
                 .trust-name {
-                    font-size: 14px;
+                    font-size: 18px;
                     font-weight: bold;
                     color: #8B0000;
                     letter-spacing: 1px;
-                    margin-bottom: 3px;
                 }
                 .subtitle {
-                    font-size: 11px;
+                    font-size: 13px;
                     font-style: italic;
                     font-weight: bold;
                     color: #0000FF;
-                    margin-bottom: 8px;
+                    margin: 5px 0;
                 }
                 .address {
-                    font-size: 9px;
-                    margin-bottom: 3px;
+                    font-size: 10px;
+                    color: #666;
+                    margin: 3px 0;
                 }
                 .receipt-title {
-                    font-size: 16px;
+                    font-size: 20px;
                     font-weight: bold;
-                    margin: 10px 0;
                     text-align: center;
+                    margin: 20px 0;
+                    color: #2c3e50;
                     letter-spacing: 2px;
                 }
                 .receipt-no {
                     text-align: center;
-                    font-size: 10px;
+                    font-size: 12px;
                     font-weight: bold;
-                    margin: 5px 0;
-                    padding: 3px;
-                    background: #f0f0f0;
+                    background: #f8f9fa;
+                    padding: 8px;
+                    margin: 10px 0;
+                    border-radius: 5px;
                 }
                 .divider {
-                    border-top: 1px dashed #000;
-                    margin: 8px 0;
+                    border-top: 1px dashed #999;
+                    margin: 15px 0;
                 }
                 .divider-solid {
-                    border-top: 1px solid #000;
-                    margin: 8px 0;
+                    border-top: 2px solid #333;
+                    margin: 15px 0;
                 }
                 .customer-info {
-                    margin: 10px 0;
-                    padding: 8px;
-                    background: #f9f9f9;
-                    border: 1px solid #ddd;
-                    font-size: 9px;
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    border-left: 4px solid #8B0000;
                 }
-                .customer-info strong {
-                    font-size: 10px;
+                .customer-info h4 {
+                    color: #8B0000;
+                    margin-bottom: 10px;
+                    font-size: 13px;
+                }
+                .info-row {
+                    margin: 5px 0;
+                    font-size: 11px;
+                }
+                .info-label {
+                    font-weight: bold;
+                    display: inline-block;
+                    width: 70px;
                 }
                 table {
                     width: 100%;
                     border-collapse: collapse;
-                    margin: 10px 0;
-                }
-                th, td {
-                    text-align: left;
-                    padding: 5px 3px;
-                    border-bottom: 1px dotted #ccc;
+                    margin: 20px 0;
                 }
                 th {
+                    background: #f8f9fa;
+                    padding: 10px;
+                    text-align: left;
                     font-weight: bold;
-                    background: #f5f5f5;
-                    font-size: 9px;
+                    font-size: 11px;
+                    border-bottom: 2px solid #ddd;
+                }
+                td {
+                    padding: 8px;
+                    border-bottom: 1px solid #eee;
+                    font-size: 11px;
                 }
                 .text-right {
                     text-align: right;
@@ -558,33 +591,82 @@ function printPOSReceipt(data) {
                 .text-center {
                     text-align: center;
                 }
+                .totals-section {
+                    margin-top: 20px;
+                    padding-top: 10px;
+                    border-top: 2px solid #ddd;
+                }
                 .total-row {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin: 5px 0;
+                    font-size: 12px;
+                }
+                .total-label {
                     font-weight: bold;
-                    font-size: 11px;
-                    margin-top: 5px;
+                    width: 150px;
+                    text-align: right;
+                    margin-right: 15px;
                 }
                 .grand-total {
-                    font-size: 12px;
+                    font-size: 16px;
                     font-weight: bold;
-                    border-top: 2px solid #000;
-                    padding-top: 5px;
-                    margin-top: 5px;
+                    color: #8B0000;
+                    margin-top: 10px;
+                    padding-top: 10px;
+                    border-top: 2px solid #8B0000;
+                }
+                .payment-section {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: #e8f5e9;
+                    border-radius: 8px;
+                    text-align: center;
+                }
+                .payment-section strong {
+                    color: #2e7d32;
                 }
                 .footer {
                     text-align: center;
-                    margin-top: 15px;
-                    padding-top: 8px;
-                    border-top: 1px solid #000;
-                    font-size: 9px;
+                    margin-top: 30px;
+                    padding-top: 15px;
+                    border-top: 1px solid #ddd;
+                    font-size: 10px;
+                    color: #666;
                 }
-                .signature {
-                    margin-top: 20px;
+                .signature-section {
+                    margin-top: 40px;
                     display: flex;
                     justify-content: space-between;
                 }
+                .signature-line {
+                    text-align: center;
+                    width: 200px;
+                }
+                .signature-line p {
+                    border-top: 1px solid #333;
+                    padding-top: 5px;
+                    margin-top: 30px;
+                    font-size: 10px;
+                }
+                .watermark {
+                    opacity: 0.1;
+                    position: fixed;
+                    bottom: 50%;
+                    right: 50%;
+                    transform: translate(50%, 50%);
+                    font-size: 60px;
+                    font-weight: bold;
+                    color: #8B0000;
+                    white-space: nowrap;
+                    pointer-events: none;
+                }
                 @media print {
                     body {
-                        padding: 10px;
+                        padding: 15px;
+                    }
+                    .watermark {
+                        opacity: 0.05;
                     }
                     .no-print {
                         display: none;
@@ -593,110 +675,123 @@ function printPOSReceipt(data) {
             </style>
         </head>
         <body>
-            <!-- Header Section - Matching Online Invoice -->
-            <div class="header">
-                <div class="trust-name">SMT LINGAMMAL RAMARAJU SHASTRAPRATHISTA TRUST</div>
-                <div class="subtitle">"RAMCO DHARMIKA SEVA"</div>
-                <div class="address">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117,</div>
-                <div class="address">Tamilnadu, India.</div>
-                <div class="address">email: shastraprathista@gmail.com | Mob: 88704 12345</div>
-            </div>
-            
-            <div class="receipt-title">CASH SALE RECEIPT</div>
-            <div class="receipt-no">Receipt No: ${data.receiptNumber}</div>
-            <div class="text-center" style="font-size: 9px; margin-bottom: 5px;">Date: ${new Date().toLocaleString()}</div>
-            
-            <div class="divider-solid"></div>
-            
-            <!-- Customer Information -->
-            <div class="customer-info">
-                <strong>Customer Details:</strong><br>
-                Name: ${escapeHtml(data.customerName)}<br>
-                Phone: ${data.customerPhone}<br>
-                ${data.customerAddress ? `Address: ${escapeHtml(data.customerAddress)}<br>` : ''}
-                ${data.city ? `City: ${data.city}<br>` : ''}
-                ${data.state ? `State: ${data.state}<br>` : ''}
-                ${data.pincode ? `Pincode: ${data.pincode}<br>` : ''}
-            </div>
-            
-            <div class="divider"></div>
-            
-            <!-- Items Table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Item</th>
-                        <th class="text-right">Qty</th>
-                        <th class="text-right">Price</th>
-                        <th class="text-right">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${data.items.map((item, idx) => `
+            <div class="receipt-container">
+                <!-- Watermark -->
+                <div class="watermark">SHASTRAPRATHISTA</div>
+                
+                <!-- Header Section -->
+                <div class="header">
+                    <div class="logo-section">
+                        <img src="/image/logo.jpg" alt="Logo" class="logo" onerror="this.style.display='none'">
+                        <div>
+                            <div class="trust-name">SMT LINGAMMAL RAMARAJU SHASTRAPRATHISTA TRUST</div>
+                            <div class="subtitle">"RAMCO DHARMIKA SEVA"</div>
+                        </div>
+                    </div>
+                    <div class="address">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117, Tamilnadu, India.</div>
+                    <div class="address">email: shastraprathista@gmail.com | Mob: 88704 12345</div>
+                </div>
+                
+                <div class="receipt-title">CASH SALE RECEIPT</div>
+                
+                <div class="receipt-no">
+                    Receipt No: ${data.receiptNumber} | Date: ${new Date().toLocaleString('en-IN')}
+                </div>
+                
+                <div class="divider-solid"></div>
+                
+                <!-- Customer Information -->
+                <div class="customer-info">
+                    <h4><i class="fas fa-user"></i> Customer Details</h4>
+                    <div class="info-row"><span class="info-label">Name:</span> ${escapeHtml(data.customerName)}</div>
+                    <div class="info-row"><span class="info-label">Phone:</span> ${data.customerPhone}</div>
+                    ${data.customerAddress ? `<div class="info-row"><span class="info-label">Address:</span> ${escapeHtml(data.customerAddress)}</div>` : ''}
+                </div>
+                
+                <div class="divider"></div>
+                
+                <!-- Items Table -->
+                <table>
+                    <thead>
                         <tr>
-                            <td>${idx + 1}</td>
-                            <td>${escapeHtml(item.name.length > 25 ? item.name.substring(0, 22) + '...' : item.name)}</td>
-                            <td class="text-right">${item.quantity}</td>
-                            <td class="text-right">₹${item.price.toFixed(2)}</td>
-                            <td class="text-right">₹${(item.price * item.quantity).toFixed(2)}</td>
+                            <th>#</th>
+                            <th>Item Description</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-right">Price (₹)</th>
+                            <th class="text-right">Total (₹)</th>
                         </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-            
-            <div class="divider"></div>
-            
-            <!-- Totals Section -->
-            <div style="margin-top: 5px;">
-                <div style="display: flex; justify-content: space-between; font-size: 10px;">
-                    <span>Subtotal:</span>
-                    <span>₹${data.subtotal.toFixed(2)}</span>
+                    </thead>
+                    <tbody>
+                        ${data.items.map((item, idx) => `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td><strong>${escapeHtml(item.name)}</strong></td>
+                                <td class="text-center">${item.quantity}</td>
+                                <td class="text-right">${item.price.toFixed(2)}</td>
+                                <td class="text-right">${(item.price * item.quantity).toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                
+                <div class="divider"></div>
+                
+                <!-- Totals Section -->
+                <div class="totals-section">
+                    <div class="total-row">
+                        <span class="total-label">Subtotal:</span>
+                        <span>₹${data.subtotal.toFixed(2)}</span>
+                    </div>
+                    ${data.discount > 0 ? `
+                    <div class="total-row">
+                        <span class="total-label">Discount:</span>
+                        <span style="color: #d32f2f;">-₹${data.discount.toFixed(2)}</span>
+                    </div>
+                    ` : ''}
+                    ${data.shipping > 0 ? `
+                    <div class="total-row">
+                        <span class="total-label">Shipping Charge:</span>
+                        <span>+₹${data.shipping.toFixed(2)}</span>
+                    </div>
+                    ` : ''}
+                    <div class="total-row grand-total">
+                        <span class="total-label">GRAND TOTAL:</span>
+                        <span>₹${data.total.toFixed(2)}</span>
+                    </div>
                 </div>
-                ${data.discount > 0 ? `
-                <div style="display: flex; justify-content: space-between; font-size: 10px; color: #d32f2f;">
-                    <span>Discount:</span>
-                    <span>-₹${data.discount.toFixed(2)}</span>
+                
+                <!-- Payment Details -->
+                <div class="payment-section">
+                    <strong>✓ PAID ✓</strong><br>
+                    Payment Mode: Cash | Status: Completed
                 </div>
-                ` : ''}
-                ${data.shipping > 0 ? `
-                <div style="display: flex; justify-content: space-between; font-size: 10px;">
-                    <span>Shipping:</span>
-                    <span>₹${data.shipping.toFixed(2)}</span>
+                
+                <!-- Footer -->
+                <div class="footer">
+                    <p>Thank you for your purchase!</p>
+                    <p style="font-size: 9px; margin-top: 5px;">Books HSN - 4901 (GST Exempt as per Indian Law)</p>
+                    <p style="font-size: 9px;">www.shastraprathista.in</p>
                 </div>
-                ` : ''}
-                <div class="divider" style="margin: 5px 0;"></div>
-                <div class="total-row" style="display: flex; justify-content: space-between;">
-                    <span>GRAND TOTAL:</span>
-                    <span>₹${data.total.toFixed(2)}</span>
+                
+                <!-- Signature Section -->
+                <div class="signature-section">
+                    <div class="signature-line">
+                        <p>Customer Signature</p>
+                    </div>
+                    <div class="signature-line">
+                        <p>Authorized Signatory</p>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="divider-solid"></div>
-            
-            <!-- Payment Details -->
-            <div style="margin: 8px 0; font-size: 9px;">
-                <strong>Payment Mode:</strong> Cash<br>
-                <strong>Status:</strong> Paid ✓
-            </div>
-            
-            <!-- Footer -->
-            <div class="footer">
-                <div>Thank you for your purchase!</div>
-                <div style="font-size: 8px; margin-top: 3px;">Books HSN - 4901 (GST Exempt)</div>
-                <div style="font-size: 8px; margin-top: 3px;">www.shastraprathista.in</div>
-            </div>
-            
-            <!-- Signature Lines -->
-            <div class="signature">
-                <div style="font-size: 9px;">Customer Signature</div>
-                <div style="font-size: 9px;">Authorized Signatory</div>
-            </div>
-            
-            <!-- Print Instructions -->
-            <div class="no-print" style="text-align: center; margin-top: 20px; padding: 10px; background: #f0f0f0;">
-                <button onclick="window.print()" style="padding: 5px 15px; margin: 5px; cursor: pointer;">🖨️ Print Receipt</button>
-                <button onclick="window.close()" style="padding: 5px 15px; margin: 5px; cursor: pointer;">✖️ Close</button>
+                
+                <!-- Print Instructions -->
+                <div class="no-print" style="text-align: center; margin-top: 30px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                    <button onclick="window.print()" style="padding: 10px 25px; margin: 5px; cursor: pointer; background: #8B0000; color: white; border: none; border-radius: 5px; font-size: 14px;">
+                        🖨️ Print Receipt
+                    </button>
+                    <button onclick="window.close()" style="padding: 10px 25px; margin: 5px; cursor: pointer; background: #666; color: white; border: none; border-radius: 5px; font-size: 14px;">
+                        ✖️ Close
+                    </button>
+                </div>
             </div>
             
             <script>
@@ -704,9 +799,9 @@ function printPOSReceipt(data) {
                 window.onload = function() {
                     setTimeout(function() {
                         window.print();
-                    }, 500);
+                    }, 800);
                 };
-            </script>
+            <\/script>
         </body>
         </html>
     `);
@@ -937,9 +1032,8 @@ async function viewCounterOrder(orderId) {
     showCounterOrderDetails(orderId);
 }
 
-// Show counter order details in receipt-style modal (WIDER VERSION) - WITH FORCED RECALCULATION
+// Show counter order details in receipt-style modal (matching profile invoice style)
 function showCounterOrderDetails(orderId) {
-    // Fetch the counter order details
     fetch(`/api/orders/${orderId}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     })
@@ -951,53 +1045,52 @@ function showCounterOrderDetails(orderId) {
         if (!result.success) throw new Error('Order not found');
         const order = result.order;
         
-        // ✅ FORCE RECALCULATE totals to fix any database errors
         const subtotal = order.totals?.subtotal || 0;
         const discount = order.totals?.discount || 0;
         const shipping = order.totals?.shipping || 0;
-        // 👇 THIS IS THE KEY FIX - Recalculate, don't trust stored total
         const calculatedTotal = subtotal - discount + shipping;
         
-        // Use calculated total instead of stored total
-        const displayTotal = calculatedTotal;
-        
-        // Create receipt-styled modal - WIDER
         const modalHtml = `
             <div id="counterReceiptModal" class="modal" style="display: block;">
                 <div class="modal-content" style="max-width: 800px; width: 90%;">
-                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px;">
-                        <h2 style="margin: 0; color: #333;">Counter Sale Receipt</h2>
+                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8B0000; padding-bottom: 15px;">
+                        <h2 style="margin: 0; color: #8B0000;">
+                            <i class="fas fa-receipt"></i> Counter Sale Receipt
+                        </h2>
                         <button onclick="closeCounterReceiptModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
                     </div>
                     <div class="modal-body" style="padding: 20px 0;">
-                        <!-- Receipt Content -->
-                        <div id="receiptPrintArea" style="font-family: 'Courier New', monospace; font-size: 13px;">
+                        <div id="receiptPrintArea" style="font-family: 'Helvetica', 'Arial', sans-serif; font-size: 13px;">
                             <!-- Header -->
-                            <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #333; padding-bottom: 15px;">
-                                <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRA PRATHISTA TRUST</h3>
-                                <p style="margin: 8px 0; font-size: 13px; font-weight: bold;">"RAMCO DHARMIKA SEVA"</p>
-                                <p style="margin: 5px 0; font-size: 12px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117</p>
-                                <p style="margin: 5px 0; font-size: 12px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
+                            <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #8B0000; padding-bottom: 15px;">
+                                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                                    <img src="/image/logo.jpg" alt="Logo" style="max-width: 50px; max-height: 50px; margin-right: 15px;" onerror="this.style.display='none'">
+                                    <div>
+                                        <h3 style="margin: 0; color: #8B0000; font-size: 18px;">SMT LINGAMMAL RAMARAJU SHASTRAPRATHISTA TRUST</h3>
+                                        <p style="margin: 5px 0; font-size: 12px; font-style: italic; font-weight: bold; color: #0000FF;">"RAMCO DHARMIKA SEVA"</p>
+                                    </div>
+                                </div>
+                                <p style="margin: 5px 0; font-size: 11px;">No.1, P.A.C. Ramasamy Raja Road, Rajapalayam - 626 117, Tamilnadu, India.</p>
+                                <p style="margin: 5px 0; font-size: 11px;">email: shastraprathista@gmail.com | Mob: 88704 12345</p>
                             </div>
                             
-                            <h4 style="text-align: center; margin: 20px 0; font-size: 16px;">CASH SALE RECEIPT</h4>
+                            <h4 style="text-align: center; margin: 20px 0; font-size: 20px; color: #2c3e50;">CASH SALE RECEIPT</h4>
                             
-                            <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                            <div style="margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap; background: #f8f9fa; padding: 10px; border-radius: 5px;">
                                 <div><strong>Receipt No:</strong> ${order.receiptNumber || order.orderId}</div>
-                                <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</div>
+                                <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString('en-IN')}</div>
                             </div>
                             
-                            <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
-                                <strong style="font-size: 14px;">Customer Details:</strong><br>
+                            <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #8B0000;">
+                                <strong style="font-size: 14px; color: #8B0000;">Customer Details:</strong><br>
                                 <strong>Name:</strong> ${order.customerName || 'N/A'}<br>
                                 <strong>Phone:</strong> ${order.customerPhone || 'N/A'}<br>
                                 ${order.customerAddress ? `<strong>Address:</strong> ${order.customerAddress}<br>` : ''}
                             </div>
                             
-                            <!-- Items Table - WIDER -->
                             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                                 <thead>
-                                    <tr style="border-bottom: 2px solid #333; background: #f0f0f0;">
+                                    <tr style="border-bottom: 2px solid #ddd; background: #f8f9fa;">
                                         <th style="text-align: left; padding: 10px;">#</th>
                                         <th style="text-align: left; padding: 10px;">Item</th>
                                         <th style="text-align: center; padding: 10px;">Qty</th>
@@ -1007,7 +1100,7 @@ function showCounterOrderDetails(orderId) {
                                 </thead>
                                 <tbody>
                                     ${(order.items || []).map((item, idx) => `
-                                        <tr style="border-bottom: 1px solid #ddd;">
+                                        <tr style="border-bottom: 1px solid #eee;">
                                             <td style="padding: 10px;">${idx + 1}</td>
                                             <td style="padding: 10px;"><strong>${item.title || item.name}</strong></td>
                                             <td style="text-align: center; padding: 10px;">${item.quantity}</td>
@@ -1016,54 +1109,55 @@ function showCounterOrderDetails(orderId) {
                                         </tr>
                                     `).join('')}
                                 </tbody>
-                                <tfoot>
-                                    <tr style="border-top: 2px solid #333;">
-                                        <td colspan="4" style="text-align: right; padding: 10px;"><strong>Subtotal:</strong></td>
-                                        <td style="text-align: right; padding: 10px;"><strong>₹${subtotal.toFixed(2)}</strong></td>
-                                    </tr>
-                                    ${discount > 0 ? `
-                                    <tr>
-                                        <td colspan="4" style="text-align: right; padding: 8px; color: #d32f2f;"><strong>Discount:</strong></td>
-                                        <td style="text-align: right; padding: 8px; color: #d32f2f;"><strong>-₹${discount.toFixed(2)}</strong></td>
-                                    </tr>
-                                    ` : ''}
-                                    ${shipping > 0 ? `
-                                    <tr>
-                                        <td colspan="4" style="text-align: right; padding: 8px;"><strong>Shipping:</strong></td>
-                                        <td style="text-align: right; padding: 8px;"><strong>₹${shipping.toFixed(2)}</strong></td>
-                                    </tr>
-                                    ` : ''}
-                                    <tr style="border-top: 2px solid #333; background: #f5f5f5;">
-                                        <td colspan="4" style="text-align: right; padding: 12px; font-size: 16px;"><strong>GRAND TOTAL:</strong></td>
-                                        <td style="text-align: right; padding: 12px; font-size: 16px;"><strong>₹${displayTotal.toFixed(2)}</strong></td>
-                                    </tr>
-                                </tfoot>
                             </table>
                             
-                            <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px;">
-                                <strong>Payment Mode:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'} &nbsp;&nbsp;|&nbsp;&nbsp;
-                                <strong>Status:</strong> <span style="color: #2e7d32;">✓ PAID</span>
+                            <div style="margin-top: 20px; padding-top: 10px; border-top: 2px solid #ddd;">
+                                <div style="display: flex; justify-content: flex-end; margin: 5px 0;">
+                                    <span style="font-weight: bold; width: 150px; text-align: right;">Subtotal:</span>
+                                    <span style="width: 100px; text-align: right;">₹${subtotal.toFixed(2)}</span>
+                                </div>
+                                ${discount > 0 ? `
+                                <div style="display: flex; justify-content: flex-end; margin: 5px 0;">
+                                    <span style="font-weight: bold; width: 150px; text-align: right; color: #d32f2f;">Discount:</span>
+                                    <span style="width: 100px; text-align: right; color: #d32f2f;">-₹${discount.toFixed(2)}</span>
+                                </div>
+                                ` : ''}
+                                ${shipping > 0 ? `
+                                <div style="display: flex; justify-content: flex-end; margin: 5px 0;">
+                                    <span style="font-weight: bold; width: 150px; text-align: right;">Shipping:</span>
+                                    <span style="width: 100px; text-align: right;">+₹${shipping.toFixed(2)}</span>
+                                </div>
+                                ` : ''}
+                                <div style="display: flex; justify-content: flex-end; margin: 10px 0; padding-top: 10px; border-top: 2px solid #8B0000;">
+                                    <span style="font-weight: bold; font-size: 16px; width: 150px; text-align: right; color: #8B0000;">GRAND TOTAL:</span>
+                                    <span style="font-size: 16px; font-weight: bold; width: 100px; text-align: right; color: #8B0000;">₹${calculatedTotal.toFixed(2)}</span>
+                                </div>
                             </div>
                             
-                            <div style="text-align: center; margin-top: 30px; border-top: 2px dashed #333; padding-top: 20px;">
-                                <p style="font-size: 13px;">Thank you for your purchase!</p>
-                                <p style="font-size: 11px; color: #666;">Books HSN - 4901 (GST Exempt)</p>
-                                <p style="font-size: 11px;">www.shastraprathista.in</p>
-                                <br><br>
-                                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                                    <p>_________________________</p>
-                                    <p>_________________________</p>
+                            <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 8px; text-align: center;">
+                                <strong style="color: #2e7d32;">✓ PAID ✓</strong><br>
+                                Payment Mode: ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'CASH'} | Status: Completed
+                            </div>
+                            
+                            <div style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd;">
+                                <p style="font-size: 12px;">Thank you for your purchase!</p>
+                                <p style="font-size: 10px; color: #666;">Books HSN - 4901 (GST Exempt as per Indian Law)</p>
+                                <p style="font-size: 10px;">www.shastraprathista.in</p>
+                            </div>
+                            
+                            <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                                <div style="text-align: center; width: 200px;">
+                                    <p style="border-top: 1px solid #333; padding-top: 5px; margin-top: 30px;">Customer Signature</p>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 11px;">
-                                    <p>Customer Signature</p>
-                                    <p>Authorized Signatory</p>
+                                <div style="text-align: center; width: 200px;">
+                                    <p style="border-top: 1px solid #333; padding-top: 5px; margin-top: 30px;">Authorized Signatory</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 15px;">
-                        <button onclick="printCounterReceipt()" class="btn btn-primary" style="padding: 10px 20px;">
-                            <i class="fas fa-print"></i> 🖨️ Print Receipt
+                        <button onclick="printCounterReceipt()" class="btn btn-primary" style="padding: 10px 20px; background: #8B0000; color: white; border: none; border-radius: 5px;">
+                            <i class="fas fa-print"></i> Print Receipt
                         </button>
                         <button onclick="closeCounterReceiptModal()" class="btn btn-secondary" style="padding: 10px 20px;">
                             <i class="fas fa-times"></i> Close
@@ -1073,18 +1167,15 @@ function showCounterOrderDetails(orderId) {
             </div>
         `;
         
-        // Remove existing modal if any
         const existingModal = document.getElementById('counterReceiptModal');
         if (existingModal) existingModal.remove();
         
-        // Add modal to body
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         
-        // Store order data for printing (with corrected total)
         window.currentReceiptOrder = {
             ...order,
-            displayTotal: displayTotal,
-            correctedTotal: displayTotal
+            displayTotal: calculatedTotal,
+            correctedTotal: calculatedTotal
         };
     })
     .catch(err => {
