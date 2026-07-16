@@ -244,7 +244,7 @@
   <!-- Common JS -->
   <script src="common.js"></script>
 
-  // Hi
+  
   <script>
 
     // Load shared header & footer
@@ -698,7 +698,7 @@
       
       // Update slider position and dots
       function updateSlider() {
-        const translateX = -currentSlide * 12.5; // Each slide is 12.5% of container
+        const translateX = -(100 / totalSlides) * currentSlide;
         slider.style.transform = `translateX(${translateX}%)`;
         
         // Update active dot

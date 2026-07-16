@@ -579,17 +579,16 @@
 }
 
 .slider {
-  display: flex;
-  width: 800%; /* 8 slides * 100% */
-  height: 100%;
-  transition: transform 0.5s ease-in-out;
+    display: flex;
+    width: 1000%;      /* 10 slides */
+    height: 100%;
+    transition: transform .5s ease-in-out;
 }
 
 .slide {
-  flex: 0 0 12.5%; /* 100% / 8 = 12.5% */
-  height: 100%;
-  position: relative;
-  width: 100%;
+    flex: 0 0 10%;
+    height: 100%;
+    position: relative;
 }
 
 .slide img {
